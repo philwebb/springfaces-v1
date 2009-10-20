@@ -27,7 +27,7 @@ import org.springframework.faces.mvc.support.MvcFacesTestUtils.MethodCallAsserto
 
 public class PageScopeELResolverTest extends TestCase {
 
-	private class PageScopeELResolverForTest extends PageScopeELResolver {
+	private class MockPageScopeELResolver extends PageScopeELResolver {
 		protected Map getPageScope() {
 			return pageScope;
 		}
@@ -45,7 +45,7 @@ public class PageScopeELResolverTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.resolver = new PageScopeELResolverForTest();
+		this.resolver = new MockPageScopeELResolver();
 		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
 		this.pageScope.put(PROPERTY_NAME, PROPERTY_VALUE);
 	}

@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * JSF view so that they remain available throughout the JSF lifecyle. When a page scoped bean is accessed from a JSF
  * page it will be stored within the view root of the page, subsequent post-back operations will return the same bean
  * instance. Note: Only serializable beans can be stored in page scope.
- * 
+ *
  * @author Phillip Webb
  */
 public class PageScope implements Scope {
@@ -61,6 +61,10 @@ public class PageScope implements Scope {
 
 	public Object remove(String name) {
 		return getScope().remove(name);
+	}
+
+	public Object resolveContextualObject(String key) {
+		return null;
 	}
 
 	private Map getScope() {

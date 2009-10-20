@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="spring-faces-mvc">
-	<property name="ivy.settings.dir" value="${basedir}"/>
-	<property file="./ivysettings.properties" />
-	<import file="${base.module.dir}/build-scisys-master-base.xml"/>
+<project name="org.springframework.faces.mvc">
+
+	<property file="${basedir}/../build.properties"/>
+	<property file="${basedir}/../build.versions"/>
+	<import file="${basedir}/../build-spring-faces/package-bundle.xml"/>
+	<import file="${basedir}/../spring-build/standard/default.xml"/>
+
 </project>

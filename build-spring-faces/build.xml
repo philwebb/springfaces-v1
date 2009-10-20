@@ -3,6 +3,7 @@
 
 	<path id="bundles">
 		<pathelement location="../org.springframework.faces"/>
+		<pathelement location="../org.springframework.faces.mvc"/>
 	</path>
 
 	<property file="${basedir}/../build.properties"/>
