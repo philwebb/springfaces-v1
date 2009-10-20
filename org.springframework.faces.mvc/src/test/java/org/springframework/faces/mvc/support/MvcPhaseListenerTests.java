@@ -24,9 +24,9 @@ import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.MvcPhaseListener;
 import org.springframework.faces.mvc.support.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 
-public class MvcPhaseListenerTest extends AbstractJsfTestCase {
+public class MvcPhaseListenerTests extends AbstractJsfTestCase {
 
-	public MvcPhaseListenerTest(String name) {
+	public MvcPhaseListenerTests(String name) {
 		super(name);
 	}
 

@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.springframework.faces.mvc.support.PageScopeELResolver;
 import org.springframework.faces.mvc.support.MvcFacesTestUtils.MethodCallAssertor;
 
-public class PageScopeELResolverTest extends TestCase {
+public class PageScopeELResolverTests extends TestCase {
 
 	private class MockPageScopeELResolver extends PageScopeELResolver {
 		protected Map getPageScope() {

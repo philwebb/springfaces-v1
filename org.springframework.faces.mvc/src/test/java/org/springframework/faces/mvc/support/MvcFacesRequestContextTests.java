@@ -22,7 +22,7 @@ import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 
-public class MvcFacesRequestContextTest extends TestCase {
+public class MvcFacesRequestContextTests extends TestCase {
 
 	private static final class LifeCycleRun implements Runnable {
 		private boolean wait;

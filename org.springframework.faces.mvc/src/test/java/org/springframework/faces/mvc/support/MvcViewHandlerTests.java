@@ -31,13 +31,13 @@ import org.springframework.faces.mvc.support.MvcFacesTestUtils.MockMvcFacesReque
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.xslt.XsltView;
 
-public class MvcViewHandlerTest extends AbstractJsfTestCase {
+public class MvcViewHandlerTests extends AbstractJsfTestCase {
 
 	private static final String VIEW_ID = "someview";
 	private static final String XHTML_VIEW_NAME = "someview.xhtml";
 	private static final String ACTION_URL = "/web/someaction/url";
 
-	public MvcViewHandlerTest(String name) {
+	public MvcViewHandlerTests(String name) {
 		super(name);
 	}
 

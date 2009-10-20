@@ -25,7 +25,7 @@ import org.apache.shale.test.mock.MockFacesContext12;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
 import org.springframework.faces.mvc.support.PageScopeVariableResolver;
 
-public class PageScopeVariableResolverTest extends TestCase {
+public class PageScopeVariableResolverTests extends TestCase {
 
 	public void testPage() throws Exception {
 		UIViewRoot viewRoot = new UIViewRoot();

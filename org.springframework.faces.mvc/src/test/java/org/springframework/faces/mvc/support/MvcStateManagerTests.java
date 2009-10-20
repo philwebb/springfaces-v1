@@ -24,9 +24,9 @@ import org.springframework.faces.mvc.support.MvcStateManager;
 import org.springframework.faces.mvc.support.MvcFacesTestUtils.MethodCallAssertor;
 import org.springframework.faces.mvc.support.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 
-public class MvcStateManagerTest extends AbstractJsfTestCase {
+public class MvcStateManagerTests extends AbstractJsfTestCase {
 
-	public MvcStateManagerTest(String name) {
+	public MvcStateManagerTests(String name) {
 		super(name);
 	}
 

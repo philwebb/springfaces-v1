@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockFacesContext12;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
 
-public class PageScopeHolderComponentTest extends TestCase {
+public class PageScopeHolderComponentTests extends TestCase {
 
 	private PageScopeHolderComponent component;
 
