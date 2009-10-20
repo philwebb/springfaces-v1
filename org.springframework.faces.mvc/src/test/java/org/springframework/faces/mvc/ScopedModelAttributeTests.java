@@ -17,6 +17,8 @@ package org.springframework.faces.mvc;
 
 import junit.framework.TestCase;
 
+import org.springframework.util.ObjectUtils;
+
 public class ScopedModelAttributeTests extends TestCase {
 
 	public void testConstructor() throws Exception {
@@ -47,6 +49,8 @@ public class ScopedModelAttributeTests extends TestCase {
 		assertEquals(s3.hashCode(), s4.hashCode());
 		assertFalse(s1.equals(s3));
 		assertFalse(s1.equals(s4));
+		assertFalse(s1.equals(null));
+		assertFalse(s1.equals(new Long(1234)));
 	}
 
 	public void testNewScope() throws Exception {
@@ -57,5 +61,11 @@ public class ScopedModelAttributeTests extends TestCase {
 		assertEquals("attribute", s1.getModelAttribute());
 		assertEquals("scope2", s2.getScope());
 		assertEquals("attribute", s2.getModelAttribute());
+	}
+
+	public void testToString() throws Exception {
+		ScopedModelAttribute s1 = new ScopedModelAttribute("scope1", "attribute");
+		assertEquals("[ScopedModelAttribute@" + ObjectUtils.getIdentityHexString(s1)
+				+ " scope = 'scope1', modelAttribute = 'attribute']", s1.toString());
 	}
 }

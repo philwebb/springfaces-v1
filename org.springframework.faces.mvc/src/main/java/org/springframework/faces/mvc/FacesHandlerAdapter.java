@@ -19,6 +19,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.faces.webapp.FacesServlet;
+import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements InitializingBean, BeanNameAware {
 
 	private RequestMappedModelBindingExecutor modelBindingExecutor = new RequestMappedModelBindingExecutor();
-	private FacesServlet facesServlet;
+	private Servlet facesServlet;
 	private String beanName;
 	private Class facesServletClass = FacesServlet.class;
 	private Properties initParameters = new Properties();
@@ -93,14 +94,15 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 			redirectHandler = new DefaultRedirectHandler();
 			initializeInternalBean(redirectHandler);
 		}
-		facesServlet = newFacesServlet();
-		facesServlet.init(new DelegatingServletConfig());
 		if (modelBindingExecutor.getModelBinder() == null) {
 			BeanScopeModelBinder modelBinder = new BeanScopeModelBinder();
 			initializeInternalBean(modelBinder);
 			modelBindingExecutor.setModelBinder(modelBinder);
 		}
 		initializeInternalBean(modelBindingExecutor);
+
+		facesServlet = newFacesServlet();
+		facesServlet.init(new DelegatingServletConfig());
 	}
 
 	protected boolean isPageScopeSupported() {
@@ -123,17 +125,21 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 		return redirectHandler;
 	}
 
+	protected Servlet getFacesServlet() {
+		return facesServlet;
+	}
+
 	/**
 	 * Factory method used to construct the servlet class.
 	 * 
 	 * @return The faces servlet instance.
 	 */
-	protected FacesServlet newFacesServlet() {
+	protected Servlet newFacesServlet() {
 		try {
-			return (FacesServlet) facesServletClass.newInstance();
+			return (Servlet) facesServletClass.newInstance();
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to instanciate face servlet from the specified class "
-					+ facesServletClass, e);
+					+ facesServletClass.getName(), e);
 		}
 	}
 
@@ -182,6 +188,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * @see PageEncodedActionUrlMapper
 	 */
 	public void setActionUrlMapper(ActionUrlMapper actionUrlMapper) {
+		Assert.notNull(actionUrlMapper, "The actionUrlMapper is required");
 		this.actionUrlMapper = actionUrlMapper;
 	}
 
@@ -192,6 +199,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * @see BeanScopeModelBinder
 	 */
 	public void setModelBinder(ModelBinder modelBinder) {
+		Assert.notNull(modelBinder, "The modelBinder is required");
 		modelBindingExecutor.setModelBinder(modelBinder);
 	}
 
