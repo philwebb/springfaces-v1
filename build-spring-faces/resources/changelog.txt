@@ -1,0 +1,8 @@
+SPRING FACES CHANGELOG
+=========================
+http://www.springframework.org/faces
+
+Changes in version 3.0.0.M1 (12.02.2008)
+-------------------------------------
+General
+* Spring Faces has been moved into its own top-level project.  The source is available at https://src.springframework.org/svn/spring-faces
