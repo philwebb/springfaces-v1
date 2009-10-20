@@ -2,7 +2,6 @@
 <project name="build-spring-faces" default="precommit">
 
 	<path id="bundles">
-		<pathelement location="../org.springframework.faces"/>
 		<pathelement location="../org.springframework.faces.mvc"/>
 	</path>
 

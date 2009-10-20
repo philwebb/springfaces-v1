@@ -32,8 +32,8 @@
 		<dependency org="org.springframework" name="org.springframework.core" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.web" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.web.servlet" rev="${org.springframework}" conf="compile->runtime"/>
-		<dependency org="org.springframework.faces" name="org.springframework.faces" rev="latest.integration" conf="compile->runtime"/>
 		<dependency org="org.springframework.js" name="org.springframework.js" rev="${org.springframework.js}" conf="compile->runtime"/>
+		<dependency org="org.springframework.webflow" name="org.springframework.faces" rev="${org.springframework.webflow}" conf="compile->runtime"/>
 		<dependency org="org.springframework.webflow" name="org.springframework.binding" rev="${org.springframework.webflow}" conf="compile->runtime"/>
 		<dependency org="org.springframework.webflow" name="org.springframework.webflow" rev="${org.springframework.webflow}" conf="compile->runtime"/>
 
