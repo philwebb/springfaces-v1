@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+
+<faces-config>
+
+	<application>
+		<view-handler>org.springframework.faces.mvc.support.MvcViewHandler</view-handler>
+		<navigation-handler>org.springframework.faces.mvc.support.MvcNavigationHandler</navigation-handler>
+		<variable-resolver>org.springframework.faces.mvc.support.PageScopeVariableResolver</variable-resolver>
+		<state-manager>org.springframework.faces.mvc.support.MvcStateManager</state-manager>
+	</application>
+
+	<lifecycle>
+		<phase-listener>org.springframework.faces.mvc.support.MvcPhaseListener</phase-listener>
+	</lifecycle>
+</faces-config>

@@ -1,0 +1,11 @@
+- build all model elements and make them page scope
+- expose @Controller to faces
+- Define navigation rules easily
+- Do model level validation
+- Exception handling perhaps as navigation rule
+- new scope to allow beans to last across post
+- integrate with the flow converter framework
+- start flow passing input
+- respond to flow output
+- integrate phase listener in model
+- support action listeners/events

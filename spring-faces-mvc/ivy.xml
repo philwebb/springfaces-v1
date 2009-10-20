@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+	<info organisation="org.springframework.faces"
+		module="spring-faces-mvc">
+		<description>
+			Spring Faces - MVC
+		</description>
+	</info>
+
+	<configurations>
+		<include file="${master.module.configurations.file}"/>
+	</configurations>
+
+	<publications>
+        <artifact type="jar" conf="master"/>
+        <artifact type="source" ext="jar" conf="master"/>
+    </publications>
+
+	<dependencies>
+		<!-- Compile -->
+		<dependency org="commons-logging" name="commons-logging" rev="1.1.1" conf="compile"/>
+
+		<dependency org="org.springframework.webflow" name="spring-faces" rev="2.0.8.RELEASE" conf="compile"/>
+
+		<!-- Provided -->
+		<dependency org="javax.el" name="el-api" rev="1.0" conf="provided"/>
+		<dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.2.3" conf="provided"/>
+		<dependency org="javax.servlet" name="servlet-api" rev="${dependency.javax.servlet}" conf="provided"/>
+		<dependency org="org.apache.myfaces.core" name="myfaces-api" rev="1.2.3" conf="provided" transitive="false"/>
+
+		<!-- Test -->
+		<dependency org="junit" name="junit" rev="3.8.2" conf="test"/>
+		<dependency org="org.apache.shale" name="shale-test" rev="1.0.4" conf="test" />
+		<dependency org="org.easymock" name="easymock" rev="2.3" conf="test" />
+		<dependency org="org.springframework" name="spring-test" rev="2.5.6" conf="test" />
+		<dependency org="org.springframework" name="spring-aop" rev="2.5.6" conf="test" />
+		<dependency org="cglib" name="cglib" rev="2.2"  conf="test"/>
+
+		<!-- Excludes -->
+		<exclude org="org.springframework" artifact="org.springframework.core"/>
+		<!-- Exclude SUN JSF RI (we use myfaces) -->
+		<exclude org="javax.faces" artifact="jsf-api"/>
+
+	</dependencies>
+</ivy-module>
