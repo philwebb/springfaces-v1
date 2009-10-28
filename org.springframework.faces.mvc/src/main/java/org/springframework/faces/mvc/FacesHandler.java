@@ -17,6 +17,7 @@ package org.springframework.faces.mvc;
 
 import javax.faces.context.FacesContext;
 
+import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
 /**

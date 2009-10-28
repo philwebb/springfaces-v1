@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc;
+package org.springframework.faces.mvc.annotation;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.faces.FacesMapping;
+import org.springframework.faces.bind.annotation.FacesController;
+import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
@@ -42,6 +44,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	// FIXME doccomments
 	// FIXME support FaceContext param injection?
+	// FIXME expose controller
 
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -52,6 +55,48 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private final Map<Class<?>, RequestMappingMethodsResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, RequestMappingMethodsResolver>();
 
 	private FacesHandlerAdapter facesHandlerAdapter;
+
+	public boolean supports(Object handler) {
+		return supportsFaces(handler) && super.supports(handler);
+	}
+
+	protected boolean supportsFaces(Object handler) {
+		Class handlerClass = ClassUtils.getUserClass(handler);
+		boolean hasFacesController = AnnotationUtils.findAnnotation(handlerClass, FacesController.class) != null;
+		return hasFacesController;
+	}
+
+	protected ModelAndView createView(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		return super.handle(request, response, handler);
+	}
+
+	protected Object getNavigationOutcome(String fromAction, String outcome, Object handler) {
+		RequestMappingMethodsResolver methodResolver = getMethodsResolver(handler);
+
+		return null;
+	}
+
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+
+		FacesHandler facesHandler = new AnnotatedMethodFacesHandlerAdapter(handler);
+		return facesHandlerAdapter.handle(request, response, facesHandler);
+	}
+
+	public void setFacesHandlerAdapter(FacesHandlerAdapter facesHandlerAdapter) {
+		this.facesHandlerAdapter = facesHandlerAdapter;
+	}
+
+	private RequestMappingMethodsResolver getMethodsResolver(Object handler) {
+		Class handlerClass = ClassUtils.getUserClass(handler);
+		RequestMappingMethodsResolver resolver = this.methodResolverCache.get(handlerClass);
+		if (resolver == null) {
+			resolver = new RequestMappingMethodsResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
+			this.methodResolverCache.put(handlerClass, resolver);
+		}
+		return resolver;
+	}
 
 	public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
 		super.setUrlPathHelper(urlPathHelper);
@@ -68,48 +113,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		this.pathMatcher = pathMatcher;
 	}
 
-	protected boolean supportsFaces(Object handler) {
-		// FIXME option to disable this?
-		Class handlerClass = ClassUtils.getUserClass(handler);
-		boolean hasFacesAnnotation = AnnotationUtils.findAnnotation(handlerClass, FacesMapping.class) != null;
-		return hasFacesAnnotation;
-	}
-
-	public boolean supports(Object handler) {
-		return supportsFaces(handler) && super.supports(handler);
-	}
-
-	protected ModelAndView handleCreateView(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-		return super.handle(request, response, handler);
-	}
-
-	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-
-		FacesHandler facesHandler = new AnnotatedMethodFacesHandlerAdapter(handler);
-		return facesHandlerAdapter.handle(request, response, facesHandler);
-	}
-
-	public void setFacesHandlerAdapter(FacesHandlerAdapter facesHandlerAdapter) {
-		this.facesHandlerAdapter = facesHandlerAdapter;
-	}
-
 	/**
-	 * Build a HandlerMethodResolver for the given handler type.
-	 */
-	private RequestMappingMethodsResolver getMethodResolver(Object handler) {
-		Class handlerClass = ClassUtils.getUserClass(handler);
-		RequestMappingMethodsResolver resolver = this.methodResolverCache.get(handlerClass);
-		if (resolver == null) {
-			resolver = new RequestMappingMethodsResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
-			this.methodResolverCache.put(handlerClass, resolver);
-		}
-		return resolver;
-	}
-
-	/**
-	 * Adapter class to convert the annotated handler into a {@link FacesMapping}.
+	 * Adapter class to convert the annotated handler into a {@link FacesController}.
 	 */
 	private class AnnotatedMethodFacesHandlerAdapter implements FacesHandler {
 		private Object handler;
@@ -120,19 +125,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 
 		public ModelAndView createView(FacesContext facesContext) throws Exception {
-
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			ModelAndView modelAndView = FacesAnnotationMethodHandlerAdapter.this.handleCreateView(request, response,
-					handler);
-			return modelAndView;
-
+			return FacesAnnotationMethodHandlerAdapter.this.createView(request, response, handler);
 		}
 
 		public Object getNavigationOutcomeLocation(String fromAction, String outcome) {
-			System.out.println(fromAction);
-			System.out.println(outcome);
-			return "/test/test2";
+			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(fromAction, outcome, handler);
 		}
 	}
 
