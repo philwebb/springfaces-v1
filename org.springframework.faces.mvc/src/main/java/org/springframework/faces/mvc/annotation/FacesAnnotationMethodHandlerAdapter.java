@@ -72,8 +72,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	}
 
 	protected Object getNavigationOutcome(String fromAction, String outcome, Object handler) {
+		// We attempt to find navigation rules in the order that methods are resolved
 		RequestMappingMethodsResolver methodResolver = getMethodsResolver(handler);
-
 		return null;
 	}
 
