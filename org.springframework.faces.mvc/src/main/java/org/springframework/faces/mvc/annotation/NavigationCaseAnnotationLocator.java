@@ -17,6 +17,8 @@ package org.springframework.faces.mvc.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.bind.annotation.NavigationCase;
@@ -35,7 +37,7 @@ public class NavigationCaseAnnotationLocator {
 	 * methods array. Methods are searched in order starting at index 0. If not suitable method annotation is found the
 	 * declaring class of the method will be searched, followed by the package.
 	 * 
-	 * @param methods Array of methods to search. It is assumed that all methods are declared on the same class.
+	 * @param methods Array of methods to search.
 	 * @param outcome The outcome that should be matched.
 	 * @return A {@link FoundNavigationCase} instance or <tt>null</tt> if no suitable annotation is found.
 	 */
@@ -43,30 +45,38 @@ public class NavigationCaseAnnotationLocator {
 		if (methods == null || methods.length == 0) {
 			return null;
 		}
-		Class<?> ownerClass = methods[0].getDeclaringClass();
-		Package ownerPackage = ownerClass.getPackage();
 		NavigationCaseFilter filter = new NavigationCaseFilter(outcome);
 
-		// Search methods
 		FoundNavigationCase navigationCase = null;
+
+		// Search methods (collecting classes)
+		Set<Class<?>> ownerClasses = new LinkedHashSet<Class<?>>();
 		for (Method method : methods) {
+			ownerClasses.add(method.getDeclaringClass());
 			navigationCase = findNavigationCase(method, filter);
 			if (navigationCase != null) {
 				return navigationCase;
 			}
 		}
 
-		// Search class
-		navigationCase = findNavigationCase(ownerClass, filter);
-		if (navigationCase != null) {
-			return navigationCase;
+		// Search classes (collecting packages_
+		Set<Package> ownerPackages = new LinkedHashSet<Package>();
+		for (Class<?> ownerClass : ownerClasses) {
+			ownerPackages.add(ownerClass.getPackage());
+			navigationCase = findNavigationCase(ownerClass, filter);
+			if (navigationCase != null) {
+				return navigationCase;
+			}
 		}
 
 		// Search package
-		navigationCase = findNavigationCase(ownerPackage, filter);
-		if (navigationCase != null) {
-			return navigationCase;
+		for (Package ownerPackage : ownerPackages) {
+			navigationCase = findNavigationCase(ownerPackage, filter);
+			if (navigationCase != null) {
+				return navigationCase;
+			}
 		}
+
 		return null;
 	}
 

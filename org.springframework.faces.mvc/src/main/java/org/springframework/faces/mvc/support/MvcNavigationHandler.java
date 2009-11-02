@@ -15,8 +15,6 @@
  */
 package org.springframework.faces.mvc.support;
 
-import java.io.IOException;
-
 import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
@@ -52,10 +50,11 @@ public class MvcNavigationHandler extends NavigationHandler {
 			// http:// or https:// - redirect to a fully-qualified resource URI
 
 			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
-			Object location = requestContext.getFacesHandler().getNavigationOutcomeLocation(fromAction, outcome);
 			try {
+				Object location = requestContext.getFacesHandler().getNavigationOutcomeLocation(facesContext,
+						fromAction, outcome);
 				requestContext.getMvcFacesContext().redirect(facesContext, location);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new FacesException(e.getMessage(), e);
 			}
 

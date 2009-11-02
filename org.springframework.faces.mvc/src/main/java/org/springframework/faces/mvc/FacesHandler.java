@@ -53,6 +53,6 @@ public interface FacesHandler {
 	 * {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> view ID can be used to indicate that navigation
 	 * has been handled directly.
 	 */
-	Object getNavigationOutcomeLocation(String fromAction, String outcome);
+	Object getNavigationOutcomeLocation(FacesContext facesContext, String fromAction, String outcome) throws Exception;
 	// FIXME null support
 }

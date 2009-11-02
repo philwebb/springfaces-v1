@@ -15,6 +15,7 @@
  */
 package org.springframework.faces.mvc.annotation;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,8 +25,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.bind.annotation.FacesController;
+import org.springframework.faces.mvc.DefaultRedirectHandler;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
+import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
@@ -45,6 +48,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	// FIXME doccomments
 	// FIXME support FaceContext param injection?
 	// FIXME expose controller
+	// FIXME @SessionAttributes support
+	// FIXME support @ModelAttribute on navigation
 
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -52,9 +57,14 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
-	private final Map<Class<?>, RequestMappingMethodsResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, RequestMappingMethodsResolver>();
+	private RedirectHandler redirectHandler = new DefaultRedirectHandler();
+	// FIXME setter
 
 	private FacesHandlerAdapter facesHandlerAdapter;
+
+	private final NavigationCaseAnnotationLocator navigationCaseAnnotationLocator = new NavigationCaseAnnotationLocator();
+
+	private final Map<Class<?>, NavigationCaseMethodsResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, NavigationCaseMethodsResolver>();
 
 	public boolean supports(Object handler) {
 		return supportsFaces(handler) && super.supports(handler);
@@ -71,9 +81,16 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return super.handle(request, response, handler);
 	}
 
-	protected Object getNavigationOutcome(String fromAction, String outcome, Object handler) {
-		// We attempt to find navigation rules in the order that methods are resolved
-		RequestMappingMethodsResolver methodResolver = getMethodsResolver(handler);
+	protected Object getNavigationOutcome(FacesContext facesContext, String fromAction, String outcome, Object handler)
+			throws Exception {
+		NavigationCaseMethodsResolver methodResolver = getMethodsResolver(handler);
+		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
+		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
+				outcome);
+		// FIXME execute the case to get an outcome
+		Object location = null;
+		redirectHandler.handleRedirect(facesContext, location);
 		return null;
 	}
 
@@ -88,11 +105,11 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		this.facesHandlerAdapter = facesHandlerAdapter;
 	}
 
-	private RequestMappingMethodsResolver getMethodsResolver(Object handler) {
+	private NavigationCaseMethodsResolver getMethodsResolver(Object handler) {
 		Class handlerClass = ClassUtils.getUserClass(handler);
-		RequestMappingMethodsResolver resolver = this.methodResolverCache.get(handlerClass);
+		NavigationCaseMethodsResolver resolver = this.methodResolverCache.get(handlerClass);
 		if (resolver == null) {
-			resolver = new RequestMappingMethodsResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
+			resolver = new NavigationCaseMethodsResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
 			this.methodResolverCache.put(handlerClass, resolver);
 		}
 		return resolver;
@@ -130,8 +147,10 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return FacesAnnotationMethodHandlerAdapter.this.createView(request, response, handler);
 		}
 
-		public Object getNavigationOutcomeLocation(String fromAction, String outcome) {
-			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(fromAction, outcome, handler);
+		public Object getNavigationOutcomeLocation(FacesContext facesContext, String fromAction, String outcome)
+				throws Exception {
+			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(facesContext, fromAction, outcome,
+					handler);
 		}
 	}
 
