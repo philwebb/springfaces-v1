@@ -23,6 +23,7 @@ import java.util.Set;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.bind.annotation.NavigationCase;
 import org.springframework.faces.bind.annotation.NavigationRules;
+import org.springframework.util.StringUtils;
 
 /**
  * Support class that can be used to locate {@link NavigationCase} and {@link NavigationRules} annotations.
@@ -38,14 +39,15 @@ public class NavigationCaseAnnotationLocator {
 	 * declaring class of the method will be searched, followed by the package.
 	 * 
 	 * @param methods Array of methods to search.
+	 * @param fromAction The action to that should be matched.
 	 * @param outcome The outcome that should be matched.
 	 * @return A {@link FoundNavigationCase} instance or <tt>null</tt> if no suitable annotation is found.
 	 */
-	public FoundNavigationCase findNavigationCase(Method[] methods, String outcome) {
+	public FoundNavigationCase findNavigationCase(Method[] methods, String fromAction, String outcome) {
 		if (methods == null || methods.length == 0) {
 			return null;
 		}
-		NavigationCaseFilter filter = new NavigationCaseFilter(outcome);
+		NavigationCaseFilter filter = new NavigationCaseFilter(fromAction, outcome);
 
 		FoundNavigationCase navigationCase = null;
 
@@ -145,8 +147,10 @@ public class NavigationCaseAnnotationLocator {
 	private static class NavigationCaseFilter {
 
 		private String outcome;
+		private String fromAction;
 
-		public NavigationCaseFilter(String outcome) {
+		public NavigationCaseFilter(String fromAction, String outcome) {
+			this.fromAction = fromAction;
 			this.outcome = outcome;
 		}
 
@@ -154,6 +158,16 @@ public class NavigationCaseAnnotationLocator {
 			if (navigationCase == null) {
 				return false;
 			}
+			if (!isSuitableOn(navigationCase)) {
+				return false;
+			}
+			if (!isSuitableAction(navigationCase)) {
+				return false;
+			}
+			return true;
+		}
+
+		private boolean isSuitableOn(NavigationCase navigationCase) {
 			if (navigationCase.on().length == 0) {
 				return true;
 			}
@@ -164,5 +178,17 @@ public class NavigationCaseAnnotationLocator {
 			}
 			return false;
 		}
+
+		private boolean isSuitableAction(NavigationCase navigationCase) {
+			if ("".equals(navigationCase.fromAction())) {
+				return true;
+			}
+			if (StringUtils.hasText(fromAction) && fromAction.equals(navigationCase.fromAction())) {
+				return true;
+			}
+			return false;
+		}
+
 	}
+
 }

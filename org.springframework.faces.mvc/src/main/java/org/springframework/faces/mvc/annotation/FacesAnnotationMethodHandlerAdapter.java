@@ -87,7 +87,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
-				outcome);
+				outcome, fromAction);
 		// FIXME execute the case to get an outcome
 		Object location = null;
 		redirectHandler.handleRedirect(facesContext, location);

@@ -140,6 +140,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 		public String getViewIdForRestore(FacesContext facesContext, String viewId) {
 			String viewName = AbstractFacesHandlerAdapter.this.getActionUrlMapper().getViewNameForRestore(facesContext);
+			if (viewName == null) {
+				return null;
+			}
 			return AbstractFacesHandlerAdapter.this.getFacesViewIdResolver().resolveViewId(viewName);
 		}
 

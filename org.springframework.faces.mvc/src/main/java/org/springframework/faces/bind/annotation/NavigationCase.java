@@ -34,6 +34,18 @@ public @interface NavigationCase {
 	public String[] on() default {};
 
 	/**
+	 * @return The action expression that the navigation case applied to. This is the expression as defined on the
+	 * component that caused the action. For example "#{controller.continue}"
+	 */
+	public String fromAction() default "";
+
+	/**
+	 * @return Optional EL expression that should be evaluated as a condition of the navigation case. Only cases that
+	 * have expressions evaluating to <tt>True</tt> will be considered.
+	 */
+	// FIXME public String condition() default "";
+
+	/**
 	 * @return The to case that the navigation case applies to. This value is omitted the result of the method will be
 	 * used or, if the result is unavailable, the current view will be re-rendered.
 	 */

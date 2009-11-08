@@ -9,8 +9,11 @@
 		<view-handler>org.springframework.faces.mvc.support.MvcViewHandler</view-handler>
 		<navigation-handler>org.springframework.faces.mvc.support.MvcNavigationHandler</navigation-handler>
 		<variable-resolver>org.springframework.faces.mvc.support.PageScopeVariableResolver</variable-resolver>
-		<state-manager>org.springframework.faces.mvc.support.MvcStateManager</state-manager>
 	</application>
+
+	<factory>
+		<application-factory>org.springframework.faces.mvc.support.MvcApplicationFactory</application-factory>
+	</factory>
 
 	<lifecycle>
 		<phase-listener>org.springframework.faces.mvc.support.MvcPhaseListener</phase-listener>
