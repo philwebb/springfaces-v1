@@ -51,9 +51,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	// FIXME support FaceContext param injection?
 	// FIXME expose controller
 	// FIXME @SessionAttributes support
-	// FIXME support @ModelAttribute on navigation?
 	// FIXME support @EL
 	// FIXME perhaps @BeforePhase @AfterPhase support
+	// FIXME FacesWebArgumentResolver integration
 
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 

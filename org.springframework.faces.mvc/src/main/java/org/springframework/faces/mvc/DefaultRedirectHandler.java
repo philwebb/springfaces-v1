@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DefaultRedirectHandler implements RedirectHandler {
 
-	// FIXME null redirect to self?
-
 	private static final int NONE = 0x00;
 	private static final int STRIP_PREFIX = 0x01;
 	private static final int SLASH = 0x02;

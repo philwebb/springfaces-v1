@@ -21,7 +21,6 @@ import java.util.EventObject;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 
-import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -76,6 +75,6 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 	}
 
 	public String toString() {
-		return new ToStringCreator(this).append("fromAction", fromAction).append("outcome", outcome).toString();
+		return "JSF Navigation Request Event (fromAction=\"" + fromAction + "\", outcome=\"" + outcome + "\")";
 	}
 }

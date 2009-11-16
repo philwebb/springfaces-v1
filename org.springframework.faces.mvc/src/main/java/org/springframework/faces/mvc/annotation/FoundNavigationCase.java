@@ -101,7 +101,8 @@ public final class FoundNavigationCase {
 							+ " as method also includes @RequestMapping annotation");
 				}
 				SimpleWebArgumentResolverInvoker invoker = new SimpleWebArgumentResolverInvoker(null,
-						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event) });
+						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event),
+								new FacesWebArgumentResolver() });
 				return invoker.invoke(method, target, request);
 			}
 		}

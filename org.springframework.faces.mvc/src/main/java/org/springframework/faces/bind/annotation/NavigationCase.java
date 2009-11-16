@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 
 import javax.faces.application.NavigationHandler;
 
-import org.springframework.faces.mvc.FacesWebArgumentResolver;
 import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.faces.mvc.annotation.FacesWebArgumentResolver;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
