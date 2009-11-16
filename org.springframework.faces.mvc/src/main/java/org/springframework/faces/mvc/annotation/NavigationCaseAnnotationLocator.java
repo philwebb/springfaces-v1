@@ -23,6 +23,7 @@ import java.util.Set;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.bind.annotation.NavigationCase;
 import org.springframework.faces.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.util.StringUtils;
 
 /**
@@ -39,15 +40,14 @@ public class NavigationCaseAnnotationLocator {
 	 * declaring class of the method will be searched, followed by the package.
 	 * 
 	 * @param methods Array of methods to search.
-	 * @param fromAction The action to that should be matched.
-	 * @param outcome The outcome that should be matched.
+	 * @param event The navigation request event.
 	 * @return A {@link FoundNavigationCase} instance or <tt>null</tt> if no suitable annotation is found.
 	 */
-	public FoundNavigationCase findNavigationCase(Method[] methods, String fromAction, String outcome) {
+	public FoundNavigationCase findNavigationCase(Method[] methods, NavigationRequestEvent event) {
 		if (methods == null || methods.length == 0) {
 			return null;
 		}
-		NavigationCaseFilter filter = new NavigationCaseFilter(fromAction, outcome);
+		NavigationCaseFilter filter = new NavigationCaseFilter(event);
 
 		FoundNavigationCase navigationCase = null;
 
@@ -146,12 +146,10 @@ public class NavigationCaseAnnotationLocator {
 	 */
 	private static class NavigationCaseFilter {
 
-		private String outcome;
-		private String fromAction;
+		private NavigationRequestEvent event;
 
-		public NavigationCaseFilter(String fromAction, String outcome) {
-			this.fromAction = fromAction;
-			this.outcome = outcome;
+		public NavigationCaseFilter(NavigationRequestEvent event) {
+			this.event = event;
 		}
 
 		public boolean isSuitable(NavigationCase navigationCase) {
@@ -172,7 +170,7 @@ public class NavigationCaseAnnotationLocator {
 				return true;
 			}
 			for (String on : navigationCase.on()) {
-				if (on.equals(outcome)) {
+				if (on.equals(event.outcome())) {
 					return true;
 				}
 			}
@@ -183,7 +181,7 @@ public class NavigationCaseAnnotationLocator {
 			if ("".equals(navigationCase.fromAction())) {
 				return true;
 			}
-			if (StringUtils.hasText(fromAction) && fromAction.equals(navigationCase.fromAction())) {
+			if (StringUtils.hasText(event.fromAction()) && event.fromAction().equals(navigationCase.fromAction())) {
 				return true;
 			}
 			return false;

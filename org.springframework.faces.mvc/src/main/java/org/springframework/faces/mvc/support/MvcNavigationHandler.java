@@ -19,6 +19,8 @@ import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 
+import org.springframework.faces.mvc.NavigationRequestEvent;
+
 /**
  * JSF {@link NavigationHandler} that provides integration with Spring MVC.
  * 
@@ -35,29 +37,17 @@ public class MvcNavigationHandler extends NavigationHandler {
 
 	public void handleNavigation(FacesContext facesContext, String fromAction, String outcome) {
 		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			// FIXME Where to redirect to?
-			// A flow
-			// external URL
-			// relative URL
-			// Another controller
-			// A jsf view
-			// Itself
-			// flowRedirect:
-			// externalRedirect:
-			// servletRelative: - redirect to a resource relative to the current servlet
-			// contextRelative: - redirect to a resource relative to the current web application context path
-			// serverRelative: - redirect to a resource relative to the server root
-			// http:// or https:// - redirect to a fully-qualified resource URI
-
 			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
+			NavigationRequestEvent event = new NavigationRequestEvent(facesContext, fromAction, outcome);
 			try {
-				Object location = requestContext.getFacesHandler().getNavigationOutcomeLocation(facesContext,
-						fromAction, outcome);
-				requestContext.getMvcFacesContext().redirect(facesContext, location);
+				Object location = requestContext.getFacesHandler().getNavigationOutcomeLocation(facesContext, event);
+				if (location != null) {
+					requestContext.getMvcFacesContext().redirect(facesContext, location);
+					return;
+				}
 			} catch (Exception e) {
 				throw new FacesException(e.getMessage(), e);
 			}
-
 		}
 		this.delegate.handleNavigation(facesContext, fromAction, outcome);
 	}

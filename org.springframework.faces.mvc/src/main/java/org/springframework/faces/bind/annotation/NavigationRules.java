@@ -17,10 +17,14 @@ package org.springframework.faces.bind.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
 
 /**
- * Annotation that can be used to encapsulate JSF navigation rules.
- *
+ * Annotation that can be used to encapsulate JSF navigation rules. This annotation can be placed on a {@link Method}
+ * {@link Class} or {@link Package}.
+ * 
+ * @see NavigationCase
+ * 
  * @author Phillip Webb
  */
 @Retention(RetentionPolicy.RUNTIME)

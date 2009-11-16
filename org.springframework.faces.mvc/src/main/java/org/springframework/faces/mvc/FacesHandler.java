@@ -45,14 +45,12 @@ public interface FacesHandler {
 	/**
 	 * Called to determine the outcome of a navigation.
 	 * 
-	 * @param fromAction - The action binding expression that was evaluated to retrieve the specified outcome, or
-	 * <tt>null</tt> if the outcome was acquired by some other means
-	 * @param outcome - The logical outcome returned by a previous invoked application action (which may be
-	 * <tt>null</tt>)
+	 * @param facesContext The faces context that requested the navigation
+	 * @param event The navigation request event.
 	 * @return A location that can the client can be redirected to by the
-	 * {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> view ID can be used to indicate that navigation
-	 * has been handled directly.
+	 * {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> view ID can be used if the navigation could not
+	 * be handled, in such cases the standard JSF navigation handlers are called (if no navigation handler manages the
+	 * outcome the existing page is re-rendered). view.
 	 */
-	Object getNavigationOutcomeLocation(FacesContext facesContext, String fromAction, String outcome) throws Exception;
-	// FIXME null support
+	Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event) throws Exception;
 }

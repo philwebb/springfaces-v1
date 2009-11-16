@@ -17,10 +17,17 @@ package org.springframework.faces.bind.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+
+import javax.faces.application.NavigationHandler;
+
+import org.springframework.faces.mvc.FacesWebArgumentResolver;
+import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Annotation that can be used to map JSF navigation cases. This annotation can be used as part of the
- * {@link NavigationRules} annotation or an individual method.
+ * {@link NavigationRules} annotation or placed on a {@link Method} {@link Class} or {@link Package}.
  * 
  * @author Phillip Webb
  */
@@ -28,26 +35,37 @@ import java.lang.annotation.RetentionPolicy;
 public @interface NavigationCase {
 
 	/**
-	 * @return The 'on' cases that the navigation case applies to. If this value is omitted the navigation case applies
-	 * for all views that the handler controls.
+	 * The 'on' cases that the navigation case applies to. If this value is omitted the navigation case applies for all
+	 * views that the handler controls.
+	 * @return The 'on' cases.
 	 */
 	public String[] on() default {};
 
 	/**
-	 * @return The action expression that the navigation case applied to. This is the expression as defined on the
-	 * component that caused the action. For example "#{controller.continue}"
+	 * The action expression that the navigation case applies to. This is the expression as defined on the component
+	 * that caused the action. For example "#{controller.continue}"
+	 * @return The action expression.
 	 */
 	public String fromAction() default "";
 
 	/**
-	 * @return Optional EL expression that should be evaluated as a condition of the navigation case. Only cases that
-	 * have expressions evaluating to <tt>True</tt> will be considered.
-	 */
-	// FIXME public String condition() default "";
-
-	/**
-	 * @return The to case that the navigation case applies to. This value is omitted the result of the method will be
-	 * used or, if the result is unavailable, the current view will be re-rendered.
+	 * The navigation outcome used to redirect the user when the navigation case applies. This value is omitted the
+	 * result of the method will be used or, if the result is unavailable, a <tt>null</tt> outcome will be returned.
+	 * <p>
+	 * When applied to a method the method should return an appropriate outcome for the navigation. The method can also
+	 * declare parameters of the following type:
+	 * <ul>
+	 * <li>String - Will contain the <tt>outcome</tt> value as passed to the JSF {@link NavigationHandler}.</li>
+	 * <li>{@link NavigationRequestEvent} - Will contain the event that requested the navigation, this can be used to
+	 * access the <tt>outcome</tt> and <tt>fromAction</tt> values as passed to the JSF {@link NavigationHandler}</li>
+	 * <li>{@link NavigationCase} - Will contain the actual annotation instance that is handling the navigation.</li>
+	 * </ul>
+	 * In addition any of the parameter types supported by {@link FacesWebArgumentResolver} can also be used. Parameters
+	 * can be declared in any order.
+	 * <p>
+	 * Note: Methods will not be called if they are also {@link RequestMapping}s.
+	 * 
+	 * @return The navigation outcome.
 	 */
 	public String to() default "";
 }

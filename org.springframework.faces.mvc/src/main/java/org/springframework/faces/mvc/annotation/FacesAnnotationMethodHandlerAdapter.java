@@ -28,10 +28,12 @@ import org.springframework.faces.bind.annotation.FacesController;
 import org.springframework.faces.mvc.DefaultRedirectHandler;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
+import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver;
@@ -49,7 +51,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	// FIXME support FaceContext param injection?
 	// FIXME expose controller
 	// FIXME @SessionAttributes support
-	// FIXME support @ModelAttribute on navigation
+	// FIXME support @ModelAttribute on navigation?
+	// FIXME support @EL
+	// FIXME perhaps @BeforePhase @AfterPhase support
 
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -81,17 +85,16 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return super.handle(request, response, handler);
 	}
 
-	protected Object getNavigationOutcome(FacesContext facesContext, String fromAction, String outcome, Object handler)
+	protected Object getNavigationOutcome(FacesContext facesContext, NavigationRequestEvent event, Object handler)
 			throws Exception {
 		NavigationCaseMethodsResolver methodResolver = getMethodsResolver(handler);
 		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+		HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+		ServletWebRequest servletWebRequest = new ServletWebRequest(request, response);
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
-				outcome, fromAction);
-		// FIXME execute the case to get an outcome
-		Object location = null;
-		redirectHandler.handleRedirect(facesContext, location);
-		return null;
+				event);
+		return navigationCase == null ? null : navigationCase.getOutcome(event, handler, servletWebRequest);
 	}
 
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -147,10 +150,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return FacesAnnotationMethodHandlerAdapter.this.createView(request, response, handler);
 		}
 
-		public Object getNavigationOutcomeLocation(FacesContext facesContext, String fromAction, String outcome)
+		public Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event)
 				throws Exception {
-			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(facesContext, fromAction, outcome,
-					handler);
+			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(facesContext, event, handler);
 		}
 	}
 

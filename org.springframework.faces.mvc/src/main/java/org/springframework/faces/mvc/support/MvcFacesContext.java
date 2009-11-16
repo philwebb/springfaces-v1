@@ -26,19 +26,20 @@ import javax.faces.event.PhaseListener;
 import org.springframework.faces.mvc.AbstractFacesHandlerAdapter;
 import org.springframework.faces.mvc.ActionUrlMapper;
 import org.springframework.faces.mvc.FacesViewIdResolver;
+import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.web.servlet.HandlerAdapter;
 
-//FIXME doc redirect handler
 /**
  * A MVC Faces Context object that acts as a central facade for various the various MVC/JSF integration classes. This
  * interface is exposed via the {@link MvcFacesRequestContext} object and provides a unified facade for the
  * {@link MvcNavigationHandler}, {@link MvcPhaseListener}, {@link MvcStateManager} and {@link MvcViewHandler} JSF
- * classes. The context will most likely delegate to a MVC {@link HandlerAdapter} and the {@link FacesViewIdResolver} &
- * {@link ActionUrlMapper} interfaces. Note: This interface will only be called for MVC faces requests (that is when
- * {@link MvcFacesRequestContext#getCurrentInstance()} does not return <tt>null</tt>).
+ * classes. The context will most likely delegate to a MVC {@link HandlerAdapter} and the {@link FacesViewIdResolver},
+ * {@link RedirectHandler} & {@link ActionUrlMapper} interfaces. Note: This interface will only be called for MVC faces
+ * requests (that is when {@link MvcFacesRequestContext#getCurrentInstance()} does not return <tt>null</tt>).
  * 
  * @see AbstractFacesHandlerAdapter
  * @see FacesViewIdResolver
+ * @see RedirectHandler
  * @see ActionUrlMapper
  * 
  * @author Phillip Webb
@@ -106,6 +107,12 @@ public interface MvcFacesContext {
 	 */
 	void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event);
 
-	// FIXME doc comments
+	/**
+	 * Called after a navigation outcome has been determined to redirect the browser.
+	 * 
+	 * @param facesContext
+	 * @param location
+	 * @throws IOException
+	 */
 	void redirect(FacesContext facesContext, Object location) throws IOException;
 }
