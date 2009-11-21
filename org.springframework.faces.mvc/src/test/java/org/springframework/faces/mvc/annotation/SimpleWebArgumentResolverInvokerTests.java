@@ -18,5 +18,6 @@ package org.springframework.faces.mvc.annotation;
 import junit.framework.TestCase;
 
 public class SimpleWebArgumentResolverInvokerTests extends TestCase {
+
 	// FIXME implement
 }

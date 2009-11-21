@@ -30,7 +30,6 @@ import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
-import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 

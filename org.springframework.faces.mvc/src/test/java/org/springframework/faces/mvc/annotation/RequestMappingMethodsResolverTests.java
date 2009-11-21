@@ -101,8 +101,8 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		} catch (IllegalStateException e) {
 			assertEquals(
 					"Ambiguous handler methods mapped for HTTP path '/an/example/path/ambiguous.do': "
-							+ "{public void org.springframework.faces.mvc.annotation.RequestMappingMethodsResolverTest$AmbiguousExample.ambiguous(), "
-							+ "public void org.springframework.faces.mvc.annotation.RequestMappingMethodsResolverTest$AmbiguousExample.ambiguous(javax.servlet.http.HttpServletRequest)}. "
+							+ "{public void org.springframework.faces.mvc.annotation.RequestMappingMethodsResolverTests$AmbiguousExample.ambiguous(), "
+							+ "public void org.springframework.faces.mvc.annotation.RequestMappingMethodsResolverTests$AmbiguousExample.ambiguous(javax.servlet.http.HttpServletRequest)}. "
 							+ "If you intend to handle the same path in multiple methods, then factor them out into a "
 							+ "dedicated handler class with that path mapped at the type level!", e.getMessage());
 		}

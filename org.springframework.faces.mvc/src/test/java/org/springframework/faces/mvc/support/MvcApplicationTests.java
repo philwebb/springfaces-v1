@@ -15,8 +15,28 @@
  */
 package org.springframework.faces.mvc.support;
 
+import java.lang.reflect.Field;
+
+import javax.faces.application.StateManager;
+
 import junit.framework.TestCase;
 
+import org.apache.shale.test.mock.MockApplication12;
+import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.webflow.FlowViewStateManager;
+
 public class MvcApplicationTests extends TestCase {
-	// FIXME implement
+
+	public void testset() throws Exception {
+		MockApplication12 parent = new MockApplication12();
+		MvcApplication mvcApplication = new MvcApplication(parent);
+		StateManager manager = (StateManager) MvcFacesTestUtils.methodTrackingObject(StateManager.class);
+		mvcApplication.setStateManager(manager);
+		StateManager stateManager = parent.getStateManager();
+		assertTrue(stateManager instanceof FlowViewStateManager);
+		Field field = FlowViewStateManager.class.getDeclaredField("delegate");
+		field.setAccessible(true);
+		Object delegate = field.get(stateManager);
+		assertTrue(delegate instanceof MvcStateManager);
+	}
 }

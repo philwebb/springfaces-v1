@@ -2,9 +2,11 @@ package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +32,8 @@ import org.springframework.web.util.UrlPathHelper;
  */
 public class NavigationCaseMethodsResolver extends RequestMappingMethodsResolver {
 
-	private final Set<Method> globalNavigationMethods = new LinkedHashSet<Method>();
+	private final SortedSet<Method> globalNavigationMethods = new TreeSet<Method>(
+			new NavgationAnnotatedMethodComparator());
 
 	public NavigationCaseMethodsResolver(final Class<?> handlerType, UrlPathHelper urlPathHelper,
 			MethodNameResolver methodNameResolver, PathMatcher pathMatcher) {
@@ -42,6 +45,7 @@ public class NavigationCaseMethodsResolver extends RequestMappingMethodsResolver
 				}
 			}
 		});
+
 	}
 
 	private boolean hasNavigationAnnotation(Method method) {
@@ -65,7 +69,7 @@ public class NavigationCaseMethodsResolver extends RequestMappingMethodsResolver
 	}
 
 	/**
-	 * Resolve the methods annotated with {@link NavigationCase} or {@link NavigationRules} and can also process the
+	 * Resolve the methods annotated with {@link NavigationCase} or {@link NavigationRules} that can also process the
 	 * specified request.
 	 * 
 	 * @param request
@@ -85,4 +89,13 @@ public class NavigationCaseMethodsResolver extends RequestMappingMethodsResolver
 		return navigationMethods.toArray(new Method[] {});
 	}
 
+	/**
+	 * Simple comparator that is used to sort methods, this simply ensures that any ambiguous mapping are at least
+	 * consistent in the order that they run regardless of the JVM.
+	 */
+	private static class NavgationAnnotatedMethodComparator implements Comparator<Method> {
+		public int compare(Method o1, Method o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	}
 }
