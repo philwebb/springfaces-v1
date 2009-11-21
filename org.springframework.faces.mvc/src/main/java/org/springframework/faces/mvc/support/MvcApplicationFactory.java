@@ -35,8 +35,8 @@ public class MvcApplicationFactory extends ApplicationFactory {
 
 	public Application getApplication() {
 		if (application == null) {
-			application = new MvcApplication(delegate.getApplication());
-
+			Application delegateApplication = delegate.getApplication();
+			application = delegateApplication == null ? null : new MvcApplication(delegateApplication);
 		}
 		return application;
 	}

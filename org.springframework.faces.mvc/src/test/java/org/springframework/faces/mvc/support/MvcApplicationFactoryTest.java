@@ -15,8 +15,45 @@
  */
 package org.springframework.faces.mvc.support;
 
+import javax.faces.application.Application;
+import javax.faces.application.ApplicationFactory;
+
 import junit.framework.TestCase;
 
+import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
+
 public class MvcApplicationFactoryTest extends TestCase {
-	// FIXME implement
+
+	private Application application;
+
+	public void testGetApplicationWhenNotSet() throws Exception {
+		this.application = (Application) MvcFacesTestUtils.methodTrackingObject(Application.class);
+		MvcApplicationFactory factory = new MvcApplicationFactory(new MockApplicationFactory());
+		Application getApplication = factory.getApplication();
+		assertTrue(getApplication instanceof MvcApplication);
+		getApplication.setDefaultLocale(null);
+		((MethodCallAssertor) application).assertCalled("setDefaultLocale");
+	}
+
+	public void testSetApplication() throws Exception {
+		Application applicationToSet = (Application) MvcFacesTestUtils.methodTrackingObject(Application.class);
+		MvcApplicationFactory factory = new MvcApplicationFactory(new MockApplicationFactory());
+		assertNull(factory.getApplication());
+		factory.setApplication(applicationToSet);
+		Application getApplication = factory.getApplication();
+		assertTrue(getApplication instanceof MvcApplication);
+		assertSame(applicationToSet, application);
+	}
+
+	private class MockApplicationFactory extends ApplicationFactory {
+
+		public Application getApplication() {
+			return MvcApplicationFactoryTest.this.application;
+		}
+
+		public void setApplication(Application application) {
+			MvcApplicationFactoryTest.this.application = application;
+		}
+	}
 }

@@ -24,10 +24,11 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
+import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
+import org.springframework.faces.mvc.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.MvcViewHandler;
-import org.springframework.faces.mvc.support.MvcFacesTestUtils.MethodCallAssertor;
-import org.springframework.faces.mvc.support.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.xslt.XsltView;
 

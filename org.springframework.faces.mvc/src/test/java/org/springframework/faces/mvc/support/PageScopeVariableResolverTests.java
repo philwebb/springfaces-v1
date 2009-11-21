@@ -22,6 +22,7 @@ import javax.faces.el.VariableResolver;
 import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext12;
+import org.springframework.faces.mvc.MvcFacesTestUtils;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
 import org.springframework.faces.mvc.support.PageScopeVariableResolver;
 

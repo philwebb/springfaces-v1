@@ -20,9 +20,10 @@ import javax.faces.event.PhaseId;
 
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
+import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.mvc.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.MvcPhaseListener;
-import org.springframework.faces.mvc.support.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 
 public class MvcPhaseListenerTests extends AbstractJsfTestCase {
 

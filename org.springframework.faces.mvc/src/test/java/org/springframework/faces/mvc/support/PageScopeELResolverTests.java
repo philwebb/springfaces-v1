@@ -22,8 +22,9 @@ import javax.el.ELContext;
 
 import junit.framework.TestCase;
 
+import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
 import org.springframework.faces.mvc.support.PageScopeELResolver;
-import org.springframework.faces.mvc.support.MvcFacesTestUtils.MethodCallAssertor;
 
 public class PageScopeELResolverTests extends TestCase {
 
