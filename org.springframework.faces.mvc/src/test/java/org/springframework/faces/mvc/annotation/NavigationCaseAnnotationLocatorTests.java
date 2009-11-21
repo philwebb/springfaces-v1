@@ -10,7 +10,7 @@ import org.apache.shale.test.mock.MockFacesContext;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
 
-public class NavigationCaseAnnotationLocatorTest extends TestCase {
+public class NavigationCaseAnnotationLocatorTests extends TestCase {
 
 	private FacesContext facesContext = new MockFacesContext();
 

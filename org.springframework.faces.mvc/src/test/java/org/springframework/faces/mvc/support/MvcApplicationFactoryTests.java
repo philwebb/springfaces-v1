@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.springframework.faces.mvc.MvcFacesTestUtils;
 import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
 
-public class MvcApplicationFactoryTest extends TestCase {
+public class MvcApplicationFactoryTests extends TestCase {
 
 	private Application application;
 
@@ -49,11 +49,11 @@ public class MvcApplicationFactoryTest extends TestCase {
 	private class MockApplicationFactory extends ApplicationFactory {
 
 		public Application getApplication() {
-			return MvcApplicationFactoryTest.this.application;
+			return MvcApplicationFactoryTests.this.application;
 		}
 
 		public void setApplication(Application application) {
-			MvcApplicationFactoryTest.this.application = application;
+			MvcApplicationFactoryTests.this.application = application;
 		}
 	}
 }

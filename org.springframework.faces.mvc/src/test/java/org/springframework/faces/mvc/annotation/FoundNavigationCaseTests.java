@@ -11,7 +11,7 @@ import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.FoundNavigationCase.FoundNavigationCaseType;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
 
-public class FoundNavigationCaseTest extends TestCase {
+public class FoundNavigationCaseTests extends TestCase {
 
 	private void doTest(Object owner, FoundNavigationCaseType type) throws Exception {
 		NavigationCase navigationCase = EasyMock.createMock(NavigationCase.class);

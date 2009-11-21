@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.support;
+package org.springframework.faces.mvc.annotation;
 
 import junit.framework.TestCase;
 
-public class MvcApplicationTest extends TestCase {
+public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	// FIXME implement
 }

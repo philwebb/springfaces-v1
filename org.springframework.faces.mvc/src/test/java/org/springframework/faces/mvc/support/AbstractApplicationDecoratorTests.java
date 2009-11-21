@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.springframework.faces.mvc.MvcFacesTestUtils;
 import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
 
-public class AbstractApplicationDecoratorTest extends TestCase {
+public class AbstractApplicationDecoratorTests extends TestCase {
 
 	private Application application;
 	private MethodCallAssertor methodCallAssertor;

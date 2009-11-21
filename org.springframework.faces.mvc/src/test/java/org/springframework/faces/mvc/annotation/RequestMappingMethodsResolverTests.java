@@ -25,7 +25,7 @@ import org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameRes
 import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
 import org.springframework.web.util.UrlPathHelper;
 
-public class RequestMappingMethodsResolverTest extends TestCase {
+public class RequestMappingMethodsResolverTests extends TestCase {
 
 	private RequestMappingAnnotationMatch newMatch(String[] paths, RequestMethod[] requestMethods, String[] params) {
 		RequestMappingAnnotation annotation = new RequestMappingAnnotation(paths, new HashSet<String>(Arrays

@@ -26,12 +26,12 @@ import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
 
-public class FacesWebArgumentResolverTest extends AbstractJsfTestCase {
+public class FacesWebArgumentResolverTests extends AbstractJsfTestCase {
 
 	private FacesWebArgumentResolver resolver = new FacesWebArgumentResolver();
 	private Method method = getSampleMethod();
 
-	public FacesWebArgumentResolverTest(String name) {
+	public FacesWebArgumentResolverTests(String name) {
 		super(name);
 	}
 

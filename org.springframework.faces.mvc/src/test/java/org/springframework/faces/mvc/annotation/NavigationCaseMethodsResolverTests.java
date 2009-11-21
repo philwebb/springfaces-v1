@@ -17,7 +17,7 @@ package org.springframework.faces.mvc.annotation;
 
 import junit.framework.TestCase;
 
-public class NavigationCaseMethodsResolverTest extends TestCase {
+public class NavigationCaseMethodsResolverTests extends TestCase {
 
 	// FIXME implement
 }

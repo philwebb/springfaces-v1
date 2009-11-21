@@ -30,9 +30,9 @@ public class MvcNavigationHandler extends NavigationHandler {
 
 	private NavigationHandler delegate;
 
-	public MvcNavigationHandler(NavigationHandler navigationHandler) {
+	public MvcNavigationHandler(NavigationHandler delegate) {
 		super();
-		this.delegate = navigationHandler;
+		this.delegate = delegate;
 	}
 
 	public void handleNavigation(FacesContext facesContext, String fromAction, String outcome) {
