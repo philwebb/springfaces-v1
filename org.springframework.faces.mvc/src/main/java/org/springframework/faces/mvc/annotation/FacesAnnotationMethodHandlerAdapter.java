@@ -23,17 +23,25 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.faces.bind.annotation.FacesController;
-import org.springframework.faces.mvc.DefaultRedirectHandler;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.RedirectHandler;
+import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.faces.mvc.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.bind.stereotype.FacesController;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver;
@@ -41,19 +49,27 @@ import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
- * Extension of {@link AnnotationMethodHandlerAdapter} to support JSF controllers.
+ * Implementation of the {@link HandlerAdapter} interface that maps JSF requests to {@link FacesController} annotated
+ * classes using methods based on HTTP paths, HTTP methods and request parameters expressed through the
+ * {@link RequestMapping} annotation. This adapter will also handle JSF navigation outcomes using the
+ * {@link NavigationCase} and {@link NavigationRules} annotations.
+ * <p>
+ * Supports the {@link ModelAttribute} annotation for exposing model attribute values to JSF.
  * 
  * @author Phillip Webb
+ * 
+ * @see #setPathMatcher
+ * @see #setMethodNameResolver
+ * @see #setWebBindingInitializer
+ * @see #setSessionAttributeStore
+ * @see FacesHandlerAdapter
  */
-public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter {
+public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter implements InitializingBean,
+		Ordered {
 
-	// FIXME doccomments
-	// FIXME support FaceContext param injection?
-	// FIXME expose controller
+	private static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
+
 	// FIXME @SessionAttributes support
-	// FIXME support @EL
-	// FIXME perhaps @BeforePhase @AfterPhase support
-	// FIXME FacesWebArgumentResolver integration
 
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -61,14 +77,15 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
-	private RedirectHandler redirectHandler = new DefaultRedirectHandler();
-	// FIXME setter
-
 	private FacesHandlerAdapter facesHandlerAdapter;
 
 	private final NavigationCaseAnnotationLocator navigationCaseAnnotationLocator = new NavigationCaseAnnotationLocator();
 
 	private final Map<Class<?>, NavigationCaseMethodsResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, NavigationCaseMethodsResolver>();
+
+	// Always order above other AnnotationMethodHandlerAdapter adapters so that they do not type and process faces
+	// requests
+	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	public boolean supports(Object handler) {
 		return supportsFaces(handler) && super.supports(handler);
@@ -104,6 +121,17 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return facesHandlerAdapter.handle(request, response, facesHandler);
 	}
 
+	/**
+	 * Set the {@link FacesHandlerAdapter} that will be used to process the annotated controllers that are handled by
+	 * this class. The {@link FacesHandlerAdapter} may be need to be set if additional configuration is required (for
+	 * example is a specific {@link RedirectHandler} is required.
+	 * <p>
+	 * If this property is not injected the {@link ApplicationContext} will be used to locate a single
+	 * {@link FacesHandlerAdapter} bean. If no bean is found a new {@link FacesHandlerAdapter} with default settings
+	 * will be used.
+	 * 
+	 * @param facesHandlerAdapter
+	 */
 	public void setFacesHandlerAdapter(FacesHandlerAdapter facesHandlerAdapter) {
 		this.facesHandlerAdapter = facesHandlerAdapter;
 	}
@@ -116,6 +144,22 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			this.methodResolverCache.put(handlerClass, resolver);
 		}
 		return resolver;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		if (facesHandlerAdapter == null) {
+			Map<String, FacesHandlerAdapter> facesHandlerAdapters = getApplicationContext().getBeansOfType(
+					FacesHandlerAdapter.class);
+			if (facesHandlerAdapters.size() > 1) {
+				throw new IllegalStateException(
+						"Multiple FacesHandlerAdapters found in application context, please manually inject "
+								+ "a FacesHanlderAdapter using the setFacesHandlerAdapter method");
+			} else if (facesHandlerAdapters.size() == 1) {
+				facesHandlerAdapter = facesHandlerAdapters.values().iterator().next();
+			} else {
+				facesHandlerAdapter = new FacesHandlerAdapter();
+			}
+		}
 	}
 
 	public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
@@ -131,6 +175,35 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	public void setPathMatcher(PathMatcher pathMatcher) {
 		super.setPathMatcher(pathMatcher);
 		this.pathMatcher = pathMatcher;
+	}
+
+	public void setCustomArgumentResolver(WebArgumentResolver argumentResolver) {
+		setCustomArgumentResolvers(new WebArgumentResolver[] { argumentResolver });
+	}
+
+	public void setCustomArgumentResolvers(WebArgumentResolver[] argumentResolvers) {
+		if (argumentResolvers == null) {
+			super.setCustomArgumentResolvers(ARGUMENT_RESOLVERS);
+		} else {
+			WebArgumentResolver[] completeArgumentResolvers = new WebArgumentResolver[ARGUMENT_RESOLVERS.length
+					+ argumentResolvers.length];
+			System.arraycopy(argumentResolvers, 0, completeArgumentResolvers, 0, argumentResolvers.length);
+			System.arraycopy(ARGUMENT_RESOLVERS, 0, completeArgumentResolvers, argumentResolvers.length,
+					ARGUMENT_RESOLVERS.length);
+			super.setCustomArgumentResolvers(completeArgumentResolvers);
+		}
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	/**
+	 * Set the order of the adapter.
+	 * @param order
+	 */
+	public void setOrder(int order) {
+		this.order = order;
 	}
 
 	/**
@@ -154,6 +227,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				throws Exception {
 			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(facesContext, event, handler);
 		}
-	}
 
+		public Object resolveVariable(String variableName) {
+			// FIXME expose controller
+			if ("controller".equals(variableName)) {
+				return handler;
+			}
+			return null;
+		}
+	}
 }

@@ -4,10 +4,10 @@ import javax.faces.context.FacesContext;
 
 import junit.framework.Assert;
 
-import org.springframework.faces.bind.annotation.FacesController;
-import org.springframework.faces.bind.annotation.NavigationCase;
-import org.springframework.faces.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.faces.mvc.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.bind.stereotype.FacesController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @FacesController

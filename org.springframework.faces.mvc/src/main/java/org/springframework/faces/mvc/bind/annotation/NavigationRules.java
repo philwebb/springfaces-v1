@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.bind.annotation;
+package org.springframework.faces.mvc.bind.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
 /**
@@ -28,6 +30,7 @@ import java.lang.reflect.Method;
  * @author Phillip Webb
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.PACKAGE, ElementType.METHOD, ElementType.TYPE })
 public @interface NavigationRules {
 	public NavigationCase[] value();
 }

@@ -5,6 +5,6 @@
 @NavigationCase(on = "pon2", to = "pto2")
 package org.springframework.faces.mvc.annotation.sample;
 
-import org.springframework.faces.bind.annotation.NavigationCase;
-import org.springframework.faces.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 

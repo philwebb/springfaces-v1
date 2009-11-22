@@ -19,8 +19,8 @@ import java.lang.reflect.Method;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.faces.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,6 +100,7 @@ public final class FoundNavigationCase {
 							+ method.getDeclaringClass() + " in order to resolve @NavigationCase for " + event
 							+ " as method also includes @RequestMapping annotation");
 				}
+				// FIXME model binder to allow use of model attributes
 				SimpleWebArgumentResolverInvoker invoker = new SimpleWebArgumentResolverInvoker(null,
 						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event),
 								new FacesWebArgumentResolver() });

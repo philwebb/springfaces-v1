@@ -11,8 +11,8 @@ import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.faces.bind.annotation.NavigationCase;
-import org.springframework.faces.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;

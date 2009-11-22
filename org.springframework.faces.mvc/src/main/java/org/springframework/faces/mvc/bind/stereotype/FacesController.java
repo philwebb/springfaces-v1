@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.bind.annotation;
+package org.springframework.faces.mvc.bind.stereotype;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,8 +22,14 @@ import java.lang.annotation.Target;
 
 import org.springframework.stereotype.Controller;
 
-@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.TYPE })
 @Controller
 public @interface FacesController {
+	/**
+	 * The value may indicate a suggestion for a logical component name, to be turned into a Spring bean in case of an
+	 * autodetected component.
+	 * @return the suggested component name, if any
+	 */
+	String value() default "";
 }

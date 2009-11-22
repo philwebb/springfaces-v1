@@ -63,7 +63,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 			facesServlet.service(request, response);
 			return null;
 		} catch (Exception e) {
-			// FIXME support exception handling
+			// FIXME support exception handling navigation
 			throw e;
 		}
 	}
@@ -147,6 +147,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Sets the class that will be used to construct the {@link FacesServlet} that will be used to handle requests. If
 	 * not specified the default {@link FacesServlet} class will be used.
+	 * 
 	 * @param facesServletClass
 	 */
 	public void setFacesServletClass(Class facesServletClass) {
@@ -164,6 +165,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 	/**
 	 * Set if the adapter should support "pageScope".
+	 * 
 	 * @param pageScopeSupported
 	 * @see PageScope
 	 */
@@ -174,6 +176,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the {@link FacesViewIdResolver} that will be used to resolve view IDs. If the resolver is not injected a
 	 * {@link SimpleFacesViewIdResolver} will be used.
+	 * 
 	 * @param facesViewIdResolver
 	 * @see SimpleFacesViewIdResolver
 	 */
@@ -185,6 +188,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the {@link ActionUrlMapper} that will be used to map action URLS. If the mapper is not injected a
 	 * {@link PageEncodedActionUrlMapper} will be used.
+	 * 
 	 * @param actionUrlMapper
 	 * @see PageEncodedActionUrlMapper
 	 */
@@ -196,12 +200,24 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the model binder that will be used to expose model elements to JSF. If the binder is not injected the
 	 * {@link BeanScopeModelBinder} will be used.
+	 * 
 	 * @param modelBinder
 	 * @see BeanScopeModelBinder
 	 */
 	public void setModelBinder(ModelBinder modelBinder) {
 		Assert.notNull(modelBinder, "The modelBinder is required");
 		modelBindingExecutor.setModelBinder(modelBinder);
+	}
+
+	/**
+	 * Set the redirect handler that will be used to handle navigation outcome. If the handler is not injected the
+	 * {@link DefaultRedirectHandler} will be used.
+	 * 
+	 * @param redirectHandler
+	 */
+	public void setRedirectHandler(RedirectHandler redirectHandler) {
+		Assert.notNull(redirectHandler, "The redirectHandler is required");
+		this.redirectHandler = redirectHandler;
 	}
 
 	/**

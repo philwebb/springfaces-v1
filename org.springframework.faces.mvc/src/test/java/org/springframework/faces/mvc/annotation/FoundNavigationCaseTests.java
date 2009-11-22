@@ -6,10 +6,10 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
-import org.springframework.faces.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.FoundNavigationCase.FoundNavigationCaseType;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
+import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 
 public class FoundNavigationCaseTests extends TestCase {
 

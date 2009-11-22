@@ -50,7 +50,16 @@ public interface FacesHandler {
 	 * @return A location that can the client can be redirected to by the
 	 * {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> view ID can be used if the navigation could not
 	 * be handled, in such cases the standard JSF navigation handlers are called (if no navigation handler manages the
-	 * outcome the existing page is re-rendered). view.
+	 * outcome the existing page is re-rendered).
 	 */
 	Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event) throws Exception;
+
+	/**
+	 * Called to resolve read-only variables from the handler. This method can be used to expose variables from the
+	 * hander to JSF.
+	 * 
+	 * @param propertyName The name of the propery being resolved.
+	 * @return A resolved property or <tt>null</tt> if the propertyName is not recognised by the handler.
+	 */
+	Object resolveVariable(String variableName);
 }
