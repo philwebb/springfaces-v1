@@ -15,7 +15,10 @@
  */
 package org.springframework.faces.mvc;
 
+import java.lang.reflect.Method;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.faces.webapp.FacesServlet;
@@ -25,6 +28,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.aop.framework.AdvisedSupport;
+import org.springframework.aop.framework.AopProxy;
+import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
@@ -52,6 +60,8 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	private FacesViewIdResolver facesViewIdResolver;
 	private ActionUrlMapper actionUrlMapper;
 	private RedirectHandler redirectHandler;
+	private boolean overrideInitParameters;
+	private ServletContext facesServletContext;
 
 	public boolean supports(Object handler) {
 		return handler instanceof FacesHandler;
@@ -145,6 +155,46 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
+	 * Obtain a {@link ServletContext} instance with the {@link ServletContext#getInitParameter(String)} intercepted in
+	 * order to provide a config that will work with the {@link FacesServlet} used by this class regardless of whether
+	 * the user has set the required parameters in their web.xml. Note: This behaviour can be disabled using
+	 * {@link #setOverrideInitParameters(boolean)}.
+	 * 
+	 * @return {@link ServletConfig} instance.
+	 */
+	protected ServletContext getFacesServletContext() {
+		// FIXME test
+		if (!overrideInitParameters) {
+			return getServletContext();
+		}
+		if (facesServletContext == null) {
+			AdvisedSupport aopConfig = new AdvisedSupport();
+			aopConfig.setInterfaces(new Class[] { ServletContext.class });
+			aopConfig.setTarget(getServletContext());
+			aopConfig.addAdvice(new OverrideInitParameterInterceptor());
+			DefaultAopProxyFactory aopProxyFactory = new DefaultAopProxyFactory();
+			AopProxy proxy = aopProxyFactory.createAopProxy(aopConfig);
+			facesServletContext = (ServletContext) proxy.getProxy();
+		}
+		return facesServletContext;
+	}
+
+	/**
+	 * Determine if override init parameters should be used. In order for the FacesServlet instance to process MVC
+	 * requests correctly exceptions must not be handled internally by the servlet. Some JSF implementations (MyFaces
+	 * for example) require additional configuration in order to propagate exceptions correctly and allow MVC to handle
+	 * them. By default this class will use AOP to ensure that this configuration occurs automatically. If this
+	 * behaviour is not desired then this set <tt>overrideInitParameters</tt> to <tt>false</tt>
+	 * 
+	 * @param overrideInitParameters <tt>true</tt> if init parameters are automatically set for correct MVC operation or
+	 * <tt>false</tt> if parameters should be set manually in web.xml. Defaults to <tt>true</tt> when not explicitly
+	 * set.
+	 */
+	public void setOverrideInitParameters(boolean overrideInitParameters) {
+		this.overrideInitParameters = overrideInitParameters;
+	}
+
+	/**
 	 * Sets the class that will be used to construct the {@link FacesServlet} that will be used to handle requests. If
 	 * not specified the default {@link FacesServlet} class will be used.
 	 * 
@@ -231,7 +281,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 		}
 
 		public ServletContext getServletContext() {
-			return FacesHandlerAdapter.this.getServletContext();
+			return FacesHandlerAdapter.this.getFacesServletContext();
 		}
 
 		public String getInitParameter(String paramName) {
@@ -240,6 +290,36 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 		public Enumeration getInitParameterNames() {
 			return FacesHandlerAdapter.this.initParameters.keys();
+		}
+	}
+
+	/**
+	 * Internal method interceptor used to ensure that the {@link ServletContext} has sensible default init parameters
+	 * for MVC operation.
+	 */
+	private static class OverrideInitParameterInterceptor implements MethodInterceptor {
+
+		private static final Method SERVLETCONTEXT_INITPARAMETER_METHOD;
+		private static final Map INIT_PARAMETER_OVERRIDES;
+		static {
+			try {
+				SERVLETCONTEXT_INITPARAMETER_METHOD = ServletContext.class.getMethod("getInitParameter",
+						new Class[] { String.class });
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+			INIT_PARAMETER_OVERRIDES = new HashMap();
+			INIT_PARAMETER_OVERRIDES.put("org.apache.myfaces.ERROR_HANDLING", "false");
+		}
+
+		public Object invoke(MethodInvocation invocation) throws Throwable {
+			if (SERVLETCONTEXT_INITPARAMETER_METHOD.equals(invocation.getMethod())) {
+				String name = (String) invocation.getArguments()[0];
+				if (INIT_PARAMETER_OVERRIDES.containsKey(name)) {
+					return INIT_PARAMETER_OVERRIDES.get(name);
+				}
+			}
+			return invocation.proceed();
 		}
 	}
 }
