@@ -40,6 +40,7 @@ public class MvcNavigationHandler extends NavigationHandler {
 			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, fromAction, outcome);
 			try {
+			//FIXME update test case
 				requestContext.setLastNavigationRequestEvent(event);
 				Object location = requestContext.getFacesHandler().getNavigationOutcomeLocation(facesContext, event);
 				if (location != null) {
