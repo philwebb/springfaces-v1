@@ -15,15 +15,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
-import org.springframework.web.servlet.ModelAndView;
 
 public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	private class MockFacesHandlerAdapter extends AbstractFacesHandlerAdapter {
 
-		protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response, FacesHandler handler)
-				throws Exception {
-			return null;
+		protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+				HttpServletResponse response) throws Exception {
 		}
 
 		protected ActionUrlMapper getActionUrlMapper() {
@@ -77,10 +75,9 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.expect(facesViewIdResolver.resolveViewId("viewname")).andReturn("viewid");
 		EasyMock.replay(new Object[] { facesViewIdResolver });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().resolveViewId("viewname");
-				return null;
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -92,10 +89,9 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.expect(actionUrlMapper.getActionUlr(facesContext, "viewname")).andReturn("action");
 		EasyMock.replay(new Object[] { facesViewIdResolver, actionUrlMapper });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().getActionUlr(facesContext, "viewid");
-				return null;
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -107,11 +103,10 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.expect(facesViewIdResolver.resolveViewId("viewname")).andReturn("viewid");
 		EasyMock.replay(new Object[] { facesViewIdResolver, actionUrlMapper });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().getViewIdForRestore(facesContext,
 						"viewid");
-				return null;
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -126,12 +121,10 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { modelBindingExecutor });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
-				MvcFacesRequestContext mvcFacesRequestContext = MvcFacesRequestContext.getCurrentInstance();
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				mvcFacesRequestContext.getMvcFacesContext().viewCreated(facesContext, mvcFacesRequestContext, viewRoot,
 						model);
-				return null;
 			}
 
 			protected boolean isPageScopeSupported() {
@@ -175,10 +168,9 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { facesViewIdResolver, actionUrlMapper });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().writeState(facesContext);
-				return null;
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -191,12 +183,10 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { modelBindingExecutor });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
-				MvcFacesRequestContext mvcFacesRequestContext = MvcFacesRequestContext.getCurrentInstance();
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				PhaseEvent event = new PhaseEvent(facesContext, phaseId, lifecycle);
 				mvcFacesRequestContext.getMvcFacesContext().afterPhase(mvcFacesRequestContext, event);
-				return null;
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -232,23 +222,23 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 				};
 			}
 
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				assertEquals("customhandler", MvcFacesRequestContext.getCurrentInstance().getFacesHandler().toString());
-				return null;
 			}
 		};
 	}
 
 	public void testRedirectHandler() throws Exception {
-		redirectHandler.handleRedirect(facesContext, "location");
+		Object frequest = facesContext.getExternalContext().getRequest();
+		Object fresponse = facesContext.getExternalContext().getResponse();
+		redirectHandler.handleRedirect(frequest, fresponse, "location");
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-					FacesHandler handler) throws Exception {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
 				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().redirect(facesContext, "location");
-				return null;
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);

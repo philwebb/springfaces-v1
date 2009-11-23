@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 
-import org.apache.shale.test.mock.MockExternalContext12;
-import org.apache.shale.test.mock.MockFacesContext12;
 import org.easymock.EasyMock;
 
 public class DefaultRedirectHandlerTests extends TestCase {
@@ -32,7 +30,6 @@ public class DefaultRedirectHandlerTests extends TestCase {
 			throws Exception {
 		DefaultRedirectHandler handler = new DefaultRedirectHandler();
 		handler.setRedirectHttp10Compatible(redirectHttp10Compatible);
-		MockFacesContext12 facesContext = new MockFacesContext12();
 		ServletContext context = EasyMock.createMock(ServletContext.class);
 		HttpServletRequest request = EasyMock.createNiceMock(HttpServletRequest.class);
 		EasyMock.expect(request.getContextPath()).andReturn("/context");
@@ -44,15 +41,13 @@ public class DefaultRedirectHandlerTests extends TestCase {
 			EasyMock.expect(response.encodeRedirectURL(EasyMock.eq(expectedUrl))).andReturn(expectedUrl);
 			response.setHeader("Location", expectedUrl);
 			EasyMock.expectLastCall();
+		} else {
+			response.sendRedirect(expectedUrl);
+			EasyMock.expectLastCall();
+
 		}
 		EasyMock.replay(new Object[] { context, request, response });
-		MockExternalContext12 externalContext = new MockExternalContext12(context, request, response) {
-			public void redirect(String requestURI) throws java.io.IOException {
-				assertEquals(expectedUrl, requestURI);
-			}
-		};
-		facesContext.setExternalContext(externalContext);
-		handler.handleRedirect(facesContext, location);
+		handler.handleRedirect(request, response, location);
 		EasyMock.verify(new Object[] { response });
 	}
 

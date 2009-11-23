@@ -36,9 +36,9 @@ import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
+import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerAdapter;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * MVC {@link HandlerAdapter} that can be used to process {@link FacesHandler}s. This class handles most of the low
@@ -60,22 +60,16 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	private FacesViewIdResolver facesViewIdResolver;
 	private ActionUrlMapper actionUrlMapper;
 	private RedirectHandler redirectHandler;
-	private boolean overrideInitParameters;
+	private boolean overrideInitParameters = true;
 	private ServletContext facesServletContext;
 
 	public boolean supports(Object handler) {
 		return handler instanceof FacesHandler;
 	}
 
-	protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response, FacesHandler handler)
-			throws Exception {
-		try {
-			facesServlet.service(request, response);
-			return null;
-		} catch (Exception e) {
-			// FIXME support exception handling navigation
-			throw e;
-		}
+	protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		facesServlet.service(request, response);
 	}
 
 	public void setBeanName(String name) {

@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Default implementation of {@link RedirectHandler}.
+ * Default implementation of {@link RedirectHandler}. The class is based heavily on FlowHandlerAdapter from the webflow
+ * project.
  * 
  * @author Phillip Webb
  * @author Keith Donald
@@ -40,11 +40,10 @@ public class DefaultRedirectHandler implements RedirectHandler {
 			return ((flags & context) != 0);
 		}
 
-		public String buildUrl(FacesContext facesContext, String location) {
-			ExternalContext externalContext = facesContext.getExternalContext();
+		public String buildUrl(HttpServletRequest httpServletRequest, String location) {
 			StringBuffer url = new StringBuffer();
-			url.append(hasFlag(CONTEXT) ? externalContext.getRequestContextPath() : "");
-			url.append(hasFlag(SERVLET) ? externalContext.getRequestServletPath() : "");
+			url.append(hasFlag(CONTEXT) ? httpServletRequest.getContextPath() : "");
+			url.append(hasFlag(SERVLET) ? httpServletRequest.getServletPath() : "");
 			location = (hasFlag(STRIP_PREFIX) ? location.substring(prefix.length()) : location);
 			if (hasFlag(SLASH) && !location.startsWith("/")) {
 				url.append("/");
@@ -73,34 +72,36 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	 * @param url the url to redirect to
 	 * @throws IOException an exception occurred
 	 */
-	protected void sendRedirect(FacesContext facesContext, String url) throws IOException {
-		if (redirectHttp10Compatible
-				|| !(facesContext.getExternalContext().getResponse() instanceof HttpServletResponse)) {
+	protected void sendRedirect(HttpServletResponse httpServletResponse, String url) throws IOException {
+		if (redirectHttp10Compatible) {
 			// Always send status code 302.
-			facesContext.getExternalContext().redirect(url);
+			httpServletResponse.sendRedirect(url);
 		} else {
 			// Correct HTTP status code is 303, in particular for POST requests.
-			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			response.setStatus(303);
-			response.setHeader("Location", response.encodeRedirectURL(url));
+			httpServletResponse.setStatus(303);
+			httpServletResponse.setHeader("Location", httpServletResponse.encodeRedirectURL(url));
 		}
 	}
 
-	protected String getLocationUrl(FacesContext facesContext, String location) {
+	protected String getLocationUrl(HttpServletRequest httpServletRequest, String location) {
 		for (Iterator iterator = URL_BUILDERS.iterator(); iterator.hasNext();) {
 			UrlBuilder urlBuilder = (UrlBuilder) iterator.next();
 			if (urlBuilder.isSuitable(location)) {
-				return urlBuilder.buildUrl(facesContext, location);
+				return urlBuilder.buildUrl(httpServletRequest, location);
 			}
 		}
 		return location;
 	}
 
-	public void handleRedirect(FacesContext facesContext, Object location) throws IOException {
-
+	public void handleRedirect(Object request, Object response, Object location) throws IOException {
+		if (!(request instanceof HttpServletRequest && response instanceof HttpServletResponse)) {
+			throw new IllegalStateException("Only servlet environments are currently supported");
+		}
+		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 		if (location != null) {
-			String url = getLocationUrl(facesContext, location.toString());
-			sendRedirect(facesContext, url);
+			String url = getLocationUrl(httpServletRequest, location.toString());
+			sendRedirect(httpServletResponse, url);
 		}
 	}
 

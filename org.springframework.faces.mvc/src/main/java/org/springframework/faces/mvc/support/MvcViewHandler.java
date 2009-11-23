@@ -46,7 +46,6 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public UIViewRoot createView(FacesContext context, String viewId) {
-
 		if (MvcFacesRequestContext.getCurrentInstance() != null) {
 			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
 			ModelAndView modelAndView;

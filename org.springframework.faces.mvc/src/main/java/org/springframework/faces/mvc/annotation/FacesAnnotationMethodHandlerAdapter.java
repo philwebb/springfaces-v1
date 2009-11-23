@@ -29,11 +29,14 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
+import org.springframework.faces.mvc.MvcFacesExceptionHandler;
+import org.springframework.faces.mvc.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.bind.stereotype.FacesController;
+import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
@@ -102,11 +105,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return super.handle(request, response, handler);
 	}
 
-	protected Object getNavigationOutcome(FacesContext facesContext, NavigationRequestEvent event, Object handler)
-			throws Exception {
+	protected Object getNavigationOutcome(HttpServletRequest request, HttpServletResponse response,
+			NavigationRequestEvent event, Object handler) throws Exception {
 		NavigationCaseMethodsResolver methodResolver = getMethodsResolver(handler);
-		HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
-		HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 		ServletWebRequest servletWebRequest = new ServletWebRequest(request, response);
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
@@ -207,9 +208,10 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	}
 
 	/**
-	 * Adapter class to convert the annotated handler into a {@link FacesController}.
+	 * Adapter class to convert the annotated handler into a {@link FacesController}. Also implements
+	 * {@link MvcFacesExceptionHandler} to deal with navigation based exception handling.
 	 */
-	private class AnnotatedMethodFacesHandlerAdapter implements FacesHandler {
+	private class AnnotatedMethodFacesHandlerAdapter implements FacesHandler, MvcFacesExceptionHandler {
 		private Object handler;
 
 		public AnnotatedMethodFacesHandlerAdapter(Object handler) {
@@ -225,7 +227,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 		public Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event)
 				throws Exception {
-			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(facesContext, event, handler);
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event, handler);
 		}
 
 		public Object resolveVariable(String variableName) {
@@ -234,6 +238,27 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				return handler;
 			}
 			return null;
+		}
+		
+		//FIXME test exception stuff
+
+		public MvcFacesExceptionHandler[] getExceptionHandlers() {
+			return new MvcFacesExceptionHandler[] { this };
+		}
+
+		public boolean handleException(Exception exception, MvcFacesRequestContext requestContext,
+				HttpServletRequest request, HttpServletResponse response, MvcFacesExceptionOutcome outcome)
+				throws Exception {
+			requestContext.getFacesHandler();
+			NavigationRequestEvent event = new NavigationRequestEvent(this, requestContext
+					.getLastNavigationRequestEvent(), exception);
+			Object location = FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event,
+					handler);
+			if (location != null) {
+				outcome.redirect(location);
+				return true;
+			}
+			return false;
 		}
 	}
 }

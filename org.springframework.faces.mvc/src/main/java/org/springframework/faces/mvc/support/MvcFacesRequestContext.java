@@ -15,9 +15,13 @@
  */
 package org.springframework.faces.mvc.support;
 
+import javax.faces.event.PhaseId;
+
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.util.Assert;
+import org.springframework.webflow.mvc.portlet.AbstractFlowHandler;
 
 /**
  * A context for a single JSF request that is being handled by the Spring MVC framework. The
@@ -34,6 +38,8 @@ public class MvcFacesRequestContext {
 	private boolean released;
 	private MvcFacesContext mvcFacesContext;
 	private FacesHandler facesHandler;
+	private Exception exception;
+	private NavigationRequestEvent lastNavigationRequestEvent;
 
 	/**
 	 * Public constructor.
@@ -71,6 +77,47 @@ public class MvcFacesRequestContext {
 		Assert.isTrue(!released, "The MvcFacesRequest has already been released");
 		released = true;
 		setCurrentInstance(null);
+	}
+	
+	//FIXME set setException, setLastNvigation
+
+	/**
+	 * Method called during exception handling to store the current exception. This is a framework method called by
+	 * {@link AbstractFlowHandler} and should not be called directly by developers.
+	 * 
+	 * @param exception The exception being handled.
+	 * 
+	 * @see #getException()
+	 */
+	public void setException(Exception exception) {
+		this.exception = exception;
+	}
+
+	/**
+	 * @return The current exception that is being handled by MVC or <tt>null</tt> if an exception has not been raised.
+	 * Note: When an exception is being processes the JSF lifecycle will stop after {@link PhaseId#PROCESS_VALIDATIONS}.
+	 */
+	public Exception getException() {
+		return exception;
+	}
+
+	/**
+	 * Method called during navigation processing to store the navigation event being processes. This is a framework
+	 * method called by {@link MvcNavigationHandler} and should not be called directly by developers.
+	 * 
+	 * @param lastNavigationRequestEvent The navigation event.
+	 */
+	void setLastNavigationRequestEvent(NavigationRequestEvent lastNavigationRequestEvent) {
+		this.lastNavigationRequestEvent = lastNavigationRequestEvent;
+	}
+
+	/**
+	 * @return The last navigation event that was being processed by the system or <tt>null</tt> if a navigation request
+	 * has not yet been processed. Note: this value is reset on each request but remains availble during exception
+	 * handling.
+	 */
+	public NavigationRequestEvent getLastNavigationRequestEvent() {
+		return lastNavigationRequestEvent;
 	}
 
 	/**

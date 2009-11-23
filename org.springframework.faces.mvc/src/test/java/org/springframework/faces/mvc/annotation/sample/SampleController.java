@@ -46,8 +46,8 @@ public class SampleController {
 		this.methodCalled = true;
 		Assert.assertEquals("methodcall", navigation);
 		Assert.assertEquals("methodcall", navigationCase.on()[0]);
-		Assert.assertEquals("#{action.test}", event.fromAction());
-		Assert.assertEquals("methodcall", event.outcome());
+		Assert.assertEquals("#{action.test}", event.getFromAction());
+		Assert.assertEquals("methodcall", event.getOutcome());
 		Assert.assertNotNull(facesContext);
 		return "someview";
 	}

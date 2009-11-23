@@ -37,8 +37,8 @@ public class NavigationRequestEventTests extends TestCase {
 	public void testEqualsAndHashCode() throws Exception {
 
 		FacesContext facesContext = new MockFacesContext();
-		NavigationRequestEvent e1a = new NavigationRequestEvent(facesContext, null, null);
-		NavigationRequestEvent e1b = new NavigationRequestEvent(new MockFacesContext(), null, null);
+		NavigationRequestEvent e1a = new NavigationRequestEvent(facesContext, (String) null, (String) null);
+		NavigationRequestEvent e1b = new NavigationRequestEvent(new MockFacesContext(), (String) null, (String) null);
 
 		NavigationRequestEvent e2a = new NavigationRequestEvent(facesContext, null, "run");
 		NavigationRequestEvent e2b = new NavigationRequestEvent(facesContext, null, "run");
@@ -75,7 +75,7 @@ public class NavigationRequestEventTests extends TestCase {
 
 	public void testValues() throws Exception {
 		NavigationRequestEvent event = new NavigationRequestEvent(new MockFacesContext(), "#{action.test}", "run");
-		assertEquals("#{action.test}", event.fromAction());
-		assertEquals("run", event.outcome());
+		assertEquals("#{action.test}", event.getFromAction());
+		assertEquals("run", event.getOutcome());
 	}
 }

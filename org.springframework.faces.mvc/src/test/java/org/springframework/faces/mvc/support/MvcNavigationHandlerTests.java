@@ -45,8 +45,8 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 								(NavigationRequestEvent) EasyMock.anyObject())).andAnswer(new IAnswer<Object>() {
 					public Object answer() throws Throwable {
 						NavigationRequestEvent event = (NavigationRequestEvent) EasyMock.getCurrentArguments()[1];
-						assertEquals("action", event.fromAction());
-						assertEquals("outcome", event.outcome());
+						assertEquals("action", event.getFromAction());
+						assertEquals("outcome", event.getOutcome());
 						return navigate;
 					}
 				});

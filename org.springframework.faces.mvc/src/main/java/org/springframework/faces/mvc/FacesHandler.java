@@ -62,4 +62,11 @@ public interface FacesHandler {
 	 * @return A resolved property or <tt>null</tt> if the propertyName is not recognised by the handler.
 	 */
 	Object resolveVariable(String variableName);
+
+	/**
+	 * @return Any handler specific {@link MvcFacesExceptionHandler}s that should be used to deal with exceptions.
+	 * Return <tt>null</tt> if no handler specific handlers are required. Handlers registered with
+	 * {@link AbstractFacesHandlerAdapter} will still be called.
+	 */
+	MvcFacesExceptionHandler[] getExceptionHandlers();
 }

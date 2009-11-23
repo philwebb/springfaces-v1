@@ -125,7 +125,7 @@ public final class FoundNavigationCase {
 
 		public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
 			if (String.class.equals(methodParameter.getParameterType())) {
-				return event.outcome();
+				return event.getOutcome();
 			}
 			if (NavigationRequestEvent.class.equals(methodParameter.getParameterType())) {
 				return event;

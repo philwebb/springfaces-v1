@@ -16,6 +16,8 @@
 package org.springframework.faces.mvc;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.faces.component.UIViewRoot;
@@ -26,8 +28,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
@@ -41,7 +49,11 @@ import org.springframework.web.servlet.support.WebContentGenerator;
  * @author Phillip Webb
  */
 public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator implements HandlerAdapter,
-		BeanFactoryPostProcessor {
+		BeanFactoryPostProcessor, ApplicationListener {
+
+	private boolean detectAllExceptionHandlers = true;
+	private ArrayList userDefinedExceptionHandlers;
+	private MvcFacesExceptionHandler[] allExceptionHandlers;
 
 	public boolean supports(Object handler) {
 		return handler instanceof FacesHandler;
@@ -49,13 +61,54 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
+		FacesHandler facesHandler = (FacesHandler) handler;
 		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestContext(newFacesHandlerAdapterContext(),
-				(FacesHandler) handler);
+				facesHandler);
 		try {
-			return doHandle(request, response, (FacesHandler) handler);
+			try {
+				doHandle(mvcFacesRequestContext, request, response);
+				return null;
+			} catch (Exception e) {
+				handleException(mvcFacesRequestContext, request, response, e);
+				return null;
+			}
 		} finally {
 			mvcFacesRequestContext.release();
 		}
+	}
+
+//FIXME DC + test
+	protected void handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+			HttpServletResponse response, Exception exception) throws Exception {
+		mvcFacesRequestContext.setException(exception);
+		MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome = new MvcFacesExceptionOutcomeImpl();
+		// Try the handler specified exception handlers
+		boolean handled = handleException(mvcFacesRequestContext, request, response, exception,
+				mvcFacesExceptionOutcome, mvcFacesRequestContext.getFacesHandler().getExceptionHandlers());
+		if (!handled) {
+			handled = handleException(mvcFacesRequestContext, request, response, exception, mvcFacesExceptionOutcome,
+					allExceptionHandlers);
+		}
+		if (!handled) {
+			throw exception;
+		}
+	}
+
+	private boolean handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+			HttpServletResponse response, Exception exception, MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome,
+			MvcFacesExceptionHandler[] handlers) throws Exception {
+		if (handlers == null || handlers.length == 0) {
+			return false;
+		}
+		for (int i = 0; i < handlers.length; i++) {
+			mvcFacesExceptionOutcome.reset();
+			if (handlers[i].handleException(exception, mvcFacesRequestContext, request, response,
+					mvcFacesExceptionOutcome)) {
+				mvcFacesExceptionOutcome.complete(mvcFacesRequestContext, request, response);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public long getLastModified(HttpServletRequest request, Object handler) {
@@ -68,22 +121,51 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 	}
 
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ContextRefreshedEvent) {
+			onRefresh(((ContextRefreshedEvent) event).getApplicationContext());
+		}
+	}
+
+	protected void onRefresh(ApplicationContext context) {
+		initExceptionHandlers(context);
+	}
+
+//FIXME test
+	private void initExceptionHandlers(ApplicationContext context) {
+		allExceptionHandlers = null;
+		if (detectAllExceptionHandlers) {
+			// Find all HandlerExceptionResolvers in the ApplicationContext, including ancestor contexts.
+			Map matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, MvcFacesExceptionHandler.class,
+					true, false);
+			if (!matchingBeans.isEmpty()) {
+				ArrayList detectedExceptionHandlers = new ArrayList(matchingBeans.values());
+				Collections.sort(detectedExceptionHandlers, new OrderComparator());
+				allExceptionHandlers = (MvcFacesExceptionHandler[]) detectedExceptionHandlers
+						.toArray(new MvcFacesExceptionHandler[] {});
+			}
+		} else {
+			if (userDefinedExceptionHandlers != null) {
+				allExceptionHandlers = (MvcFacesExceptionHandler[]) userDefinedExceptionHandlers
+						.toArray(new MvcFacesExceptionHandler[] {});
+			}
+		}
+	}
+
 	/**
 	 * Internal method called to perform the actual handling of the request. The {@link MvcFacesRequestContext} will be
-	 * active when this method is called.
+	 * active when this method is called. This method is expected to completely handle the rendering of a response or
+	 * throw an exception.
 	 * 
+	 * @param mvcFacesRequestContext The MVC Faces Request Context
 	 * @param request current HTTP request
 	 * @param response current HTTP response
-	 * @param handler handler to use. This object must have previously been passed to the <code>supports</code> method
-	 * of this interface, which must have returned <code>true</code>.
 	 * @throws Exception in case of errors
-	 * @return ModelAndView object with the name of the view and the required model data, or <code>null</code> if the
-	 * request has been handled directly
 	 * 
 	 * @see HandlerAdapter#handle(HttpServletRequest, HttpServletResponse, Object)
 	 */
-	protected abstract ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response,
-			FacesHandler handler) throws Exception;
+	protected abstract void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+			HttpServletResponse response) throws Exception;
 
 	/**
 	 * Factory method used to construct the {@link MvcFacesContext} that will be used during request handling. By
@@ -107,6 +189,27 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		return true;
 	}
 
+//FIXME test
+	/**
+	 * Set whether to detect all {@link MvcFacesExceptionHandler} beans in the application context. The default is
+	 * <tt>true</tt> meaning that all {@link MvcFacesExceptionHandler}s will be dynamically located from the application
+	 * context. If this behaviour is not required set this value to <tt>false</tt> and manually inject handler using
+	 * {@link #setExceptionHandlers(ArrayList)}.
+	 */
+	public void setDetectAllHandlerExceptionResolvers(boolean detectAllExceptionHandlers) {
+		this.detectAllExceptionHandlers = detectAllExceptionHandlers;
+	}
+//FIXME test
+	/**
+	 * Set a specific set of {@link MvcFacesExceptionHandler}s that will be used by this bean then
+	 * {@link #setDetectAllHandlerExceptionResolvers(boolean)} has been set to <tt>false</tt>. Note: This property will
+	 * be ignored when <tt>detectAllExceptionHandlers</tt> is true.
+	 * @param exceptionHandlers
+	 */
+	public void setExceptionHandlers(ArrayList exceptionHandlers) {
+		this.userDefinedExceptionHandlers = exceptionHandlers;
+	}
+
 	/**
 	 * @return The {@link FacesViewIdResolver} that will be used to resolve faces view IDs.
 	 */
@@ -122,6 +225,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 */
 	protected abstract ActionUrlMapper getActionUrlMapper();
 
+	/**
+	 * @return The {@link RedirectHandler} that will be used to issue redirects.
+	 */
 	protected abstract RedirectHandler getRedirectHandler();
 
 	/**
@@ -160,7 +266,15 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			AbstractFacesHandlerAdapter.this.getActionUrlMapper().writeState(facesContext, viewName);
 		}
 
+		private void stopAtProcessValidationsWhenHasCurrentException(MvcFacesRequestContext mvcFacesRequestContext,
+				PhaseEvent event) {
+			if (PhaseId.PROCESS_VALIDATIONS.equals(event.getPhaseId()) && mvcFacesRequestContext.getException() != null) {
+				event.getFacesContext().renderResponse();
+			}
+		}
+
 		public void beforePhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
+			stopAtProcessValidationsWhenHasCurrentException(mvcFacesRequestContext, event);
 		}
 
 		public void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
@@ -170,8 +284,42 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 
 		public void redirect(FacesContext facesContext, Object location) throws IOException {
-			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(facesContext, location);
+			Object request = facesContext.getExternalContext().getRequest();
+			Object response = facesContext.getExternalContext().getResponse();
+			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(request, response, location);
 		}
 	}
 
+	private class MvcFacesExceptionOutcomeImpl implements MvcFacesExceptionOutcome {
+
+		private Object redirectLocation;
+		private boolean redisplay;
+
+		private void reset() {
+			this.redirectLocation = null;
+			this.redisplay = false;
+		}
+
+		public void redirect(Object location) {
+			this.redirectLocation = location;
+		}
+
+		public void redisplay() {
+			this.redisplay = true;
+		}
+
+		public void complete(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+				HttpServletResponse response) throws Exception {
+			if (redirectLocation != null && redisplay) {
+				throw new IllegalStateException(
+						"Illegal outcome specified, redirect or redisplay are mutually exclusive");
+			}
+			if (redirectLocation != null) {
+				getRedirectHandler().handleRedirect(request, response, redirectLocation);
+			}
+			if (redisplay) {
+				doHandle(mvcFacesRequestContext, request, response);
+			}
+		}
+	}
 }

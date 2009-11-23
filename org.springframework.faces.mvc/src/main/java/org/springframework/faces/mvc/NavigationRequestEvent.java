@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.EventObject;
 
 import javax.faces.application.NavigationHandler;
-import javax.faces.context.FacesContext;
 
 import org.springframework.util.ObjectUtils;
 
@@ -33,28 +32,60 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 
 	private String fromAction;
 	private String outcome;
+	private Exception exception;
 
-	public NavigationRequestEvent(FacesContext owner, String fromAction, String outcome) {
+	/**
+	 * Constructor for a regular navigation event.
+	 * 
+	 * @param owner The owner.
+	 * @param fromAction The from action.
+	 * @param outcome The outcome.
+	 */
+	public NavigationRequestEvent(Object owner, String fromAction, String outcome) {
 		super(owner);
 		this.fromAction = fromAction;
 		this.outcome = outcome;
 	}
 
 	/**
+	 * Constructor for a navigation event that includes an exception.
+	 * @param owner The owner
+	 * @param sourceEvent The {@link NavigationRequestEvent} that was being processed when the exception was raised or
+	 * <tt>null</tt>.
+	 * @param exception The exception.
+	 */
+	public NavigationRequestEvent(Object owner, NavigationRequestEvent sourceEvent, Exception exception) {
+		super(owner);
+		if (sourceEvent != null) {
+			this.fromAction = sourceEvent.getFromAction();
+			this.outcome = sourceEvent.getOutcome();
+		}
+		this.exception = exception;
+	}
+
+	/**
 	 * @return The action binding expression that was evaluated to retrieve the specified outcome, or <tt>null</tt> if
 	 * the outcome was acquired by some other means
 	 */
-	public String fromAction() {
+	public String getFromAction() {
 		return fromAction;
 	}
 
 	/**
 	 * @return The logical outcome returned by a previous invoked application action (which may be <tt>null</tt>)
 	 */
-	public String outcome() {
+	public String getOutcome() {
 		return outcome;
 	}
 
+	/**
+	 * @return Any exception tied to the event.
+	 */
+	public Exception getException() {
+		return exception;
+	}
+
+//FIXME to string, hashcode + equals for exception
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;

@@ -162,6 +162,9 @@ public class NavigationCaseAnnotationLocator {
 			if (!isSuitableAction(navigationCase)) {
 				return false;
 			}
+			if (!isSuitableException(navigationCase)) {
+				return false;
+			}
 			return true;
 		}
 
@@ -170,7 +173,7 @@ public class NavigationCaseAnnotationLocator {
 				return true;
 			}
 			for (String on : navigationCase.on()) {
-				if (on.equals(event.outcome())) {
+				if (on.equals(event.getOutcome())) {
 					return true;
 				}
 			}
@@ -181,12 +184,33 @@ public class NavigationCaseAnnotationLocator {
 			if ("".equals(navigationCase.fromAction())) {
 				return true;
 			}
-			if (StringUtils.hasText(event.fromAction()) && event.fromAction().equals(navigationCase.fromAction())) {
+			if (StringUtils.hasText(event.getFromAction()) && event.getFromAction().equals(navigationCase.fromAction())) {
 				return true;
 			}
 			return false;
 		}
 
-	}
+		// FIXME test this
+		// FIXME toString updates
+		private boolean isSuitableException(NavigationCase navigationCase) {
+			if (navigationCase.onException() == null || void.class.equals(navigationCase.onException())) {
+				// onException annotation has not been specified, this case is only suitable when we are not handling an
+				// exception
+				return (event.getException() != null);
+			}
+			// onException annotation has been specified
+			if (event.getException() == null) {
+				return false;
+			}
 
+			Throwable throwable = event.getException();
+			while (throwable != null) {
+				if (navigationCase.onException().isInstance(throwable)) {
+					return true;
+				}
+				throwable = throwable.getCause();
+			}
+			return false;
+		}
+	}
 }
