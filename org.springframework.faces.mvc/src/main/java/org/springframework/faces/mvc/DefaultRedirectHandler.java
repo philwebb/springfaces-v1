@@ -93,15 +93,11 @@ public class DefaultRedirectHandler implements RedirectHandler {
 		return location;
 	}
 
-	public void handleRedirect(Object request, Object response, Object location) throws IOException {
-		if (!(request instanceof HttpServletRequest && response instanceof HttpServletResponse)) {
-			throw new IllegalStateException("Only servlet environments are currently supported");
-		}
-		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+	public void handleRedirect(HttpServletRequest request, HttpServletResponse response, Object location)
+			throws IOException {
 		if (location != null) {
-			String url = getLocationUrl(httpServletRequest, location.toString());
-			sendRedirect(httpServletResponse, url);
+			String url = getLocationUrl(request, location.toString());
+			sendRedirect(response, url);
 		}
 	}
 

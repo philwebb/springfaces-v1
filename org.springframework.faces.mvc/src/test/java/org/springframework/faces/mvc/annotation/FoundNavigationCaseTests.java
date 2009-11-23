@@ -82,7 +82,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		} catch (IllegalStateException e) {
 			assertEquals(
 					"Unable to call method methodCallWithRequestMapping from class class org.springframework.faces.mvc.annotation.sample.SampleController "
-							+ "in order to resolve @NavigationCase for JSF Navigation Request Event (fromAction=\"null\", outcome=\"methodcallwithrequestmapping\") as "
+							+ "in order to resolve @NavigationCase for JSF Navigation Request Event (fromAction=\"null\", outcome=\"methodcallwithrequestmapping\", exception=\"null\") as "
 							+ "method also includes @RequestMapping annotation", e.getMessage());
 		}
 	}

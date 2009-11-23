@@ -70,7 +70,9 @@ public class NavigationRequestEventTests extends TestCase {
 
 	public void testToString() throws Exception {
 		NavigationRequestEvent event = new NavigationRequestEvent(new MockFacesContext(), "#{action.test}", "run");
-		assertEquals("JSF Navigation Request Event (fromAction=\"#{action.test}\", outcome=\"run\")", event.toString());
+		assertEquals(
+				"JSF Navigation Request Event (fromAction=\"#{action.test}\", outcome=\"run\", exception=\"null\")",
+				event.toString());
 	}
 
 	public void testValues() throws Exception {

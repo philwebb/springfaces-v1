@@ -5,8 +5,13 @@ import java.util.Iterator;
 import javax.el.ELContext;
 import javax.el.ELResolver;
 
-//FIXME doccomment
-//FIXME test
+import org.springframework.faces.mvc.FacesHandler;
+
+/**
+ * {@link ELResolver} that delegates to a {@link FacesHandler#resolveVariable(String)} when processing a MVC request.
+ * 
+ * @author Phillip Webb
+ */
 public class MvcHandlerELResolver extends ELResolver {
 
 	public Class getCommonPropertyType(ELContext elContext, Object base) {

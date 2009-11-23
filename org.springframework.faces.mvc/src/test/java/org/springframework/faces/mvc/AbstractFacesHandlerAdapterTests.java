@@ -261,8 +261,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 	}
 
 	public void testRedirectHandler() throws Exception {
-		Object frequest = facesContext.getExternalContext().getRequest();
-		Object fresponse = facesContext.getExternalContext().getResponse();
+		HttpServletRequest frequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+		HttpServletResponse fresponse = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 		redirectHandler.handleRedirect(frequest, fresponse, "location");
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });

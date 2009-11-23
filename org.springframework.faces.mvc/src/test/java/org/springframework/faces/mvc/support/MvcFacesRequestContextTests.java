@@ -19,8 +19,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.FacesHandler;
-import org.springframework.faces.mvc.support.MvcFacesContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.NavigationRequestEvent;
 
 public class MvcFacesRequestContextTests extends TestCase {
 
@@ -67,7 +66,33 @@ public class MvcFacesRequestContextTests extends TestCase {
 	}
 
 	public void testDoubleRelease() throws Exception {
-
+		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		requestContext.release();
+		try {
+			requestContext.release();
+			fail("Double release");
+		} catch (IllegalStateException e) {
+			assertEquals("The MvcFacesRequest has already been released", e.getMessage());
+		}
 	}
 
+	public void testSetGetException() throws Exception {
+		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		Exception exception = new Exception();
+		requestContext.setException(exception);
+		assertSame(exception, requestContext.getException());
+	}
+
+	public void testSetGetLastNavigationRequestEvent() throws Exception {
+		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
+		requestContext.setLastNavigationRequestEvent(event);
+		assertSame(event, requestContext.getLastNavigationRequestEvent());
+	}
 }

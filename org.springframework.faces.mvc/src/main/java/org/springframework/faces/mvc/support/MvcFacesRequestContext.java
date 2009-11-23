@@ -74,12 +74,12 @@ public class MvcFacesRequestContext {
 	 * construction of the object to ensure that all resources are released.
 	 */
 	public void release() {
-		Assert.isTrue(!released, "The MvcFacesRequest has already been released");
+		if (released) {
+			throw new IllegalStateException("The MvcFacesRequest has already been released");
+		}
 		released = true;
 		setCurrentInstance(null);
 	}
-	
-	//FIXME set setException, setLastNvigation
 
 	/**
 	 * Method called during exception handling to store the current exception. This is a framework method called by

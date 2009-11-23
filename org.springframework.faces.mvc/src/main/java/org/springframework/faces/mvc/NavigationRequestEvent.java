@@ -24,7 +24,8 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * An event object that represents a JSF navigation request. This object encapsulates the <tt>fromAction</tt> and
- * <tt>outcome</tt> paramters that are passed to JSF {@link NavigationHandler}s.
+ * <tt>outcome</tt> paramters that are passed to JSF {@link NavigationHandler}s. The event object can also include an
+ * exception if the navigation request is being handled within a {@link MvcFacesExceptionHandler}.
  * 
  * @author Phillip Webb
  */
@@ -85,7 +86,6 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 		return exception;
 	}
 
-//FIXME to string, hashcode + equals for exception
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -98,14 +98,19 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 		}
 		NavigationRequestEvent other = (NavigationRequestEvent) obj;
 		return ObjectUtils.nullSafeEquals(fromAction, other.fromAction)
-				&& ObjectUtils.nullSafeEquals(outcome, other.outcome);
+				&& ObjectUtils.nullSafeEquals(outcome, other.outcome)
+				&& ObjectUtils.nullSafeEquals(exception, exception);
 	}
 
 	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(fromAction) + ObjectUtils.nullSafeHashCode(outcome);
+		int rtn = ObjectUtils.nullSafeHashCode(fromAction);
+		rtn = 37 * rtn + ObjectUtils.nullSafeHashCode(outcome);
+		rtn = 37 * rtn + ObjectUtils.nullSafeHashCode(exception);
+		return rtn;
 	}
 
 	public String toString() {
-		return "JSF Navigation Request Event (fromAction=\"" + fromAction + "\", outcome=\"" + outcome + "\")";
+		return "JSF Navigation Request Event (fromAction=\"" + fromAction + "\", outcome=\"" + outcome
+				+ "\", exception=\"" + exception + "\")";
 	}
 }

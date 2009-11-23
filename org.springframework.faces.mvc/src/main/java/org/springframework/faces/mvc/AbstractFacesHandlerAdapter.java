@@ -197,7 +197,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		return true;
 	}
 
-	// FIXME test
 	/**
 	 * Set whether to detect all {@link MvcFacesExceptionHandler} beans in the application context. The default is
 	 * <tt>true</tt> meaning that all {@link MvcFacesExceptionHandler}s will be dynamically located from the application
@@ -208,7 +207,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		this.detectAllExceptionHandlers = detectAllExceptionHandlers;
 	}
 
-	// FIXME test
 	/**
 	 * Set a specific set of {@link MvcFacesExceptionHandler}s that will be used by this bean then
 	 * {@link #setDetectAllHandlerExceptionHandlers(boolean)} has been set to <tt>false</tt>. Note: This property will
@@ -293,8 +291,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 
 		public void redirect(FacesContext facesContext, Object location) throws IOException {
-			Object request = facesContext.getExternalContext().getRequest();
-			Object response = facesContext.getExternalContext().getResponse();
+			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(request, response, location);
 		}
 	}

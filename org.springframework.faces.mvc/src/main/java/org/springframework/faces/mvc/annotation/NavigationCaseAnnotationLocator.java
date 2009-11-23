@@ -191,7 +191,6 @@ public class NavigationCaseAnnotationLocator {
 		}
 
 		// FIXME test this
-		// FIXME toString updates
 		private boolean isSuitableException(NavigationCase navigationCase) {
 			if (navigationCase.onException() == null || void.class.equals(navigationCase.onException())) {
 				// onException annotation has not been specified, this case is only suitable when we are not handling an
