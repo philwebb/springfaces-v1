@@ -196,7 +196,7 @@ public class NavigationCaseAnnotationLocator {
 			if (navigationCase.onException() == null || void.class.equals(navigationCase.onException())) {
 				// onException annotation has not been specified, this case is only suitable when we are not handling an
 				// exception
-				return (event.getException() != null);
+				return (event.getException() == null);
 			}
 			// onException annotation has been specified
 			if (event.getException() == null) {

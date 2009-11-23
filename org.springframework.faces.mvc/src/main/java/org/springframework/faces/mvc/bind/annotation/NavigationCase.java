@@ -44,15 +44,22 @@ public @interface NavigationCase {
 	 */
 	public String[] on() default {};
 
-	// FIXME DC
-	public Class onException() default void.class;
-
 	/**
 	 * The action expression that the navigation case applies to. This is the expression as defined on the component
 	 * that caused the action. For example "#{controller.continue}"
 	 * @return The action expression.
 	 */
 	public String fromAction() default "";
+
+	/**
+	 * An {@link Exception} class that the navigation case applies to. Navigation cases that include this attribute will
+	 * only be considered if an exception is thrown during the processing of the JSF request. The navigation will also
+	 * apply if a sub-classes of the specified exception is throw. The full exception stack will be considered when
+	 * determining if the navigation case applies.
+	 * 
+	 * @return A class of exception that should trigger the navigation.
+	 */
+	public Class onException() default void.class;
 
 	/**
 	 * The navigation outcome used to redirect the user when the navigation case applies. This value is omitted the

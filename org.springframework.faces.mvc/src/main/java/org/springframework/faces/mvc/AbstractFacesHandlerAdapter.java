@@ -18,6 +18,7 @@ package org.springframework.faces.mvc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UIViewRoot;
@@ -52,7 +53,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		BeanFactoryPostProcessor, ApplicationListener {
 
 	private boolean detectAllExceptionHandlers = true;
-	private ArrayList userDefinedExceptionHandlers;
+	private List userDefinedExceptionHandlers;
 	private MvcFacesExceptionHandler[] allExceptionHandlers;
 
 	public boolean supports(Object handler) {
@@ -77,7 +78,15 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 	}
 
-//FIXME DC + test
+	/**
+	 * Method that is called when the handler throws an exception during processing.
+	 * 
+	 * @param mvcFacesRequestContext The MVC Faces Request Context
+	 * @param request The request
+	 * @param response The response
+	 * @param exception The exception that was thrown
+	 * @throws Exception
+	 */
 	protected void handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 			HttpServletResponse response, Exception exception) throws Exception {
 		mvcFacesRequestContext.setException(exception);
@@ -131,7 +140,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		initExceptionHandlers(context);
 	}
 
-//FIXME test
 	private void initExceptionHandlers(ApplicationContext context) {
 		allExceptionHandlers = null;
 		if (detectAllExceptionHandlers) {
@@ -189,24 +197,25 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		return true;
 	}
 
-//FIXME test
+	// FIXME test
 	/**
 	 * Set whether to detect all {@link MvcFacesExceptionHandler} beans in the application context. The default is
 	 * <tt>true</tt> meaning that all {@link MvcFacesExceptionHandler}s will be dynamically located from the application
 	 * context. If this behaviour is not required set this value to <tt>false</tt> and manually inject handler using
-	 * {@link #setExceptionHandlers(ArrayList)}.
+	 * {@link #setExceptionHandlers(List)}.
 	 */
-	public void setDetectAllHandlerExceptionResolvers(boolean detectAllExceptionHandlers) {
+	public void setDetectAllHandlerExceptionHandlers(boolean detectAllExceptionHandlers) {
 		this.detectAllExceptionHandlers = detectAllExceptionHandlers;
 	}
-//FIXME test
+
+	// FIXME test
 	/**
 	 * Set a specific set of {@link MvcFacesExceptionHandler}s that will be used by this bean then
-	 * {@link #setDetectAllHandlerExceptionResolvers(boolean)} has been set to <tt>false</tt>. Note: This property will
+	 * {@link #setDetectAllHandlerExceptionHandlers(boolean)} has been set to <tt>false</tt>. Note: This property will
 	 * be ignored when <tt>detectAllExceptionHandlers</tt> is true.
 	 * @param exceptionHandlers
 	 */
-	public void setExceptionHandlers(ArrayList exceptionHandlers) {
+	public void setExceptionHandlers(List exceptionHandlers) {
 		this.userDefinedExceptionHandlers = exceptionHandlers;
 	}
 
