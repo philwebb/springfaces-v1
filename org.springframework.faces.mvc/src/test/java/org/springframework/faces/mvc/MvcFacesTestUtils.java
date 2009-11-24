@@ -46,6 +46,17 @@ public class MvcFacesTestUtils {
 		public void assertNotCalled(String methodName);
 	}
 
+	private static final boolean RUNNING_SPRING_3;
+	static {
+		boolean foundClass = false;
+		try {
+			Class.forName("org.springframework.beans.factory.generic.GenericBeanFactoryAccessor");
+			foundClass = true;
+		} catch (ClassNotFoundException e) {
+		}
+		RUNNING_SPRING_3 = !foundClass;
+	}
+
 	public static class MethodTrackerInterceptor extends DelegatingIntroductionInterceptor implements
 			MethodCallAssertor {
 
@@ -148,5 +159,9 @@ public class MvcFacesTestUtils {
 				classMethods[i].invoke(object, new Object[classMethods[i].getParameterTypes().length]);
 			}
 		}
+	}
+
+	public static boolean isRunningSpring3() {
+		return RUNNING_SPRING_3;
 	}
 }

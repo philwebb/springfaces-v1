@@ -1,10 +1,15 @@
 package org.springframework.faces.mvc.annotation;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.faces.mvc.MvcFacesTestUtils;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +44,12 @@ public class FacesAnnotationHandlerMappingTests extends TestCase {
 		context.registerBeanDefinition("bean", beanDefinition);
 		String[] urls = mapping.determineUrlsForHandler("bean");
 		assertNotNull(urls);
-		assertEquals(3, urls.length);
-		assertEquals("/test/*", urls[0]);
-		assertEquals("/test/*.*", urls[1]);
-		assertEquals("/test/*/", urls[2]);
+		Set mappedUrls = new HashSet(Arrays.asList(urls));
+		Set expectedUrls = new HashSet(Arrays.asList(new String[] { "/test/*", "/test/*.*" }));
+		if (MvcFacesTestUtils.isRunningSpring3()) {
+			expectedUrls.add("/test/*/");
+		}
+		assertEquals(expectedUrls, mappedUrls);
 	}
 
 	@Controller
