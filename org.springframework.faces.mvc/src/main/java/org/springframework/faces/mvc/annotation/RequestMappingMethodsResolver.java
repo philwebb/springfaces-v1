@@ -16,6 +16,7 @@
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,10 +34,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.support.HandlerMethodResolver;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
 import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
@@ -51,8 +57,16 @@ import org.springframework.web.util.WebUtils;
  * @author Arjen Poutsma
  * @author Phillip Webb
  */
-public class RequestMappingMethodsResolver extends HandlerMethodResolver {
+public class RequestMappingMethodsResolver {
 
+	private final Set<Method> handlerMethods = new LinkedHashSet<Method>();
+	private final Set<Method> initBinderMethods = new LinkedHashSet<Method>();
+	private final Set<Method> modelAttributeMethods = new LinkedHashSet<Method>();
+	private RequestMapping typeLevelMapping;
+	private boolean sessionAttributesFound;
+	private final Set<String> sessionAttributeNames = new HashSet<String>();
+	private final Set<Class> sessionAttributeTypes = new HashSet<Class>();
+	private final Set<String> actualSessionAttributeNames = Collections.synchronizedSet(new HashSet<String>(4));
 	private MethodNameResolver methodNameResolver;
 	private Map<Method, RequestMappingAnnotation> methodAnnotations;
 	private UrlPathHelper urlPathHelper;
@@ -60,7 +74,7 @@ public class RequestMappingMethodsResolver extends HandlerMethodResolver {
 
 	public RequestMappingMethodsResolver(Class<?> handlerType, UrlPathHelper urlPathHelper,
 			MethodNameResolver methodNameResolver, PathMatcher pathMatcher) {
-		super(handlerType);
+		init(handlerType);
 		this.urlPathHelper = urlPathHelper;
 		this.methodNameResolver = methodNameResolver;
 		this.pathMatcher = pathMatcher;
@@ -72,6 +86,81 @@ public class RequestMappingMethodsResolver extends HandlerMethodResolver {
 		for (Method method : getHandlerMethods()) {
 			methodAnnotations.put(method, new RequestMappingAnnotation(typeLevelAnnotation, method));
 		}
+	}
+
+	/**
+	 * Initialize a new HandlerMethodResolver for the specified handler type.
+	 * @param handlerType the handler class to introspect
+	 */
+	public void init(Class<?> handlerType) {
+		Class<?>[] handlerTypes = Proxy.isProxyClass(handlerType) ? handlerType.getInterfaces()
+				: new Class<?>[] { handlerType };
+		for (final Class<?> currentHandlerType : handlerTypes) {
+			ReflectionUtils.doWithMethods(currentHandlerType, new ReflectionUtils.MethodCallback() {
+				public void doWith(Method method) {
+					Method specificMethod = ClassUtils.getMostSpecificMethod(method, currentHandlerType);
+					if (isHandlerMethod(method)) {
+						handlerMethods.add(specificMethod);
+					} else if (method.isAnnotationPresent(InitBinder.class)) {
+						initBinderMethods.add(specificMethod);
+					} else if (method.isAnnotationPresent(ModelAttribute.class)) {
+						modelAttributeMethods.add(specificMethod);
+					}
+				}
+			});
+		}
+		this.typeLevelMapping = AnnotationUtils.findAnnotation(handlerType, RequestMapping.class);
+		SessionAttributes sessionAttributes = handlerType.getAnnotation(SessionAttributes.class);
+		this.sessionAttributesFound = (sessionAttributes != null);
+		if (this.sessionAttributesFound) {
+			this.sessionAttributeNames.addAll(Arrays.asList(sessionAttributes.value()));
+			this.sessionAttributeTypes.addAll(Arrays.asList(sessionAttributes.types()));
+		}
+	}
+
+	protected boolean isHandlerMethod(Method method) {
+		return method.isAnnotationPresent(RequestMapping.class);
+	}
+
+	public final boolean hasHandlerMethods() {
+		return !this.handlerMethods.isEmpty();
+	}
+
+	public final Set<Method> getHandlerMethods() {
+		return this.handlerMethods;
+	}
+
+	public final Set<Method> getInitBinderMethods() {
+		return this.initBinderMethods;
+	}
+
+	public final Set<Method> getModelAttributeMethods() {
+		return this.modelAttributeMethods;
+	}
+
+	public boolean hasTypeLevelMapping() {
+		return (this.typeLevelMapping != null);
+	}
+
+	public RequestMapping getTypeLevelMapping() {
+		return this.typeLevelMapping;
+	}
+
+	public boolean hasSessionAttributes() {
+		return this.sessionAttributesFound;
+	}
+
+	public boolean isSessionAttribute(String attrName, Class attrType) {
+		if (this.sessionAttributeNames.contains(attrName) || this.sessionAttributeTypes.contains(attrType)) {
+			this.actualSessionAttributeNames.add(attrName);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Set<String> getActualSessionAttributeNames() {
+		return this.actualSessionAttributeNames;
 	}
 
 	/**

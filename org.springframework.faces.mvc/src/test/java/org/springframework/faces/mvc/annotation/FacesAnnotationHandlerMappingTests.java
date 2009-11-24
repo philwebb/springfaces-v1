@@ -39,9 +39,10 @@ public class FacesAnnotationHandlerMappingTests extends TestCase {
 		context.registerBeanDefinition("bean", beanDefinition);
 		String[] urls = mapping.determineUrlsForHandler("bean");
 		assertNotNull(urls);
-		assertEquals(2, urls.length);
+		assertEquals(3, urls.length);
 		assertEquals("/test/*", urls[0]);
 		assertEquals("/test/*.*", urls[1]);
+		assertEquals("/test/*/", urls[2]);
 	}
 
 	@Controller
