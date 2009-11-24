@@ -82,4 +82,6 @@ public @interface NavigationCase {
 	 */
 	public String to() default "";
 	// FIXME allow #{} in to
+	// FIXME support if?
+	// FIXME rename package
 }

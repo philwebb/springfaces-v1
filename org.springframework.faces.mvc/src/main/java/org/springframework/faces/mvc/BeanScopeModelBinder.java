@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, InitializingBean {
-
+	// FIXME exclude org.springframework.validation.BindingResult. ?
 	private ConfigurableBeanFactory beanFactory;
 
 	private ModelScopeProvider modelScopeProvider;
