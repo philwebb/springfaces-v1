@@ -19,4 +19,7 @@ import junit.framework.TestCase;
 
 public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	// FIXME implement
+	public void testFixme() throws Exception {
+		assertTrue(true);
+	}
 }

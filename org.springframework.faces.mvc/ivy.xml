@@ -53,7 +53,8 @@
 		<dependency org="org.junit" name="com.springsource.junit" rev="3.8.2" conf="test->runtime" />
 		<dependency org="org.jboss.el" name="com.springsource.org.jboss.el" rev="2.0.0.GA" conf="test->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.test" rev="${org.springframework}" conf="test->runtime" />
-
+		<dependency org="org.objectweb.asm" name="com.springsource.org.objectweb.asm" rev="3.1.0" conf="test->runtime" />
+		<dependency org="org.objectweb.asm" name="com.springsource.org.objectweb.asm.commons" rev="3.1.0" conf="test->runtime" />
 	</dependencies>
 
 </ivy-module>
