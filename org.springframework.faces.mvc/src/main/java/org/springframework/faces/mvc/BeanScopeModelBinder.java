@@ -28,7 +28,7 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.util.Assert;
 
 /**
- * Implementation of {@link ModelBinder} that exposes MVC Model elements to faces by delegating to one of the registered
+ * Implementation of {@link ModelBinder} that exposes MVC Model elements to JSF by delegating to one of the registered
  * spring {@link Scope} implementations. By default this binder is configured to use a
  * {@link SpecificModelScopeProvider} set to <tt>request</tt> scope with {@link ImplicitModelScopeProvider} support.
  * 

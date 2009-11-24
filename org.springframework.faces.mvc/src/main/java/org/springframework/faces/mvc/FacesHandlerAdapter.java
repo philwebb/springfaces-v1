@@ -157,7 +157,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * @return {@link ServletConfig} instance.
 	 */
 	protected ServletContext getFacesServletContext() {
-		// FIXME test
 		if (!overrideInitParameters) {
 			return getServletContext();
 		}

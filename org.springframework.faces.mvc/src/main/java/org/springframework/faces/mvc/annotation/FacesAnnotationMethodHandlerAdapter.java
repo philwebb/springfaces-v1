@@ -35,7 +35,7 @@ import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
-import org.springframework.faces.mvc.bind.stereotype.FacesController;
+import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
@@ -247,15 +247,12 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event, handler);
 		}
 
-		// FIXME test the controller
 		public Object resolveVariable(String variableName) {
 			if (exposedControllerName != null && exposedControllerName.equals(variableName)) {
 				return handler;
 			}
 			return null;
 		}
-
-		// FIXME test exception stuff
 
 		public MvcFacesExceptionHandler[] getExceptionHandlers() {
 			return new MvcFacesExceptionHandler[] { this };

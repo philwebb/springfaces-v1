@@ -18,6 +18,11 @@ public class NavigationCaseAnnotationLocatorTests extends TestCase {
 		return new NavigationRequestEvent(facesContext, fromAction, outcome);
 	}
 
+	private NavigationRequestEvent event(String fromAction, String outcome, Exception exception) {
+		NavigationRequestEvent event = new NavigationRequestEvent(this, fromAction, outcome);
+		return new NavigationRequestEvent(this, event, exception);
+	}
+
 	public void testLocate() throws Exception {
 		Method method = SampleController.class.getMethod("withRules", new Class<?>[] {});
 		Method[] methods = new Method[] { method };
@@ -73,6 +78,18 @@ public class NavigationCaseAnnotationLocatorTests extends TestCase {
 		assertEquals("dto1", locator.findNavigationCase(methods, event("mon1", "mon1")).getNavigationCase().to());
 		assertEquals("dto1", locator.findNavigationCase(methods, event("con1", "con1")).getNavigationCase().to());
 		assertEquals("dto1", locator.findNavigationCase(methods, event("pon1", "pon1")).getNavigationCase().to());
+	}
+
+	public void testLocateForException() throws Exception {
+		Method method = SampleController.class.getMethod("withRules", new Class<?>[] {});
+		Method[] methods = new Method[] { method };
+		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
+		assertEquals("ceto1", locator.findNavigationCase(methods, event("ceon1", "ceon1", new IllegalStateException()))
+				.getNavigationCase().to());
+		assertEquals("ceto1", locator.findNavigationCase(methods,
+				event("ceon1", "ceon1", new RuntimeException(new IllegalStateException()))).getNavigationCase().to());
+		assertNull(locator.findNavigationCase(methods, event("ceon1", "ceon1", new RuntimeException())));
+
 	}
 
 }

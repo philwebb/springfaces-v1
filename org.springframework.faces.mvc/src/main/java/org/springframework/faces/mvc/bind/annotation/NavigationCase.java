@@ -81,4 +81,5 @@ public @interface NavigationCase {
 	 * @return The navigation outcome.
 	 */
 	public String to() default "";
+	// FIXME allow #{} in to
 }

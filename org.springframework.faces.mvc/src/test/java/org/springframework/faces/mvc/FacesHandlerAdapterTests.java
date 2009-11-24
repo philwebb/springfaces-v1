@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -18,6 +19,7 @@ import org.apache.shale.test.mock.MockServlet;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 public class FacesHandlerAdapterTests extends TestCase {
@@ -99,8 +101,6 @@ public class FacesHandlerAdapterTests extends TestCase {
 		((TrackingMockServlet) adapter.getFacesServlet()).assertSame(request, response);
 	}
 
-	// FIXME test do handle with exceptions
-
 	public void testDefaultViewIdResolver() throws Exception {
 		adapter.afterPropertiesSet();
 		assertEquals(SimpleFacesViewIdResolver.class, adapter.getFacesViewIdResolver().getClass());
@@ -174,4 +174,20 @@ public class FacesHandlerAdapterTests extends TestCase {
 		}
 	}
 
+	private void doTestOverrideInitParams(boolean override) throws Exception {
+		adapter.setOverrideInitParameters(override);
+		ServletContext servletContext = new MockServletContext();
+		adapter.setServletContext(servletContext);
+		ServletContext facesServletContext = adapter.getFacesServletContext();
+		assertEquals((override ? "false" : null), facesServletContext
+				.getInitParameter("org.apache.myfaces.ERROR_HANDLING"));
+	}
+
+	public void testOverrideInitParamsFalse() throws Exception {
+		doTestOverrideInitParams(false);
+	}
+
+	public void testOverrideInitParamsTrue() throws Exception {
+		doTestOverrideInitParams(true);
+	}
 }

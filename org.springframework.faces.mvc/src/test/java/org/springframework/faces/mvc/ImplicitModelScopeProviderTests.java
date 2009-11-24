@@ -24,7 +24,7 @@ public class ImplicitModelScopeProviderTests extends TestCase {
 	private ModelScopeProvider provider = new ImplicitModelScopeProvider(SpecificModelScopeProvider.PAGE);
 
 	public void testDefinedScope() throws Exception {
-		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, "session.name"),
+		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, "sessionScope.name"),
 				MODEL_VALUE);
 		assertEquals("session", result.getScope());
 		assertEquals("name", result.getModelAttribute());
@@ -48,4 +48,19 @@ public class ImplicitModelScopeProviderTests extends TestCase {
 		assertEquals("request", result.getScope());
 		assertEquals("session.name", result.getModelAttribute());
 	}
+
+	private void doTestDoesNotMatch(String attribute) throws Exception {
+		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, attribute), MODEL_VALUE);
+		assertEquals("page", result.getScope());
+		assertEquals(attribute, result.getModelAttribute());
+	}
+
+	public void testExpectedNotToMatch() throws Exception {
+		doTestDoesNotMatch("sessionScope.name.test");
+		doTestDoesNotMatch("org.springframework.mvc.ModelName");
+		doTestDoesNotMatch("Scope.test");
+		doTestDoesNotMatch("sessionScope.");
+		doTestDoesNotMatch("sessionScop.test");
+	}
+
 }

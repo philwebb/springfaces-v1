@@ -7,13 +7,14 @@ import junit.framework.Assert;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
-import org.springframework.faces.mvc.bind.stereotype.FacesController;
+import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @FacesController
 @NavigationRules( { @NavigationCase(on = "con1", to = "cto1"), @NavigationCase(on = "mon1", to = "cmto1"),
 		@NavigationCase(on = "caon1", fromAction = "#{bean.action1}", to = "cato1"),
-		@NavigationCase(on = "caon1", fromAction = "#{bean.action2}", to = "cato2") })
+		@NavigationCase(on = "caon1", fromAction = "#{bean.action2}", to = "cato2"),
+		@NavigationCase(on = "ceon1", onException = IllegalStateException.class, to = "ceto1") })
 @NavigationCase(on = "con2", to = "cto2")
 public class SampleController {
 

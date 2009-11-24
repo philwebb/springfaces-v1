@@ -190,18 +190,18 @@ public class NavigationCaseAnnotationLocator {
 			return false;
 		}
 
-		// FIXME test this
 		private boolean isSuitableException(NavigationCase navigationCase) {
 			if (navigationCase.onException() == null || void.class.equals(navigationCase.onException())) {
 				// onException annotation has not been specified, this case is only suitable when we are not handling an
 				// exception
 				return (event.getException() == null);
 			}
-			// onException annotation has been specified
 			if (event.getException() == null) {
+				// We have an onException annotation but no exception
 				return false;
 			}
 
+			// Test if the exception matches
 			Throwable throwable = event.getException();
 			while (throwable != null) {
 				if (navigationCase.onException().isInstance(throwable)) {

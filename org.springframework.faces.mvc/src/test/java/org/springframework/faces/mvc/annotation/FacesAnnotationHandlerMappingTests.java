@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.faces.mvc.bind.stereotype.FacesController;
+import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 

@@ -15,16 +15,22 @@
  */
 package org.springframework.faces.mvc;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.util.StringUtils;
 
 /**
  * Implementation of {@link ModelScopeProvider} that allows scope to be defined as part of the modelAttribute. Any
  * modelAttribute can defined the scope using '.' notation, for example 'sessionScope.firstName' will result in the
- * attribute 'firstName' bound to 'session' scope.
+ * attribute 'firstName' bound to 'session' scope. Note: Any model element that contains multiple '.' characters will
+ * not be considered.
  * 
  * @author Phillip Webb
  */
 public class ImplicitModelScopeProvider implements ModelScopeProvider {
+
+	private static final Pattern PATTERN = Pattern.compile("(\\w+)Scope\\.([^\\.]+)");
 
 	private ModelScopeProvider parent;
 
@@ -37,11 +43,13 @@ public class ImplicitModelScopeProvider implements ModelScopeProvider {
 			return scopedModelAttribute;
 		}
 		String modelAttribute = scopedModelAttribute.getModelAttribute();
-		if (modelAttribute != null && modelAttribute.indexOf(".") > 0) {
-			int firstDot = modelAttribute.indexOf(".");
-			String scope = modelAttribute.substring(0, firstDot);
-			modelAttribute = modelAttribute.substring(firstDot + 1);
-			return new ScopedModelAttribute(scope, modelAttribute);
+		if (modelAttribute != null) {
+			Matcher matcher = PATTERN.matcher(modelAttribute);
+			if (matcher.matches()) {
+				String scope = matcher.group(1);
+				modelAttribute = matcher.group(2);
+				return new ScopedModelAttribute(scope, modelAttribute);
+			}
 		}
 		return parent == null ? scopedModelAttribute : parent.getModelScope(scopedModelAttribute, modelValue);
 	}

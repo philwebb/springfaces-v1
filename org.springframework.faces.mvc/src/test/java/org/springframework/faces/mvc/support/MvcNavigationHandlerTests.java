@@ -59,6 +59,8 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 
 			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
 				handler.handleNavigation(facesContext, "action", "outcome");
+				assertEquals("action", mvcFacesRequestContext.getLastNavigationRequestEvent().getFromAction());
+				assertEquals("outcome", mvcFacesRequestContext.getLastNavigationRequestEvent().getOutcome());
 			}
 		});
 		MethodCallAssertor assertor = (MethodCallAssertor) delegate;
