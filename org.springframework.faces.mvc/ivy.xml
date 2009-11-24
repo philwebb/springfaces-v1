@@ -22,20 +22,15 @@
 
 	<dependencies>
 		<!-- core dependencies -->
-		<dependency org="com.sun.facelets" name="com.springsource.com.sun.facelets" rev="1.1.14" conf="optional->runtime" />
 		<dependency org="javax.el" name="com.springsource.javax.el" rev="1.0.0" conf="provided->runtime" />
 		<dependency org="javax.servlet" name="com.springsource.javax.servlet" rev="2.4.0" conf="provided->runtime" />
 		<dependency org="org.apache.commons" name="com.springsource.org.apache.commons.logging" rev="1.1.1" conf="compile->runtime"/>
-		<dependency org="org.richfaces" name="com.springsource.org.richfaces" rev="3.1.4.GA" conf="optional->runtime" />
 		<dependency org="org.springframework" name="org.springframework.beans" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.context" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.core" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.web" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.web.servlet" rev="${org.springframework}" conf="compile->runtime"/>
-		<dependency org="org.springframework.js" name="org.springframework.js" rev="${org.springframework.js}" conf="compile->runtime"/>
 		<dependency org="org.springframework.webflow" name="org.springframework.faces" rev="${org.springframework.webflow}" conf="compile->runtime"/>
-		<dependency org="org.springframework.webflow" name="org.springframework.binding" rev="${org.springframework.webflow}" conf="compile->runtime"/>
-		<dependency org="org.springframework.webflow" name="org.springframework.webflow" rev="${org.springframework.webflow}" conf="compile->runtime"/>
 
 		<!-- JSF 1.2 dependencies -->
 		<dependency org="javax.faces" name="com.springsource.javax.faces" rev="1.2.0.09" conf="provided, jsf12->runtime" />
@@ -46,12 +41,10 @@
 		<dependency org="org.apache.myfaces" name="com.springsource.org.apache.myfaces" rev="1.1.5" conf="jsf11->runtime" />
 
 		<!-- test time only dependencies -->
-		<dependency org="org.apache.log4j" name="com.springsource.org.apache.log4j" rev="1.2.15" conf="test->runtime" />
 		<dependency org="org.apache.shale" name="com.springsource.org.apache.shale.test" rev="1.0.4" conf="test->runtime" />
 		<dependency org="org.easymock" name="com.springsource.org.easymock" rev="2.3.0" conf="test->runtime" />
 		<dependency org="net.sourceforge.cglib" name="com.springsource.net.sf.cglib" rev="2.2.0" conf="test->runtime"/>
 		<dependency org="org.junit" name="com.springsource.junit" rev="3.8.2" conf="test->runtime" />
-		<dependency org="org.jboss.el" name="com.springsource.org.jboss.el" rev="2.0.0.GA" conf="test->runtime"/>
 		<dependency org="org.springframework" name="org.springframework.test" rev="${org.springframework}" conf="test->runtime" />
 		<dependency org="org.objectweb.asm" name="com.springsource.org.objectweb.asm" rev="3.1.0" conf="test->runtime" />
 		<dependency org="org.objectweb.asm" name="com.springsource.org.objectweb.asm.commons" rev="3.1.0" conf="test->runtime" />

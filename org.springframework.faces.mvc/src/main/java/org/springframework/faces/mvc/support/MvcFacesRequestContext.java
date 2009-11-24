@@ -18,10 +18,10 @@ package org.springframework.faces.mvc.support;
 import javax.faces.event.PhaseId;
 
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.faces.mvc.AbstractFacesHandlerAdapter;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.util.Assert;
-import org.springframework.webflow.mvc.portlet.AbstractFlowHandler;
 
 /**
  * A context for a single JSF request that is being handled by the Spring MVC framework. The
@@ -83,7 +83,7 @@ public class MvcFacesRequestContext {
 
 	/**
 	 * Method called during exception handling to store the current exception. This is a framework method called by
-	 * {@link AbstractFlowHandler} and should not be called directly by developers.
+	 * {@link AbstractFacesHandlerAdapter} and should not be called directly by developers.
 	 * 
 	 * @param exception The exception being handled.
 	 * 
