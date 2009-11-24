@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.stereotype.Controller;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -32,4 +33,23 @@ public @interface FacesController {
 	 * @return the suggested component name, if any
 	 */
 	String value() default "";
+
+	/**
+	 * Determine if the controller should be exposed to JSF as a variable. By default controllers will be exposed so
+	 * that they can be referenced in page mark-up, for example: <code>#{controller.doSomething()}</code>.
+	 * 
+	 * @return <tt>true</tt> if the controller should be exposed to JSF <tt>false</tt> if it should not.
+	 * @see #controllerName()
+	 */
+	boolean exposeController() default true;
+
+	/**
+	 * Get the name of the controller that is exposed to JSF when {@link #exposeController()} is set to <tt>true</tt>.
+	 * The name of the controller can be specified or this value can be omitted to use the default name (as defined by
+	 * the {@link FacesAnnotationMethodHandlerAdapter}, usually <tt>controller</tt>).
+	 * 
+	 * @return The controller name
+	 * @see #exposeController()
+	 */
+	String controllerName() default "";
 }

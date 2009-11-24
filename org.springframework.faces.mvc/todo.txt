@@ -1,7 +1,4 @@
-- expose @Controller to faces
-- Define navigation rules easily
 - Do model level validation
-- Exception handling perhaps as navigation rule
 - start flow passing input
 - respond to flow output
 - integrate phase listener in model

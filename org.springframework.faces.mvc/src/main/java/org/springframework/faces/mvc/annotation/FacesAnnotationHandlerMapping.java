@@ -14,10 +14,21 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping;
 
+/**
+ * Implementation of the {@link org.springframework.web.servlet.HandlerMapping} interface that maps handlers based on
+ * HTTP paths expressed through the {@link RequestMapping} annotation at the type or method level when the type also
+ * includes the {@link FacesController} annotation.
+ * <p>
+ * Note: When using this mapper in combination with the {@link DefaultAnnotationHandlerMapping} ensure that this mapper
+ * is ordered above the {@link DefaultAnnotationHandlerMapping}.
+ * 
+ * @see DefaultAnnotationHandlerMapping
+ * 
+ * @author Juergen Hoeller
+ * @author Arjen Poutsma
+ * @author Phillip Webb
+ */
 public class FacesAnnotationHandlerMapping extends DefaultAnnotationHandlerMapping {
-
-	// FIXME test
-	// FIXME documment the handler adapter
 
 	public FacesAnnotationHandlerMapping() {
 		super();

@@ -40,6 +40,7 @@ import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebArgumentResolver;
@@ -72,6 +73,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
 
+	private static final String DEFAULT_CONTROLLER_NAME = "controller";
+
 	// FIXME @SessionAttributes support
 
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
@@ -81,6 +84,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 	private FacesHandlerAdapter facesHandlerAdapter;
+
+	private String exposedControllerName = DEFAULT_CONTROLLER_NAME;
 
 	private final NavigationCaseAnnotationLocator navigationCaseAnnotationLocator = new NavigationCaseAnnotationLocator();
 
@@ -94,10 +99,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return supportsFaces(handler) && super.supports(handler);
 	}
 
-	protected boolean supportsFaces(Object handler) {
+	protected FacesController getHandlerAnnotation(Object handler) {
 		Class handlerClass = ClassUtils.getUserClass(handler);
-		boolean hasFacesController = AnnotationUtils.findAnnotation(handlerClass, FacesController.class) != null;
-		return hasFacesController;
+		return AnnotationUtils.findAnnotation(handlerClass, FacesController.class);
+	}
+
+	protected boolean supportsFaces(Object handler) {
+		return getHandlerAnnotation(handler) != null;
 	}
 
 	protected ModelAndView createView(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -212,11 +220,18 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * {@link MvcFacesExceptionHandler} to deal with navigation based exception handling.
 	 */
 	private class AnnotatedMethodFacesHandlerAdapter implements FacesHandler, MvcFacesExceptionHandler {
+
 		private Object handler;
+		private String exposedControllerName;
 
 		public AnnotatedMethodFacesHandlerAdapter(Object handler) {
 			super();
 			this.handler = handler;
+			FacesController annotation = FacesAnnotationMethodHandlerAdapter.this.getHandlerAnnotation(handler);
+			if (annotation.exposeController()) {
+				exposedControllerName = (StringUtils.hasLength(annotation.controllerName()) ? annotation
+						.controllerName() : FacesAnnotationMethodHandlerAdapter.this.exposedControllerName);
+			}
 		}
 
 		public ModelAndView createView(FacesContext facesContext) throws Exception {
@@ -232,15 +247,15 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event, handler);
 		}
 
+		// FIXME test the controller
 		public Object resolveVariable(String variableName) {
-			// FIXME expose controller
-			if ("controller".equals(variableName)) {
+			if (exposedControllerName != null && exposedControllerName.equals(variableName)) {
 				return handler;
 			}
 			return null;
 		}
-		
-		//FIXME test exception stuff
+
+		// FIXME test exception stuff
 
 		public MvcFacesExceptionHandler[] getExceptionHandlers() {
 			return new MvcFacesExceptionHandler[] { this };
