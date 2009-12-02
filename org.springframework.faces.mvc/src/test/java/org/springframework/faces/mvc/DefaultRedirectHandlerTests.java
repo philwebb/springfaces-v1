@@ -42,6 +42,7 @@ public class DefaultRedirectHandlerTests extends TestCase {
 			response.setHeader("Location", expectedUrl);
 			EasyMock.expectLastCall();
 		} else {
+			EasyMock.expect(response.encodeRedirectURL(EasyMock.eq(expectedUrl))).andReturn(expectedUrl);
 			response.sendRedirect(expectedUrl);
 			EasyMock.expectLastCall();
 

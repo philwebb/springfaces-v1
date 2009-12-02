@@ -84,6 +84,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 	private FacesHandlerAdapter facesHandlerAdapter;
+	
+	//FIXME setter
+	private NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver = new NavigationOutcomeExpressionElResolver();
 
 	private String exposedControllerName = DEFAULT_CONTROLLER_NAME;
 
@@ -244,7 +247,12 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				throws Exception {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event, handler);
+			Object outcome = FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event,
+					handler);
+			outcome = navigationOutcomeExpressionResolver.resolveNavigationOutcome(outcome);
+			// FIXME expression resolve the outcome
+			// FIXME URL encode?
+			return outcome;
 		}
 
 		public Object resolveVariable(String variableName) {

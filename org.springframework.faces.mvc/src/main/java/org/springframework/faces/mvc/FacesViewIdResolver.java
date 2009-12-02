@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Interface that can be used to resolve logical JSF view names into actual view IDs. Keeping logical names distinct
- * from actual view IDs can help to keep handler clean and easy to read and provides a level of abstraction from hard
+ * from actual view IDs can help to keep handlers clean and easy to read and provides a level of abstraction from hard
  * coded view IDs. Resolvers must be able to convert MVC view names to JSF view IDs using {@link #resolveViewId(String)}
  * and reverse the process using {@link #resolveViewName(String)}.
  * 

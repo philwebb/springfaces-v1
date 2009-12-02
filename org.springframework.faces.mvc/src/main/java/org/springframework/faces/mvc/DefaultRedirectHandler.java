@@ -75,7 +75,7 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	protected void sendRedirect(HttpServletResponse httpServletResponse, String url) throws IOException {
 		if (redirectHttp10Compatible) {
 			// Always send status code 302.
-			httpServletResponse.sendRedirect(url);
+			httpServletResponse.sendRedirect(httpServletResponse.encodeRedirectURL(url));
 		} else {
 			// Correct HTTP status code is 303, in particular for POST requests.
 			httpServletResponse.setStatus(303);

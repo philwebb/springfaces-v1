@@ -57,6 +57,7 @@ public interface MvcFacesContext {
 	 * Called to obtain the Action URL for the specified view ID. This method usually delegates to an
 	 * {@link ActionUrlMapper}.
 	 * 
+	 * @see FacesViewIdResolver#resolveViewName(String)
 	 * @see ActionUrlMapper#getActionUlr(FacesContext, String)
 	 */
 	String getActionUlr(FacesContext facesContext, String viewId);

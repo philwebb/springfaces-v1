@@ -3,3 +3,9 @@
 - respond to flow output
 - integrate phase listener in model
 - support action listeners/events
+
+
+v2
+
+@BeforePhase @AfterPhase annotations
+If support in navigation case
