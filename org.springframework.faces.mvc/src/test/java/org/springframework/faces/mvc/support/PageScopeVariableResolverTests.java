@@ -23,8 +23,6 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext12;
 import org.springframework.faces.mvc.MvcFacesTestUtils;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
-import org.springframework.faces.mvc.support.PageScopeVariableResolver;
 
 public class PageScopeVariableResolverTests extends TestCase {
 
@@ -33,7 +31,7 @@ public class PageScopeVariableResolverTests extends TestCase {
 		FacesContext facesContext = new MockFacesContext12();
 		facesContext.setViewRoot(viewRoot);
 		PageScopeHolderComponent.attach(facesContext, viewRoot);
-		PageScopeHolderComponent.locate(facesContext).getPageScope().put("test", "value");
+		PageScopeHolderComponent.locate(facesContext, true).getPageScope().put("test", "value");
 		VariableResolver nextResolver = (VariableResolver) MvcFacesTestUtils.nullImplementation(VariableResolver.class);
 		PageScopeVariableResolver resolver = new PageScopeVariableResolver(nextResolver);
 		assertEquals("value", resolver.resolveVariable(facesContext, "test"));

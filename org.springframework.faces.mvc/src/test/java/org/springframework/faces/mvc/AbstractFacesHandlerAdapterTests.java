@@ -156,13 +156,13 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	public void testViewCreatedWithPageScope() throws Exception {
 		doTestViewCreated(true);
-		assertNotNull(PageScopeHolderComponent.locate(facesContext));
+		assertNotNull(PageScopeHolderComponent.locate(facesContext, false));
 	}
 
 	public void testViewCreatedWithoutPageScope() throws Exception {
 		doTestViewCreated(false);
 		try {
-			PageScopeHolderComponent.locate(facesContext);
+			PageScopeHolderComponent.locate(facesContext, true);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}

@@ -110,7 +110,8 @@ public class PageScopeELResolver extends ELResolver {
 	}
 
 	protected Map getPageScope() {
-		PageScopeHolderComponent stateHolder = PageScopeHolderComponent.locate(FacesContext.getCurrentInstance());
+		PageScopeHolderComponent stateHolder = PageScopeHolderComponent
+				.locate(FacesContext.getCurrentInstance(), false);
 		return stateHolder == null ? null : stateHolder.getPageScope();
 	}
 }

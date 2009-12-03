@@ -21,7 +21,6 @@ import javax.faces.context.FacesContext;
 import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext12;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
 
 public class PageScopeHolderComponentTests extends TestCase {
 
@@ -69,12 +68,12 @@ public class PageScopeHolderComponentTests extends TestCase {
 	public void testAttachAndLocate() throws Exception {
 		UIViewRoot viewRoot = new UIViewRoot();
 		try {
-			PageScopeHolderComponent.locate(null, viewRoot);
+			PageScopeHolderComponent.locate(null, viewRoot, true);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 		PageScopeHolderComponent.attach(null, viewRoot);
-		assertNotNull(PageScopeHolderComponent.locate(null, viewRoot));
+		assertNotNull(PageScopeHolderComponent.locate(null, viewRoot, true));
 	}
 
 	public void testLocateFromFacesContext() throws Exception {
@@ -82,7 +81,7 @@ public class PageScopeHolderComponentTests extends TestCase {
 		UIViewRoot viewRoot = new UIViewRoot();
 		facesContext.setViewRoot(viewRoot);
 		PageScopeHolderComponent.attach(null, viewRoot);
-		assertNotNull(PageScopeHolderComponent.locate(facesContext));
-		assertNotNull(PageScopeHolderComponent.locate(facesContext, null));
+		assertNotNull(PageScopeHolderComponent.locate(facesContext, true));
+		assertNotNull(PageScopeHolderComponent.locate(facesContext, null, true));
 	}
 }

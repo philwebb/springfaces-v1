@@ -102,15 +102,28 @@ public class PageScopeHolderComponent extends UIComponentBase {
 		viewRoot.getChildren().add(new PageScopeHolderComponent());
 	}
 
-	public static PageScopeHolderComponent locate(FacesContext facesContext, UIViewRoot viewRoot) {
+	/**
+	 * Locate the {@link PageScopeHolderComponent} from the specified faces context.
+	 * @param facesContext The faces context
+	 * @param viewRoot An optional view root, if not specified <tt>facesContext.getViewRoot()</tt> is used.
+	 * @param required <tt>true</tt> if the component is required and <tt>null</tt> is not a valid return.
+	 * <tt>false</tt> if the <tt>null</tt> should be returned if the component cannot be found.
+	 * @return The {@link PageScopeHolderComponent} or <tt>null</tt> (only when <tt>required</tt> is <tt>false</tt>).
+	 */
+	public static PageScopeHolderComponent locate(FacesContext facesContext, UIViewRoot viewRoot, boolean required) {
 		viewRoot = viewRoot == null ? facesContext.getViewRoot() : viewRoot;
 		UIComponent component = viewRoot.findComponent(COMPONENT_ID);
-		Assert.notNull(component, "The MVC State Holder component cannot be found in the specified viewRoot, "
-				+ "perhaps you are not rendering this view using Spring MVC");
+		if (required) {
+			Assert.notNull(component, "The MVC State Holder component cannot be found in the specified viewRoot, "
+					+ "perhaps you are not rendering this view using Spring MVC");
+		}
 		return (PageScopeHolderComponent) component;
 	}
 
-	public static PageScopeHolderComponent locate(FacesContext context) {
-		return locate(context, null);
+	/**
+	 * See {@link #locate(FacesContext, UIViewRoot, boolean)}
+	 */
+	public static PageScopeHolderComponent locate(FacesContext context, boolean required) {
+		return locate(context, null, required);
 	}
 }

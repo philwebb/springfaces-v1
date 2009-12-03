@@ -46,9 +46,9 @@ public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory
 		assertEquals("value1", pageScope.get("test", this));
 
 		// Test the removal
-		assertTrue(PageScopeHolderComponent.locate(facesContext).getPageScope().containsKey("test"));
+		assertTrue(PageScopeHolderComponent.locate(facesContext, true).getPageScope().containsKey("test"));
 		pageScope.remove("test");
-		assertFalse(PageScopeHolderComponent.locate(facesContext).getPageScope().containsKey("test"));
+		assertFalse(PageScopeHolderComponent.locate(facesContext, true).getPageScope().containsKey("test"));
 	}
 
 	public void testNoPageScopeHolder() throws Exception {
