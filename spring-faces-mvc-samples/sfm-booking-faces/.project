@@ -3,6 +3,7 @@
 	<name>sfm-booking-faces</name>
 	<comment>Spring Web Flow Number Guess JSF Example</comment>
 	<projects>
+		<project>org.springframework.faces.mvc</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
