@@ -9,9 +9,13 @@
 	<bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
 		<property name="flowRegistry" ref="flowRegistry" />
 		<property name="defaultHandler">
-			<!-- If no flow match, map path to a view to render; e.g. the "/intro" path would map to the view named "intro" -->	
+			<!-- If no flow match, map path to a view to render; e.g. the "/intro" path would map to the view named "intro" -->
 			<bean class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 		</property>
+	</bean>
+
+	<!-- Maps @FacesController annotated classes -->
+	<bean class="org.springframework.faces.mvc.annotation.FacesAnnotationHandlerMapping">
 	</bean>
 
 	<!-- Maps logical view names to Facelet templates in /WEB-INF (e.g. 'search' to '/WEB-INF/search.xhtml' -->
@@ -28,5 +32,8 @@
 	<bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
 		<property name="flowExecutor" ref="flowExecutor" />
 	</bean>
-				
+
+	<!-- Dispatches requests mapped to @FacesController implementations -->
+	<bean class="org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter">
+	</bean>
 </beans>
