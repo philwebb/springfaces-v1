@@ -16,14 +16,20 @@
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -69,7 +75,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @see FacesHandlerAdapter
  */
 public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter implements InitializingBean,
-		Ordered {
+		BeanNameAware, BeanFactoryPostProcessor, Ordered {
 
 	private static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
 
@@ -84,8 +90,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 	private FacesHandlerAdapter facesHandlerAdapter;
-	
-	//FIXME setter
+
+	// FIXME setter
 	private NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver = new NavigationOutcomeExpressionElResolver();
 
 	private String exposedControllerName = DEFAULT_CONTROLLER_NAME;
@@ -94,9 +100,26 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private final Map<Class<?>, NavigationCaseMethodsResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, NavigationCaseMethodsResolver>();
 
+	private Set<BeanFactoryPostProcessor> postProcessors = new HashSet<BeanFactoryPostProcessor>();
+
 	// Always order above other AnnotationMethodHandlerAdapter adapters so that they do not type and process faces
 	// requests
 	private int order = Ordered.HIGHEST_PRECEDENCE;
+
+	private String beanName;
+
+	/**
+	 * Trigger all post-processors and spring callbacks for internally managed beans.
+	 * @param bean The internal bean
+	 * @throws Exception
+	 */
+	private void initializeInternalBean(Object bean) throws Exception {
+		getApplicationContext().getAutowireCapableBeanFactory().initializeBean(bean,
+				"_" + beanName + "_" + bean.getClass().getSimpleName());
+		if (bean instanceof BeanFactoryPostProcessor) {
+			postProcessors.add((BeanFactoryPostProcessor) bean);
+		}
+	}
 
 	public boolean supports(Object handler) {
 		return supportsFaces(handler) && super.supports(handler);
@@ -170,6 +193,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				facesHandlerAdapter = facesHandlerAdapters.values().iterator().next();
 			} else {
 				facesHandlerAdapter = new FacesHandlerAdapter();
+				initializeInternalBean(facesHandlerAdapter);
 			}
 		}
 	}
@@ -279,6 +303,16 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				return true;
 			}
 			return false;
+		}
+	}
+
+	public void setBeanName(String name) {
+		this.beanName = name;
+	}
+
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
+			postProcessor.postProcessBeanFactory(beanFactory);
 		}
 	}
 }

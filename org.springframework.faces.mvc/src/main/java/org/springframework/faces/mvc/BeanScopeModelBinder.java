@@ -52,6 +52,7 @@ public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, Init
 			scopedModelAttribute = modelScopeProvider.getModelScope(scopedModelAttribute, modelValue);
 			Assert.notNull(scopedModelAttribute.getScope());
 			Scope scope = beanFactory.getRegisteredScope(scopedModelAttribute.getScope());
+			Assert.notNull(scope, "Unable to locate " + scopedModelAttribute.getScope() + " from beanFactory");
 			scope.get(scopedModelAttribute.getModelAttribute(), new ObjectFactory() {
 				public Object getObject() throws BeansException {
 					return modelValue;

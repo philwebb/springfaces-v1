@@ -186,7 +186,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.verify(new Object[] { facesViewIdResolver, actionUrlMapper });
 	}
 
-	private void doTestAfterPhaseBindsModel(final PhaseId phaseId, boolean binds) throws Exception {
+	private void doTestBeforePhaseBindsModel(final PhaseId phaseId, boolean binds) throws Exception {
 		EasyMock.reset(new Object[] { modelBindingExecutor });
 		modelBindingExecutor.bindStoredModel(facesContext);
 		EasyMock.expectLastCall();
@@ -195,7 +195,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
 				PhaseEvent event = new PhaseEvent(facesContext, phaseId, lifecycle);
-				mvcFacesRequestContext.getMvcFacesContext().afterPhase(mvcFacesRequestContext, event);
+				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -212,12 +212,12 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 	}
 
 	public void testAfterPhaseBindsModel() throws Exception {
-		doTestAfterPhaseBindsModel(PhaseId.APPLY_REQUEST_VALUES, false);
-		doTestAfterPhaseBindsModel(PhaseId.INVOKE_APPLICATION, false);
-		doTestAfterPhaseBindsModel(PhaseId.PROCESS_VALIDATIONS, false);
-		doTestAfterPhaseBindsModel(PhaseId.RENDER_RESPONSE, true);
-		doTestAfterPhaseBindsModel(PhaseId.RESTORE_VIEW, false);
-		doTestAfterPhaseBindsModel(PhaseId.UPDATE_MODEL_VALUES, false);
+		doTestBeforePhaseBindsModel(PhaseId.APPLY_REQUEST_VALUES, false);
+		doTestBeforePhaseBindsModel(PhaseId.INVOKE_APPLICATION, false);
+		doTestBeforePhaseBindsModel(PhaseId.PROCESS_VALIDATIONS, false);
+		doTestBeforePhaseBindsModel(PhaseId.RENDER_RESPONSE, true);
+		doTestBeforePhaseBindsModel(PhaseId.RESTORE_VIEW, false);
+		doTestBeforePhaseBindsModel(PhaseId.UPDATE_MODEL_VALUES, false);
 	}
 
 	private void doTestStopAtProcessValidationsWhenHasCurrentException(final PhaseId phaseId,

@@ -82,6 +82,8 @@ public @interface NavigationCase {
 	 */
 	public String to() default "";
 	// FIXME allow #{} in to
+	// FIXME allow navigation with just ? params
 	// FIXME support if?
 	// FIXME rename package
+	// FIXME fragment support?
 }

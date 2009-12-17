@@ -89,25 +89,28 @@ public final class FoundNavigationCase {
 	 * @throws Exception
 	 */
 	public Object getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request) throws Exception {
+		// FIXME update test
+		Object rtn = null;
 		if (StringUtils.hasText(navigationCase.to())) {
-			return navigationCase.to();
+			rtn = navigationCase.to();
 		}
 		if (FoundNavigationCaseType.METHOD.equals(type)) {
 			Method method = (Method) owner;
-			if (!void.class.equals(method.getReturnType())) {
-				if (method.getAnnotation(RequestMapping.class) != null) {
-					throw new IllegalStateException("Unable to call method " + method.getName() + " from class "
-							+ method.getDeclaringClass() + " in order to resolve @NavigationCase for " + event
-							+ " as method also includes @RequestMapping annotation");
-				}
+			if (method.getAnnotation(RequestMapping.class) == null) {
 				// FIXME model binder to allow use of model attributes
 				SimpleWebArgumentResolverInvoker invoker = new SimpleWebArgumentResolverInvoker(null,
 						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event),
 								new FacesWebArgumentResolver() });
-				return invoker.invoke(method, target, request);
+				Object methodResult = invoker.invoke(method, target, request);
+				rtn = methodResult != null ? methodResult : rtn;
 			}
 		}
-		return null;
+		// FIXME throw id null?
+		// throw new IllegalStateException("Unable to call method " + method.getName() + " from class "
+		// + method.getDeclaringClass() + " in order to resolve @NavigationCase for " + event
+		// + " as method also includes @RequestMapping annotation");
+
+		return rtn;
 	}
 
 	public String toString() {

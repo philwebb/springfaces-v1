@@ -32,6 +32,7 @@
 		<dependency org="org.springframework" name="org.springframework.web.servlet" rev="${org.springframework}" conf="compile->runtime"/>
 		<dependency org="org.springframework.webflow" name="org.springframework.binding" rev="${org.springframework.webflow}" conf="compile->runtime"/>
 		<dependency org="org.springframework.webflow" name="org.springframework.faces" rev="${org.springframework.webflow}" conf="compile->runtime"/>
+		<dependency org="org.springframework.webflow" name="org.springframework.js" rev="${org.springframework.webflow}" conf="compile->runtime"/>
 
 		<!-- JSF 1.2 dependencies -->
 		<dependency org="javax.faces" name="com.springsource.javax.faces" rev="1.2.0.09" conf="provided, jsf12->runtime" />

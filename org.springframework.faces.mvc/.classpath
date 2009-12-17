@@ -24,6 +24,7 @@
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework/org.springframework.asm/3.0.0.RC3/org.springframework.asm-3.0.0.RC3.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework.webflow/org.springframework.faces/2.0.8.RELEASE/org.springframework.faces-2.0.8.RELEASE.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework.webflow/org.springframework.binding/2.0.8.RELEASE/org.springframework.binding-2.0.8.RELEASE.jar"/>
+	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework.webflow/org.springframework.js/2.0.8.RELEASE/org.springframework.js-2.0.8.RELEASE.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.antlr/com.springsource.org.antlr/3.0.1/com.springsource.org.antlr-3.0.1.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/net.sourceforge.cglib/com.springsource.net.sf.cglib/2.2.0/com.springsource.net.sf.cglib-2.2.0.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.aopalliance/com.springsource.org.aopalliance/1.0.0/com.springsource.org.aopalliance-1.0.0.jar"/>

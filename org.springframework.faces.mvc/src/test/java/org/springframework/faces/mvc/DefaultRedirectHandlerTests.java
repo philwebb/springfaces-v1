@@ -15,6 +15,8 @@
  */
 package org.springframework.faces.mvc;
 
+import java.io.IOException;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,12 +25,16 @@ import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
+import org.springframework.js.ajax.AjaxHandler;
 
 public class DefaultRedirectHandlerTests extends TestCase {
+
+	// FIXME update tests to include ajax handler
 
 	private void doTestRedirect(Object location, final String expectedUrl, boolean redirectHttp10Compatible)
 			throws Exception {
 		DefaultRedirectHandler handler = new DefaultRedirectHandler();
+		handler.setAjaxHandler(new MockAjaxHandler());
 		handler.setRedirectHttp10Compatible(redirectHttp10Compatible);
 		ServletContext context = EasyMock.createMock(ServletContext.class);
 		HttpServletRequest request = EasyMock.createNiceMock(HttpServletRequest.class);
@@ -92,5 +98,15 @@ public class DefaultRedirectHandlerTests extends TestCase {
 	public void testDefault() throws Exception {
 		doTestRedirects("test", "/context/servlet/test");
 		doTestRedirects("/test", "/context/servlet/test");
+	}
+
+	private static class MockAjaxHandler implements AjaxHandler {
+		public boolean isAjaxRequest(HttpServletRequest arg0, HttpServletResponse arg1) {
+			return false;
+		}
+
+		public void sendAjaxRedirect(String arg0, HttpServletRequest arg1, HttpServletResponse arg2, boolean arg3)
+				throws IOException {
+		}
 	}
 }

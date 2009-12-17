@@ -21,11 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE })
-@Controller
+@Component
 public @interface FacesController {
 	/**
 	 * The value may indicate a suggestion for a logical component name, to be turned into a Spring bean in case of an

@@ -281,13 +281,13 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 
 		public void beforePhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
+			if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
+				AbstractFacesHandlerAdapter.this.getModelBindingExecutor().bindStoredModel(event.getFacesContext());
+			}
 			stopAtProcessValidationsWhenHasCurrentException(mvcFacesRequestContext, event);
 		}
 
 		public void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
-			if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
-				AbstractFacesHandlerAdapter.this.getModelBindingExecutor().bindStoredModel(event.getFacesContext());
-			}
 		}
 
 		public void redirect(FacesContext facesContext, Object location) throws IOException {

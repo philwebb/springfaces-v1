@@ -8,6 +8,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.js.ajax.AjaxHandler;
+import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
+
 /**
  * Default implementation of {@link RedirectHandler}. The class is based heavily on FlowHandlerAdapter from the webflow
  * project.
@@ -15,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Phillip Webb
  * @author Keith Donald
  */
-public class DefaultRedirectHandler implements RedirectHandler {
+public class DefaultRedirectHandler implements RedirectHandler, InitializingBean {
 
 	private static final int NONE = 0x00;
 	private static final int STRIP_PREFIX = 0x01;
@@ -64,22 +68,31 @@ public class DefaultRedirectHandler implements RedirectHandler {
 		URL_BUILDERS.add(new UrlBuilder("", SLASH | CONTEXT | SERVLET));
 	}
 
-	private boolean redirectHttp10Compatible = true;
+	// FIXME test
+	private AjaxHandler ajaxHandler;
+
+	private boolean redirectHttp10Compatible = false;
 
 	/**
 	 * Sends a redirect to the requested url.
-	 * @param facesContext the faces context.
+	 * @param request The request
+	 * @param response The response
 	 * @param url the url to redirect to
 	 * @throws IOException an exception occurred
 	 */
-	protected void sendRedirect(HttpServletResponse httpServletResponse, String url) throws IOException {
-		if (redirectHttp10Compatible) {
-			// Always send status code 302.
-			httpServletResponse.sendRedirect(httpServletResponse.encodeRedirectURL(url));
+	protected void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url)
+			throws IOException {
+		if (ajaxHandler.isAjaxRequest(request, response)) {
+			ajaxHandler.sendAjaxRedirect(url, request, response, false);
 		} else {
-			// Correct HTTP status code is 303, in particular for POST requests.
-			httpServletResponse.setStatus(303);
-			httpServletResponse.setHeader("Location", httpServletResponse.encodeRedirectURL(url));
+			if (redirectHttp10Compatible) {
+				// Always send status code 302.
+				response.sendRedirect(response.encodeRedirectURL(url));
+			} else {
+				// Correct HTTP status code is 303, in particular for POST requests.
+				response.setStatus(303);
+				response.setHeader("Location", response.encodeRedirectURL(url));
+			}
 		}
 	}
 
@@ -97,11 +110,20 @@ public class DefaultRedirectHandler implements RedirectHandler {
 			throws IOException {
 		if (location != null) {
 			String url = getLocationUrl(request, location.toString());
-			sendRedirect(response, url);
+			sendRedirect(request, response, url);
 		}
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		ajaxHandler = (ajaxHandler == null ? new SpringJavascriptAjaxHandler() : ajaxHandler);
 	}
 
 	public void setRedirectHttp10Compatible(boolean redirectHttp10Compatible) {
 		this.redirectHttp10Compatible = redirectHttp10Compatible;
+	}
+
+	// FIXME do we need this on the adapter like webflow has
+	public void setAjaxHandler(AjaxHandler ajaxHandler) {
+		this.ajaxHandler = ajaxHandler;
 	}
 }
