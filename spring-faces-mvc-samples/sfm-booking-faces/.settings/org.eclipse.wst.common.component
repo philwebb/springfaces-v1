@@ -6,9 +6,6 @@
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
-        <dependent-module archiveName="org.springframework.faces.mvc.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/org.springframework.faces.mvc/org.springframework.faces.mvc">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
 <property name="java-output-path" value="target/classes"/>
 <property name="context-root" value="/sfm-booking-faces"/>
 </wb-module>
