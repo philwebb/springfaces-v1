@@ -125,15 +125,15 @@ public abstract class AbstractApplicationDecorator extends Application {
 		return parent.getActionListener();
 	}
 
-	public Iterator<String> getComponentTypes() {
+	public Iterator getComponentTypes() {
 		return parent.getComponentTypes();
 	}
 
-	public Iterator<String> getConverterIds() {
+	public Iterator getConverterIds() {
 		return parent.getConverterIds();
 	}
 
-	public Iterator<Class> getConverterTypes() {
+	public Iterator getConverterTypes() {
 		return parent.getConverterTypes();
 	}
 
@@ -177,11 +177,11 @@ public abstract class AbstractApplicationDecorator extends Application {
 		return parent.getStateManager();
 	}
 
-	public Iterator<Locale> getSupportedLocales() {
+	public Iterator getSupportedLocales() {
 		return parent.getSupportedLocales();
 	}
 
-	public Iterator<String> getValidatorIds() {
+	public Iterator getValidatorIds() {
 		return parent.getValidatorIds();
 	}
 
@@ -225,7 +225,7 @@ public abstract class AbstractApplicationDecorator extends Application {
 		parent.setStateManager(manager);
 	}
 
-	public void setSupportedLocales(Collection<Locale> locales) {
+	public void setSupportedLocales(Collection locales) {
 		parent.setSupportedLocales(locales);
 	}
 

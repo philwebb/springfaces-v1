@@ -15,8 +15,8 @@ public class MvcHandlerVariableResolverTest extends TestCase {
 		FacesContext facesContext = new MockFacesContext12();
 		VariableResolver nextResolver = (VariableResolver) MvcFacesTestUtils.nullImplementation(VariableResolver.class);
 		MvcHandlerVariableResolver resolver = new MvcHandlerVariableResolver(nextResolver);
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		EasyMock.expect(facesHandler.resolveVariable("test")).andReturn(null);
 		EasyMock.replay(new Object[] { facesHandler });
 		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);

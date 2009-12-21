@@ -31,8 +31,8 @@ public class MvcFacesRequestContextTests extends TestCase {
 		}
 
 		public void run() {
-			MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-			FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+			MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+			FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 			final MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
 			try {
 				while (wait) {
@@ -66,8 +66,8 @@ public class MvcFacesRequestContextTests extends TestCase {
 	}
 
 	public void testDoubleRelease() throws Exception {
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
 		requestContext.release();
 		try {
@@ -79,8 +79,8 @@ public class MvcFacesRequestContextTests extends TestCase {
 	}
 
 	public void testSetGetException() throws Exception {
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
 		Exception exception = new Exception();
 		requestContext.setException(exception);
@@ -88,8 +88,8 @@ public class MvcFacesRequestContextTests extends TestCase {
 	}
 
 	public void testSetGetLastNavigationRequestEvent() throws Exception {
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
 		NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
 		requestContext.setLastNavigationRequestEvent(event);

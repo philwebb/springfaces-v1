@@ -56,7 +56,7 @@ public class PageEncodedActionUrlMapper implements ActionUrlMapper {
 	}
 
 	public String getViewNameForRestore(FacesContext context) {
-		return context.getExternalContext().getRequestParameterMap().get(ENCODED_FIELD_NAME);
+		return (String) context.getExternalContext().getRequestParameterMap().get(ENCODED_FIELD_NAME);
 	}
 
 }

@@ -17,16 +17,13 @@ package org.springframework.faces.mvc;
 
 import javax.faces.context.FacesContext;
 
-import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Interface that allows first class JSF integration with Spring MVC. In order to handle this interface an instance of
  * {@link FacesHandlerAdapter} must be registered with Spring MVC. This interface provides various hook points that
  * allows for complete JSF integration with Spring MVC. Instead of using this interface directly consider using the
- * {@link FacesAnnotationMethodHandlerAdapter} class.
- * 
- * @see FacesAnnotationMethodHandlerAdapter
+ * <tt>FacesAnnotationMethodHandlerAdapter</tt> class.
  * 
  * @author Phillip Webb
  */

@@ -60,7 +60,7 @@ public class FacesHandlerAdapterTests extends TestCase {
 	}
 
 	public void testSupports() throws Exception {
-		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		assertTrue(adapter.supports(facesHandler));
 		assertFalse(adapter.supports(""));
 	}
@@ -92,10 +92,10 @@ public class FacesHandlerAdapterTests extends TestCase {
 
 	public void testDoHandle() throws Exception {
 		adapter.afterPropertiesSet();
-		HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
-		HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
-		FacesHandler handler = EasyMock.createMock(FacesHandler.class);
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
+		HttpServletRequest request = (HttpServletRequest) EasyMock.createMock(HttpServletRequest.class);
+		HttpServletResponse response = (HttpServletResponse) EasyMock.createMock(HttpServletResponse.class);
+		FacesHandler handler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestContext(mvcFacesContext, handler);
 		adapter.doHandle(mvcFacesRequestContext, request, response);
 		((TrackingMockServlet) adapter.getFacesServlet()).assertSame(request, response);
@@ -121,9 +121,11 @@ public class FacesHandlerAdapterTests extends TestCase {
 
 	public void testDefaultModelBinder() throws Exception {
 		adapter.afterPropertiesSet();
-		assertEquals(BeanScopeModelBinder.class, adapter.getModelBindingExecutor().getModelBinder().getClass());
+		assertEquals(BeanScopeModelBinder.class,
+				((RequestMappedModelBindingExecutor) adapter.getModelBindingExecutor()).getModelBinder().getClass());
 		// Quick test that the beanFactory has been injected
-		((BeanScopeModelBinder) adapter.getModelBindingExecutor().getModelBinder()).afterPropertiesSet();
+		((BeanScopeModelBinder) ((RequestMappedModelBindingExecutor) adapter.getModelBindingExecutor())
+				.getModelBinder()).afterPropertiesSet();
 	}
 
 	public void testFacesServletInit() throws Exception {
@@ -143,7 +145,7 @@ public class FacesHandlerAdapterTests extends TestCase {
 	}
 
 	public void testCustomActionUrlMapper() throws Exception {
-		ActionUrlMapper actionUrlMapper = EasyMock.createMock(ActionUrlMapper.class);
+		ActionUrlMapper actionUrlMapper = (ActionUrlMapper) EasyMock.createMock(ActionUrlMapper.class);
 		adapter.setActionUrlMapper(actionUrlMapper);
 		adapter.afterPropertiesSet();
 		assertSame(actionUrlMapper, adapter.getActionUrlMapper());
@@ -159,10 +161,11 @@ public class FacesHandlerAdapterTests extends TestCase {
 	}
 
 	public void testCustomModelBinder() throws Exception {
-		ModelBinder modelBinder = EasyMock.createMock(ModelBinder.class);
+		ModelBinder modelBinder = (ModelBinder) EasyMock.createMock(ModelBinder.class);
 		adapter.setModelBinder(modelBinder);
 		adapter.afterPropertiesSet();
-		assertSame(modelBinder, adapter.getModelBindingExecutor().getModelBinder());
+		assertSame(modelBinder, ((RequestMappedModelBindingExecutor) adapter.getModelBindingExecutor())
+				.getModelBinder());
 	}
 
 	public void testCustomModelBinderNull() throws Exception {

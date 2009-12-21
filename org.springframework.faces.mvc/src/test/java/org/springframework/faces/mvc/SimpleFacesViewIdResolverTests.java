@@ -62,8 +62,9 @@ public class SimpleFacesViewIdResolverTests extends TestCase {
 
 	public void testSuffixFromWebXml() throws Exception {
 		SimpleFacesViewIdResolver resolver = new SimpleFacesViewIdResolver();
-		WebApplicationContext applicationContext = EasyMock.createMock(WebApplicationContext.class);
-		ServletContext servletContext = EasyMock.createMock(ServletContext.class);
+		WebApplicationContext applicationContext = (WebApplicationContext) EasyMock
+				.createMock(WebApplicationContext.class);
+		ServletContext servletContext = (ServletContext) EasyMock.createMock(ServletContext.class);
 		EasyMock.expect(applicationContext.getServletContext()).andReturn(servletContext);
 		EasyMock.expect(servletContext.getInitParameter("javax.faces.DEFAULT_SUFFIX")).andReturn(".jspx");
 		EasyMock.replay(new Object[] { applicationContext, servletContext });
@@ -75,7 +76,7 @@ public class SimpleFacesViewIdResolverTests extends TestCase {
 
 	public void testDefaultSuffixNonWebContext() throws Exception {
 		SimpleFacesViewIdResolver resolver = new SimpleFacesViewIdResolver();
-		ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
+		ApplicationContext applicationContext = (ApplicationContext) EasyMock.createMock(ApplicationContext.class);
 		EasyMock.replay(new Object[] { applicationContext });
 		resolver.setApplicationContext(applicationContext);
 		resolver.afterPropertiesSet();

@@ -35,17 +35,14 @@ import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerAdapter;
 
 /**
  * MVC {@link HandlerAdapter} that can be used to process {@link FacesHandler}s. This class handles most of the low
- * level integration between JSF and Spring MVC. Also consider using the {@link FacesAnnotationMethodHandlerAdapter}
+ * level integration between JSF and Spring MVC. Also consider using the <tt>FacesAnnotationMethodHandlerAdapter</tt>
  * class in order to support annotated controllers.
- * 
- * @see FacesAnnotationMethodHandlerAdapter
  * 
  * @author Phillip Webb
  */
@@ -118,7 +115,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 		return facesViewIdResolver;
 	}
 
-	protected RequestMappedModelBindingExecutor getModelBindingExecutor() {
+	protected ModelBindingExecutor getModelBindingExecutor() {
 		return modelBindingExecutor;
 	}
 

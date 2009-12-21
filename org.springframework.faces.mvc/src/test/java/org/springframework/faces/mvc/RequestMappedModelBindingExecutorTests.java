@@ -43,7 +43,7 @@ public class RequestMappedModelBindingExecutorTests extends TestCase {
 
 	public void testBind() throws Exception {
 		RequestMappedModelBindingExecutor executor = new RequestMappedModelBindingExecutor();
-		ModelBinder modelBinder = EasyMock.createMock(ModelBinder.class);
+		ModelBinder modelBinder = (ModelBinder) EasyMock.createMock(ModelBinder.class);
 		executor.setModelBinder(modelBinder);
 		executor.afterPropertiesSet();
 		MockFacesContext12 facesContext = new MockFacesContext12();

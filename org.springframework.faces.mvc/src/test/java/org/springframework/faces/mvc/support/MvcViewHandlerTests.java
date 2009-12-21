@@ -17,6 +17,7 @@ package org.springframework.faces.mvc.support;
 
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 
 import junit.framework.Assert;
 
@@ -27,8 +28,7 @@ import org.easymock.EasyMock;
 import org.springframework.faces.mvc.MvcFacesTestUtils;
 import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
 import org.springframework.faces.mvc.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
-import org.springframework.faces.mvc.support.MvcFacesRequestContext;
-import org.springframework.faces.mvc.support.MvcViewHandler;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.xslt.XsltView;
 
@@ -71,9 +71,9 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 						modelAndView);
 				EasyMock.expect(mvcFacesRequestContext.getMvcFacesContext().resolveViewId(VIEW_ID)).andReturn(
 						XHTML_VIEW_NAME);
-				mvcFacesRequestContext.getMvcFacesContext().viewCreated(EasyMock.eq(facesContext),
-						EasyMock.eq(mvcFacesRequestContext), EasyMock.eq(uiViewRoot),
-						EasyMock.eq(modelAndView.getModelMap()));
+				mvcFacesRequestContext.getMvcFacesContext().viewCreated((FacesContext) EasyMock.eq(facesContext),
+						(MvcFacesRequestContext) EasyMock.eq(mvcFacesRequestContext),
+						(UIViewRoot) EasyMock.eq(uiViewRoot), (ModelMap) EasyMock.eq(modelAndView.getModelMap()));
 				EasyMock.expectLastCall();
 			}
 

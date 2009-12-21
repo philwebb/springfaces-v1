@@ -17,6 +17,7 @@ package org.springframework.faces.mvc.support;
 
 import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
+import javax.faces.context.FacesContext;
 
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
@@ -41,8 +42,8 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
 				FacesHandler facesHandler = mvcFacesRequestContext.getFacesHandler();
 				EasyMock.expect(
-						facesHandler.getNavigationOutcomeLocation(EasyMock.eq(facesContext),
-								(NavigationRequestEvent) EasyMock.anyObject())).andAnswer(new IAnswer<Object>() {
+						facesHandler.getNavigationOutcomeLocation((FacesContext) EasyMock.eq(facesContext),
+								(NavigationRequestEvent) EasyMock.anyObject())).andAnswer(new IAnswer() {
 					public Object answer() throws Throwable {
 						NavigationRequestEvent event = (NavigationRequestEvent) EasyMock.getCurrentArguments()[1];
 						assertEquals("action", event.getFromAction());
@@ -91,7 +92,7 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 				public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
 					FacesHandler facesHandler = mvcFacesRequestContext.getFacesHandler();
 					EasyMock.expect(
-							facesHandler.getNavigationOutcomeLocation(EasyMock.eq(facesContext),
+							facesHandler.getNavigationOutcomeLocation((FacesContext) EasyMock.eq(facesContext),
 									(NavigationRequestEvent) EasyMock.anyObject())).andThrow(
 							new IllegalStateException("Error"));
 				}

@@ -65,13 +65,13 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.actionUrlMapper = EasyMock.createMock(ActionUrlMapper.class);
-		this.facesViewIdResolver = EasyMock.createMock(FacesViewIdResolver.class);
-		this.modelBindingExecutor = EasyMock.createMock(ModelBindingExecutor.class);
-		this.redirectHandler = EasyMock.createMock(RedirectHandler.class);
-		this.request = EasyMock.createMock(HttpServletRequest.class);
-		this.response = EasyMock.createMock(HttpServletResponse.class);
-		this.facesHandler = EasyMock.createMock(FacesHandler.class);
+		this.actionUrlMapper = (ActionUrlMapper) EasyMock.createMock(ActionUrlMapper.class);
+		this.facesViewIdResolver = (FacesViewIdResolver) EasyMock.createMock(FacesViewIdResolver.class);
+		this.modelBindingExecutor = (ModelBindingExecutor) EasyMock.createMock(ModelBindingExecutor.class);
+		this.redirectHandler = (RedirectHandler) EasyMock.createMock(RedirectHandler.class);
+		this.request = (HttpServletRequest) EasyMock.createMock(HttpServletRequest.class);
+		this.response = (HttpServletResponse) EasyMock.createMock(HttpServletResponse.class);
+		this.facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 	}
 
 	public void testOnlyForFacesHandler() throws Exception {
@@ -146,8 +146,9 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	public void testPageScopeGetsRegistered() throws Exception {
 		facesHandlerAdapter = new MockFacesHandlerAdapter();
-		ConfigurableListableBeanFactory beanFactory = EasyMock.createMock(ConfigurableListableBeanFactory.class);
-		beanFactory.registerScope(EasyMock.eq("page"), EasyMock.isA(PageScope.class));
+		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) EasyMock
+				.createMock(ConfigurableListableBeanFactory.class);
+		beanFactory.registerScope((String) EasyMock.eq("page"), (PageScope) EasyMock.isA(PageScope.class));
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { beanFactory });
 		facesHandlerAdapter.postProcessBeanFactory(beanFactory);
@@ -361,17 +362,17 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		MockMvcFacesExceptionHandler direct = new MockMvcFacesExceptionHandler(true);
 		MockMvcFacesExceptionHandler bean = new MockMvcFacesExceptionHandler(true);
 		facesHandlerAdapter.setExceptionHandlers(Collections.singletonList(direct));
-		ApplicationContext applicationContext = EasyMock.createMock(ApplicationContext.class);
+		ApplicationContext applicationContext = (ApplicationContext) EasyMock.createMock(ApplicationContext.class);
 		Map beans = new HashMap();
 		beans.put("bean", bean);
 		EasyMock.expect(applicationContext.getBeansOfType(MvcFacesExceptionHandler.class, true, false))
 				.andReturn(beans);
 		EasyMock.expect(applicationContext.getParentBeanFactory()).andReturn(null);
-		EasyMock.replay(applicationContext);
+		EasyMock.replay(new Object[] { applicationContext });
 		ContextRefreshedEvent event = new ContextRefreshedEvent(applicationContext);
 		facesHandlerAdapter.onApplicationEvent(event);
 		facesHandlerAdapter.handle(request, response, facesHandler);
-		EasyMock.verify(applicationContext);
+		EasyMock.verify(new Object[] { applicationContext });
 		direct.assertNotCalled();
 		bean.assertCalled();
 	}
@@ -420,7 +421,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		}
 
 		public void assertCalledBefore(MockMvcFacesExceptionHandler other) {
-			assertTrue(called < other.called);
+			assertTrue(called.longValue() < other.called.longValue());
 		}
 
 		public void assertCalled() {

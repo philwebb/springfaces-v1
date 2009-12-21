@@ -36,19 +36,19 @@ public class DefaultRedirectHandlerTests extends TestCase {
 		DefaultRedirectHandler handler = new DefaultRedirectHandler();
 		handler.setAjaxHandler(new MockAjaxHandler());
 		handler.setRedirectHttp10Compatible(redirectHttp10Compatible);
-		ServletContext context = EasyMock.createMock(ServletContext.class);
-		HttpServletRequest request = EasyMock.createNiceMock(HttpServletRequest.class);
+		ServletContext context = (ServletContext) EasyMock.createMock(ServletContext.class);
+		HttpServletRequest request = (HttpServletRequest) EasyMock.createNiceMock(HttpServletRequest.class);
 		EasyMock.expect(request.getContextPath()).andReturn("/context");
 		EasyMock.expect(request.getServletPath()).andReturn("/servlet");
-		HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
+		HttpServletResponse response = (HttpServletResponse) EasyMock.createMock(HttpServletResponse.class);
 		if (!redirectHttp10Compatible) {
 			response.setStatus(303);
 			EasyMock.expectLastCall();
-			EasyMock.expect(response.encodeRedirectURL(EasyMock.eq(expectedUrl))).andReturn(expectedUrl);
+			EasyMock.expect(response.encodeRedirectURL((String) EasyMock.eq(expectedUrl))).andReturn(expectedUrl);
 			response.setHeader("Location", expectedUrl);
 			EasyMock.expectLastCall();
 		} else {
-			EasyMock.expect(response.encodeRedirectURL(EasyMock.eq(expectedUrl))).andReturn(expectedUrl);
+			EasyMock.expect(response.encodeRedirectURL((String) EasyMock.eq(expectedUrl))).andReturn(expectedUrl);
 			response.sendRedirect(expectedUrl);
 			EasyMock.expectLastCall();
 

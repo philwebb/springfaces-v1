@@ -23,8 +23,8 @@ public class MvcHandlerELResolverTests extends TestCase {
 		super.setUp();
 		this.resolver = new MvcHandlerELResolver();
 		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-		this.facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+		this.facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		this.requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
 	}
 
@@ -35,45 +35,45 @@ public class MvcHandlerELResolverTests extends TestCase {
 
 	public void testGetTypeFound() throws Exception {
 		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE);
-		EasyMock.replay(facesHandler);
+		EasyMock.replay(new Object[] { facesHandler });
 		Class type = resolver.getType(elContext, null, PROPERTY_NAME);
 		assertEquals(VALUE.getClass(), type);
-		EasyMock.verify(facesHandler);
+		EasyMock.verify(new Object[] { facesHandler });
 		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
 	}
 
 	public void testGetValueFound() throws Exception {
 		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE);
-		EasyMock.replay(facesHandler);
+		EasyMock.replay(new Object[] { facesHandler });
 		Object value = resolver.getValue(elContext, null, PROPERTY_NAME);
 		assertSame(VALUE, value);
-		EasyMock.verify(facesHandler);
+		EasyMock.verify(new Object[] { facesHandler });
 		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
 	}
 
 	public void testGetTypeNotFound() throws Exception {
 		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(null);
-		EasyMock.replay(facesHandler);
+		EasyMock.replay(new Object[] { facesHandler });
 		Class type = resolver.getType(elContext, null, PROPERTY_NAME);
 		assertNull(type);
-		EasyMock.verify(facesHandler);
+		EasyMock.verify(new Object[] { facesHandler });
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 	}
 
 	public void testGetValueNotFound() throws Exception {
 		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(null);
-		EasyMock.replay(facesHandler);
+		EasyMock.replay(new Object[] { facesHandler });
 		Object value = resolver.getValue(elContext, null, PROPERTY_NAME);
 		assertNull(value);
-		EasyMock.verify(facesHandler);
+		EasyMock.verify(new Object[] { facesHandler });
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 	}
 
 	public void testGetValueNonNullBase() throws Exception {
-		EasyMock.replay(facesHandler);
+		EasyMock.replay(new Object[] { facesHandler });
 		Object value = resolver.getValue(elContext, "base", PROPERTY_NAME);
 		assertNull(value);
-		EasyMock.verify(facesHandler);
+		EasyMock.verify(new Object[] { facesHandler });
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 	}
 

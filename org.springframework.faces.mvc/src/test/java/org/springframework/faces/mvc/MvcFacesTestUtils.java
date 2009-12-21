@@ -88,8 +88,8 @@ public class MvcFacesTestUtils {
 	}
 
 	public static void doWithMockMvcFacesRequestContext(MockMvcFacesRequestContextCallback callback) throws Exception {
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
-		FacesHandler facesHandler = EasyMock.createMock(FacesHandler.class);
+		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
+		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
 		try {
 			callback.prepare(mvcFacesRequestContext);
