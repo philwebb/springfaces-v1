@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.annotation.Annotation;
@@ -47,10 +62,10 @@ public class FacesAnnotationHandlerMapping extends DefaultAnnotationHandlerMappi
 	 * @return the annotation of the given type found, or <code>null</code>
 	 * @see org.springframework.core.annotation.AnnotationUtils#findAnnotation(Class, Class)
 	 * 
-	 * * @author Rob Harrop
+	 * @author Rob Harrop
 	 * @author Juergen Hoeller
 	 */
-	public <A extends Annotation> A findAnnotationOnBean(ListableBeanFactory beanFactory, String beanName,
+	protected <A extends Annotation> A findAnnotationOnBean(ListableBeanFactory beanFactory, String beanName,
 			Class<A> annotationType) {
 		Class<?> handlerType = beanFactory.getType(beanName);
 		A ann = AnnotationUtils.findAnnotation(handlerType, annotationType);

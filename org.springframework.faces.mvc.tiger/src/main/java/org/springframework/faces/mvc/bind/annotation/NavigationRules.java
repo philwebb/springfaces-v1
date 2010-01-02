@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 
 /**
- * Annotation that can be used to encapsulate JSF navigation rules. This annotation can be placed on a {@link Method}
+ * Annotation that can be used to encapsulate JSF navigation rules. This annotation can be placed on a {@link Method},
  * {@link Class} or {@link Package}.
  * 
  * @see NavigationCase

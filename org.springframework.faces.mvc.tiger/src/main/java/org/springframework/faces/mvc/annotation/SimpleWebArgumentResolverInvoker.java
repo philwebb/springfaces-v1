@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +31,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * Support class that can be used to resolve parameters using an array of {@link WebArgumentResolver}s when invoking a
  * Method. This class is based heavily on {@link HandlerMethodInvoker}.
- *
+ * 
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @author Phillip Webb
@@ -28,7 +43,7 @@ public class SimpleWebArgumentResolverInvoker {
 
 	/**
 	 * Constructor.
-	 *
+	 * 
 	 * @param parameterNameDiscoverer The {@link ParameterNameDiscoverer} that should be used to discover parameter
 	 * names or <tt>null</tt> to use the default {@link LocalVariableTableParameterNameDiscoverer}.
 	 * @param webArgumentResolvers An array of resolvers that should be applied in order to obtain paramter values.
@@ -44,12 +59,12 @@ public class SimpleWebArgumentResolverInvoker {
 
 	/**
 	 * Invoke the specified method on the given target using {@link WebArgumentResolver}s to obtain parameter values.
-	 *
+	 * 
 	 * @param method The method to execute.
 	 * @param target The target object.
 	 * @param webRequest The webRequest being executed.
 	 * @return The result of the invocation.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public Object invoke(Method method, Object target, NativeWebRequest webRequest) throws Exception {

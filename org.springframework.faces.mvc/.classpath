@@ -19,7 +19,7 @@
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework/org.springframework.test/2.5.6.SEC01/org.springframework.test-2.5.6.SEC01.jar" sourcepath="FACES_IVY_CACHE/org.springframework/org.springframework.test/2.5.6.SEC01/org.springframework.test-sources-2.5.6.SEC01.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework/org.springframework.web/2.5.6.SEC01/org.springframework.web-2.5.6.SEC01.jar" sourcepath="FACES_IVY_CACHE/org.springframework/org.springframework.web/2.5.6.SEC01/org.springframework.web-sources-2.5.6.SEC01.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework/org.springframework.web.servlet/2.5.6.SEC01/org.springframework.web.servlet-2.5.6.SEC01.jar" sourcepath="FACES_IVY_CACHE/org.springframework/org.springframework.web.servlet/2.5.6.SEC01/org.springframework.web.servlet-sources-2.5.6.SEC01.jar"/>
-	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework/org.springframework.aop/2.5.6.SEC01/org.springframework.aop-2.5.6.SEC01.jar"/>
+	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework/org.springframework.aop/2.5.6.SEC01/org.springframework.aop-2.5.6.SEC01.jar" sourcepath="FACES_IVY_CACHE/org.springframework/org.springframework.aop/2.5.6.SEC01/org.springframework.aop-sources-2.5.6.SEC01.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework.webflow/org.springframework.faces/2.0.8.RELEASE/org.springframework.faces-2.0.8.RELEASE.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework.webflow/org.springframework.binding/2.0.8.RELEASE/org.springframework.binding-2.0.8.RELEASE.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.springframework.webflow/org.springframework.js/2.0.8.RELEASE/org.springframework.js-2.0.8.RELEASE.jar"/>
@@ -28,5 +28,6 @@
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.aopalliance/com.springsource.org.aopalliance/1.0.0/com.springsource.org.aopalliance-1.0.0.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.objectweb.asm/com.springsource.org.objectweb.asm/3.1.0/com.springsource.org.objectweb.asm-3.1.0.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.objectweb.asm/com.springsource.org.objectweb.asm.commons/3.1.0/com.springsource.org.objectweb.asm.commons-3.1.0.jar"/>
+	<classpathentry kind="var" path="FACES_IVY_CACHE/org.apache.log4j/com.springsource.org.apache.log4j/1.2.15/com.springsource.org.apache.log4j-1.2.15.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

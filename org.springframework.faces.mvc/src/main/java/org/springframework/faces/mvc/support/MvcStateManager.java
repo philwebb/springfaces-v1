@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.support;
 
 import java.io.IOException;
@@ -6,6 +21,11 @@ import javax.faces.application.StateManager;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
+/**
+ * {@link StateManager} implementation that provides integration with Spring MVC.
+ * 
+ * @author Phillip Webb
+ */
 public class MvcStateManager extends StateManager {
 
 	private StateManager delegate;
@@ -14,8 +34,7 @@ public class MvcStateManager extends StateManager {
 		this.delegate = delegate;
 	}
 
-	public void writeState(FacesContext context, javax.faces.application.StateManager.SerializedView state)
-			throws IOException {
+	public void writeState(FacesContext context, StateManager.SerializedView state) throws IOException {
 		if (MvcFacesRequestContext.getCurrentInstance() != null) {
 			MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().writeState(context);
 		}
@@ -26,7 +45,7 @@ public class MvcStateManager extends StateManager {
 		return delegate.isSavingStateInClient(context);
 	}
 
-	public javax.faces.application.StateManager.SerializedView saveSerializedView(FacesContext context) {
+	public StateManager.SerializedView saveSerializedView(FacesContext context) {
 		return delegate.saveSerializedView(context);
 	}
 

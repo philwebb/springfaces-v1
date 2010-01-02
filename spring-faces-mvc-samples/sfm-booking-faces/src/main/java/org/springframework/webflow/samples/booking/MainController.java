@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FacesController
 public class MainController {
 
+    // FIXME cache control
     private BookingService bookingService;
     private ConversionService conversionService;
 
-    @NavigationRules( { @NavigationCase(on = "search", to = "/search2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}") })
+    @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
     @RequestMapping("/main2")
     public String main(@ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria) {
 	return "enterSearchCriteria";
@@ -49,7 +50,7 @@ public class MainController {
     }
 
     // FIXME navigation reqest mapping? perhaps on navigation rules
-    @NavigationCase(on = { "next", "previous" }, to = "/search2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}&page=#{searchCriteria.page}")
+    @NavigationCase(on = { "next", "previous" }, to = "/search2?#{searchCriteria}")
     public void navigate(FacesContext facesContext, NavigationRequestEvent event,
 	    @ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria) {
 	// FIXME should be got

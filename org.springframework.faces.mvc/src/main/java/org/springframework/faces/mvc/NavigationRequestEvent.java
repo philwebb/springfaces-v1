@@ -24,7 +24,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * An event object that represents a JSF navigation request. This object encapsulates the <tt>fromAction</tt> and
- * <tt>outcome</tt> paramters that are passed to JSF {@link NavigationHandler}s. The event object can also include an
+ * <tt>outcome</tt> parameters that are passed to JSF {@link NavigationHandler}s. The event object can also include an
  * exception if the navigation request is being handled within a {@link MvcFacesExceptionHandler}.
  * 
  * @author Phillip Webb

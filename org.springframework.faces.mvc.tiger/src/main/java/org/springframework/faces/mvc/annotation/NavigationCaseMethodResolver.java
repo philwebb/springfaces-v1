@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
@@ -21,21 +36,21 @@ import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
- * Support class that extends {@link RequestMappingMethodsResolver} to resolve web method and navigation annotations in
- * a handler type. This class can be used to determine what methods from a {@link RequestMapping} annotated class could
- * be used to process a given request and what {@link NavigationCase} or {@link NavigationRules} annotated methods could
- * be used to handle navigation.
+ * Support class that extends {@link RequestMappingMethodResolver} to resolve web method and navigation annotations in a
+ * handler type. This class can be used to determine what methods from a {@link RequestMapping} annotated class could be
+ * used to process a given request and what {@link NavigationCase} or {@link NavigationRules} annotated methods could be
+ * used to handle navigation.
  * 
  * @see NavigationCaseAnnotationLocator
  * 
  * @author Phillip Webb
  */
-public class NavigationCaseMethodsResolver extends RequestMappingMethodsResolver {
+public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 
 	private final SortedSet<Method> globalNavigationMethods = new TreeSet<Method>(
 			new NavgationAnnotatedMethodComparator());
 
-	public NavigationCaseMethodsResolver(final Class<?> handlerType, UrlPathHelper urlPathHelper,
+	public NavigationCaseMethodResolver(final Class<?> handlerType, UrlPathHelper urlPathHelper,
 			MethodNameResolver methodNameResolver, PathMatcher pathMatcher) {
 		super(handlerType, urlPathHelper, methodNameResolver, pathMatcher);
 		ReflectionUtils.doWithMethods(handlerType, new ReflectionUtils.MethodCallback() {

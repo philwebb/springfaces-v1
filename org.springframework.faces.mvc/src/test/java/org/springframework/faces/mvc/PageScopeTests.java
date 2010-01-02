@@ -92,4 +92,10 @@ public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory
 			}
 		});
 	}
+
+	public void testResolveContextualObject() throws Exception {
+		// Spring 3 API change, implemented for compatibility
+		PageScope pageScope = new PageScope();
+		assertNull(pageScope.resolveContextualObject(""));
+	}
 }

@@ -20,9 +20,9 @@ import javax.faces.context.FacesContext;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Interface that allows first class JSF integration with Spring MVC. In order to handle this interface an instance of
- * {@link FacesHandlerAdapter} must be registered with Spring MVC. This interface provides various hook points that
- * allows for complete JSF integration with Spring MVC. Instead of using this interface directly consider using the
+ * Interface that allows full JSF integration with Spring MVC. In order to handle this interface an instance of
+ * {@link FacesHandlerAdapter} must be registered with Spring MVC. This interface provides the various hook points that
+ * allow for complete JSF integration with Spring MVC. Instead of using this interface directly consider using the
  * <tt>FacesAnnotationMethodHandlerAdapter</tt> class.
  * 
  * @author Phillip Webb
@@ -30,24 +30,24 @@ import org.springframework.web.servlet.ModelAndView;
 public interface FacesHandler {
 
 	/**
-	 * Called to create the JSF view for the first time.
+	 * Called to create the JSF view for the first time. A {@link ModelAndView} that contains the View ID and any model
+	 * data. The view ID must be a view reference that can be resolved by the
+	 * {@link FacesHandlerAdapter#getFacesViewIdResolver()} to an actual page resource. A <tt>null</tt> view ID can be
+	 * used to indicate that rendering has been completed by the handler directly
 	 * 
-	 * @return A {@link ModelAndView} that contains the View ID and the any model data. The view ID must be a view
-	 * reference that can be resolved by the {@link FacesHandlerAdapter#getFacesViewIdResolver()} to an actual page
-	 * resource. A <tt>null</tt> view ID can be used to indicate that rendering has been completed by the handler
-	 * directly.
+	 * @return The model and view data.
 	 */
 	ModelAndView createView(FacesContext facesContext) throws Exception;
 
 	/**
-	 * Called to determine the outcome of a navigation.
+	 * Called to determine the outcome of a navigation. This method should return a location that can the client can be
+	 * redirected to by the {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> response can be used if
+	 * the navigation could not be handled, in such cases the standard JSF navigation handlers are called (if no
+	 * navigation handler manages the outcome the existing page is re-rendered)
 	 * 
 	 * @param facesContext The faces context that requested the navigation
-	 * @param event The navigation request event.
-	 * @return A location that can the client can be redirected to by the
-	 * {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> view ID can be used if the navigation could not
-	 * be handled, in such cases the standard JSF navigation handlers are called (if no navigation handler manages the
-	 * outcome the existing page is re-rendered).
+	 * @param event The navigation request event
+	 * @return The navigation outcome
 	 */
 	Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event) throws Exception;
 
@@ -55,15 +55,15 @@ public interface FacesHandler {
 	 * Called to resolve read-only variables from the handler. This method can be used to expose variables from the
 	 * hander to JSF.
 	 * 
-	 * @param propertyName The name of the propery being resolved.
-	 * @return A resolved property or <tt>null</tt> if the propertyName is not recognised by the handler.
+	 * @param propertyName The name of the property being resolved.
+	 * @return A resolved property or <tt>null</tt> if the propertyName is not recognised by the handler
 	 */
 	Object resolveVariable(String variableName);
 
 	/**
 	 * @return Any handler specific {@link MvcFacesExceptionHandler}s that should be used to deal with exceptions.
 	 * Return <tt>null</tt> if no handler specific handlers are required. Handlers registered with
-	 * {@link AbstractFacesHandlerAdapter} will still be called.
+	 * {@link AbstractFacesHandlerAdapter} will still be called
 	 */
 	MvcFacesExceptionHandler[] getExceptionHandlers();
 }

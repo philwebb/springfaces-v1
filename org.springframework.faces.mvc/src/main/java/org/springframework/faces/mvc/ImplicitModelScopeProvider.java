@@ -21,10 +21,10 @@ import java.util.regex.Pattern;
 import org.springframework.util.StringUtils;
 
 /**
- * Implementation of {@link ModelScopeProvider} that allows scope to be defined as part of the modelAttribute. Any
- * modelAttribute can defined the scope using '.' notation, for example 'sessionScope.firstName' will result in the
- * attribute 'firstName' bound to 'session' scope. Note: Any model element that contains multiple '.' characters will
- * not be considered.
+ * Implementation of {@link ModelScopeProvider} that allows scope to be defined as part of the <tt>modelAttribute</tt>.
+ * Any <tt>modelAttribute</tt> can define the scope using '.' notation, for example 'sessionScope.firstName' will result
+ * in the attribute <tt>'firstName'</tt> bound to <tt>'session'</tt> scope. Note: Any model element that contains multiple '.' characters will not be
+ * considered.
  * 
  * @author Phillip Webb
  */
@@ -57,5 +57,4 @@ public class ImplicitModelScopeProvider implements ModelScopeProvider {
 	private boolean scopeAlreadyDefined(ScopedModelAttribute scopedModelAttribute) {
 		return StringUtils.hasText(scopedModelAttribute.getScope());
 	}
-
 }

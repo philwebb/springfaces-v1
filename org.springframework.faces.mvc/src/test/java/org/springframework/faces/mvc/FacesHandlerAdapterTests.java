@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc;
 
 import java.io.IOException;
@@ -15,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.apache.commons.collections.EnumerationUtils;
 import org.apache.shale.test.mock.MockServlet;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.support.MvcFacesContext;
@@ -24,36 +40,13 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 
 public class FacesHandlerAdapterTests extends TestCase {
 
-	public static class TrackingMockServlet extends MockServlet {
-		private ServletRequest request;
-		private ServletResponse response;
-		private ServletConfig config;
-
-		public void init(ServletConfig config) throws ServletException {
-			this.config = config;
-		}
-
-		public void service(ServletRequest request, ServletResponse response) throws IOException, ServletException {
-			this.request = request;
-			this.response = response;
-		}
-
-		public void assertSame(ServletRequest request, ServletResponse response) {
-			Assert.assertSame(request, this.request);
-			Assert.assertSame(response, this.response);
-		}
-
-		public ServletConfig getConfig() {
-			return config;
-		}
-	}
-
 	private FacesHandlerAdapter adapter;
 	private StaticWebApplicationContext context;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.adapter = new FacesHandlerAdapter();
+		this.adapter.setBeanName("testAdapterBean");
 		this.context = new StaticWebApplicationContext();
 		adapter.setApplicationContext(context);
 		adapter.setFacesServletClass(TrackingMockServlet.class);
@@ -88,6 +81,23 @@ public class FacesHandlerAdapterTests extends TestCase {
 		} catch (IllegalArgumentException e) {
 			assertEquals("The facesServletClass is required", e.getMessage());
 		}
+	}
+
+	public void testDelegatingServletConfig() throws Exception {
+		Properties initParameters = new Properties();
+		initParameters.setProperty("testkey", "testvalue");
+		ServletContext servletContext = (ServletContext) EasyMock.createMock(ServletContext.class);
+		adapter.setInitParameters(initParameters);
+		adapter.setServletContext(servletContext);
+		adapter.setOverrideInitParameters(false);
+		adapter.setFacesServletClass(MockServlet.class);
+		adapter.afterPropertiesSet();
+		MockServlet servlet = (MockServlet) adapter.getFacesServlet();
+		ServletConfig config = servlet.getServletConfig();
+		assertTrue(EnumerationUtils.toList(config.getInitParameterNames()).contains("testkey"));
+		assertEquals("testvalue", config.getInitParameter("testkey"));
+		assertEquals("testAdapterBean", config.getServletName());
+		assertSame(servletContext, config.getServletContext());
 	}
 
 	public void testDoHandle() throws Exception {
@@ -177,6 +187,39 @@ public class FacesHandlerAdapterTests extends TestCase {
 		}
 	}
 
+	public void testCustomRedirectHandler() throws Exception {
+		RedirectHandler redirectHandler = (RedirectHandler) EasyMock.createMock(RedirectHandler.class);
+		adapter.setRedirectHandler(redirectHandler);
+		adapter.afterPropertiesSet();
+		assertSame(redirectHandler, adapter.getRedirectHandler());
+	}
+
+	public void testCustomRedirectHandlerNull() throws Exception {
+		try {
+			adapter.setRedirectHandler(null);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertEquals("The redirectHandler is required", e.getMessage());
+		}
+	}
+
+	public void testCustomFacesViewIdResolver() throws Exception {
+		FacesViewIdResolver facesViewIdResolver = (FacesViewIdResolver) EasyMock.createMock(FacesViewIdResolver.class);
+		adapter.setFacesViewIdResolver(facesViewIdResolver);
+		adapter.afterPropertiesSet();
+		assertSame(facesViewIdResolver, adapter.getFacesViewIdResolver());
+	}
+
+	public void testCustomFacesViewIdResolverNull() throws Exception {
+		try {
+			adapter.setFacesViewIdResolver(null);
+			fail();
+		} catch (IllegalArgumentException e) {
+			assertEquals("The facesViewIdResolver is required", e.getMessage());
+		}
+
+	}
+
 	private void doTestOverrideInitParams(boolean override) throws Exception {
 		adapter.setOverrideInitParameters(override);
 		ServletContext servletContext = new MockServletContext();
@@ -192,5 +235,29 @@ public class FacesHandlerAdapterTests extends TestCase {
 
 	public void testOverrideInitParamsTrue() throws Exception {
 		doTestOverrideInitParams(true);
+	}
+
+	public static class TrackingMockServlet extends MockServlet {
+		private ServletRequest request;
+		private ServletResponse response;
+		private ServletConfig config;
+
+		public void init(ServletConfig config) throws ServletException {
+			this.config = config;
+		}
+
+		public void service(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+			this.request = request;
+			this.response = response;
+		}
+
+		public void assertSame(ServletRequest request, ServletResponse response) {
+			Assert.assertSame(request, this.request);
+			Assert.assertSame(response, this.response);
+		}
+
+		public ServletConfig getConfig() {
+			return config;
+		}
 	}
 }

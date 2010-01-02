@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
@@ -12,9 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.TestCase;
 
-import org.springframework.faces.mvc.annotation.RequestMappingMethodsResolver.RequestMappingAnnotation;
-import org.springframework.faces.mvc.annotation.RequestMappingMethodsResolver.RequestMappingAnnotationMatch;
-import org.springframework.faces.mvc.annotation.RequestMappingMethodsResolver.RequestMappingAnnotationMatchComparator;
+import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotation;
+import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotationMatch;
+import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotationMatchComparator;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
@@ -57,11 +72,11 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		}
 	}
 
-	private RequestMappingMethodsResolver newResolver(Class<?> handlerClass) {
+	private RequestMappingMethodResolver newResolver(Class<?> handlerClass) {
 		PathMatcher pathMatcher = new AntPathMatcher();
 		MethodNameResolver methodNameResolver = new InternalPathMethodNameResolver();
 		UrlPathHelper urlPathHelper = new UrlPathHelper();
-		RequestMappingMethodsResolver resolver = new RequestMappingMethodsResolver(handlerClass, urlPathHelper,
+		RequestMappingMethodResolver resolver = new RequestMappingMethodResolver(handlerClass, urlPathHelper,
 				methodNameResolver, pathMatcher);
 		return resolver;
 	}
@@ -70,7 +85,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/go.do");
 		request.setParameter("param", "value");
 		request.setParameter("param2", "value2");
-		RequestMappingMethodsResolver resolver = newResolver(ExampleController.class);
+		RequestMappingMethodResolver resolver = newResolver(ExampleController.class);
 		Method[] resolved = resolver.resolveHandlerMethods(request);
 		assertEquals(3, resolved.length);
 		assertEquals("exact", resolved[0].getName());
@@ -81,7 +96,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 	public void testParams() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/go.do");
 		request.setParameter("param", "value");
-		RequestMappingMethodsResolver resolver = newResolver(ParamsExample.class);
+		RequestMappingMethodResolver resolver = newResolver(ParamsExample.class);
 		Method[] resolved = resolver.resolveHandlerMethods(request);
 		Set<String> actual = new HashSet<String>();
 		for (Method method : resolved) {
@@ -94,7 +109,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 	public void testAmbiguous() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/ambiguous.do");
 		request.setParameter("param", "value");
-		RequestMappingMethodsResolver resolver = newResolver(AmbiguousExample.class);
+		RequestMappingMethodResolver resolver = newResolver(AmbiguousExample.class);
 		try {
 			resolver.resolveHandlerMethods(request);
 			fail();
@@ -110,7 +125,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 
 	public void testRequestMethod() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/go.do");
-		RequestMappingMethodsResolver resolver = newResolver(RequestMethodExample.class);
+		RequestMappingMethodResolver resolver = newResolver(RequestMethodExample.class);
 		Method[] resolved = resolver.resolveHandlerMethods(request);
 		Set<String> actual = new HashSet<String>();
 		for (Method method : resolved) {

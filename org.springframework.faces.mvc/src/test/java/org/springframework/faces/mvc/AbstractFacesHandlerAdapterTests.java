@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc;
 
 import java.util.ArrayList;
@@ -23,6 +38,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.js.ajax.AjaxHandler;
+import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
@@ -262,9 +279,10 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 	}
 
 	public void testRedirectHandler() throws Exception {
+		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
 		HttpServletRequest frequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 		HttpServletResponse fresponse = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-		redirectHandler.handleRedirect(frequest, fresponse, "location");
+		redirectHandler.handleRedirect(ajaxHandler, frequest, fresponse, "location");
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
@@ -273,6 +291,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().redirect(facesContext, "location");
 			}
 		};
+		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
 		facesHandlerAdapter.handle(request, response, facesHandler);
 		EasyMock.verify(new Object[] { redirectHandler });
 	}
@@ -346,14 +365,33 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		newExceptionThrowingFacesHandlerAdapter();
 		MockMvcFacesExceptionHandler exceptionHandler = new MockMvcFacesExceptionHandler(true);
 		exceptionHandler.setRedirect("location");
-		redirectHandler.handleRedirect(request, response, "location");
+		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
+		redirectHandler.handleRedirect(ajaxHandler, request, response, "location");
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter.setExceptionHandlers(Collections.singletonList(exceptionHandler));
 		facesHandlerAdapter.onRefresh(new StaticWebApplicationContext());
+		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
 		facesHandlerAdapter.handle(request, response, facesHandler);
 		exceptionHandler.assertCalled();
 		EasyMock.verify(new Object[] { redirectHandler });
+	}
+
+	public void testExceptionHandlerRedirectAndRedisplayThrows() throws Exception {
+		newExceptionThrowingFacesHandlerAdapter();
+		MockMvcFacesExceptionHandler exceptionHandler = new MockMvcFacesExceptionHandler(true);
+		exceptionHandler.setRedirect("location");
+		exceptionHandler.setRedisplay(true);
+		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
+		facesHandlerAdapter.setExceptionHandlers(Collections.singletonList(exceptionHandler));
+		facesHandlerAdapter.onRefresh(new StaticWebApplicationContext());
+		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
+		try {
+			facesHandlerAdapter.handle(request, response, facesHandler);
+			fail();
+		} catch (IllegalStateException e) {
+			assertEquals("Illegal outcome specified, redirect or redisplay are mutually exclusive", e.getMessage());
+		}
 	}
 
 	public void testUserDefinedHandlersIgnoredAndCanFindInContext() throws Exception {
@@ -375,6 +413,28 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.verify(new Object[] { applicationContext });
 		direct.assertNotCalled();
 		bean.assertCalled();
+	}
+
+	public void testAjaxHandlerSetWhenNull() throws Exception {
+		facesHandlerAdapter = new MockFacesHandlerAdapter();
+		assertNull(facesHandlerAdapter.getAjaxHandler());
+		facesHandlerAdapter.afterPropertiesSet();
+		assertNotNull(facesHandlerAdapter.getAjaxHandler());
+		assertTrue(facesHandlerAdapter.getAjaxHandler() instanceof SpringJavascriptAjaxHandler);
+	}
+
+	public void testAjaxHandlerNotReplacedWhenSet() throws Exception {
+		facesHandlerAdapter = new MockFacesHandlerAdapter();
+		AjaxHandler ajaxHandler = (AjaxHandler) EasyMock.createMock(AjaxHandler.class);
+		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
+		facesHandlerAdapter.afterPropertiesSet();
+		assertSame(ajaxHandler, facesHandlerAdapter.getAjaxHandler());
+	}
+
+	public void testGetLastModified() throws Exception {
+		facesHandlerAdapter = new MockFacesHandlerAdapter();
+		Object handler = new Object();
+		assertEquals(-1, facesHandlerAdapter.getLastModified(request, handler));
 	}
 
 	private static class MockMvcFacesExceptionHandler implements MvcFacesExceptionHandler {
@@ -431,7 +491,5 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		public void assertNotCalled() {
 			Assert.assertTrue(called == null);
 		}
-
 	}
-
 }

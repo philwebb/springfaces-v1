@@ -25,12 +25,14 @@ import javax.faces.application.NavigationHandler;
 
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.FacesWebArgumentResolver;
+import org.springframework.faces.mvc.annotation.NavigationOutcomeExpressionElResolver;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Annotation that can be used to map JSF navigation cases. This annotation can be used as part of the
- * {@link NavigationRules} annotation or placed on a {@link Method} {@link Class} or {@link Package}.
- *
+ * {@link NavigationRules} annotation or placed on a {@link Method}, {@link Class} or {@link Package}.
+ * 
  * @author Phillip Webb
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -40,14 +42,16 @@ public @interface NavigationCase {
 	/**
 	 * The 'on' cases that the navigation case applies to. If this value is omitted the navigation case applies for all
 	 * views that the handler controls.
-	 * @return The 'on' cases.
+	 * 
+	 * @return The 'on' cases
 	 */
 	public String[] on() default {};
 
 	/**
 	 * The action expression that the navigation case applies to. This is the expression as defined on the component
-	 * that caused the action. For example "#{controller.continue}"
-	 * @return The action expression.
+	 * that caused the action. For example "#{controller.continue}".
+	 * 
+	 * @return The action expression
 	 */
 	public String fromAction() default "";
 
@@ -56,14 +60,20 @@ public @interface NavigationCase {
 	 * only be considered if an exception is thrown during the processing of the JSF request. The navigation will also
 	 * apply if a sub-classes of the specified exception is throw. The full exception stack will be considered when
 	 * determining if the navigation case applies.
-	 *
-	 * @return A class of exception that should trigger the navigation.
+	 * 
+	 * @return A class of exception that should trigger the navigation
 	 */
 	public Class<?> onException() default void.class;
 
 	/**
 	 * The navigation outcome used to redirect the user when the navigation case applies. This value is omitted the
 	 * result of the method will be used or, if the result is unavailable, a <tt>null</tt> outcome will be returned.
+	 * <p>
+	 * The value can also include expressions that will be resolved before navigation occurs. By default, EL expressions
+	 * are supported (see {@link NavigationOutcomeExpressionElResolver} for details). Custom expression resolvers can
+	 * also be used ( {see @link
+	 * FacesAnnotationMethodHandlerAdapter#setNavigationOutcomeExpressionResolver(org.springframework
+	 * .faces.mvc.annotation.NavigationOutcomeExpressionResolver)} ).
 	 * <p>
 	 * When applied to a method the method should return an appropriate outcome for the navigation. The method can also
 	 * declare parameters of the following type:
@@ -73,17 +83,15 @@ public @interface NavigationCase {
 	 * access the <tt>outcome</tt> and <tt>fromAction</tt> values as passed to the JSF {@link NavigationHandler}</li>
 	 * <li>{@link NavigationCase} - Will contain the actual annotation instance that is handling the navigation.</li>
 	 * </ul>
-	 * In addition any of the parameter types supported by {@link FacesWebArgumentResolver} can also be used. Parameters
-	 * can be declared in any order.
+	 * In addition any of the parameter types supported by {@link FacesWebArgumentResolver} and any
+	 * {@link ModelAttribute} annotated parameters can also be used. Parameters can be declared in any order.
 	 * <p>
-	 * Note: Methods will not be called if they are also {@link RequestMapping}s.
-	 *
+	 * Note: Methods will not be called if there is also a {@link RequestMapping} annotation contained on the method.
+	 * 
 	 * @return The navigation outcome.
 	 */
 	public String to() default "";
-	// FIXME allow #{} in to
-	// FIXME allow navigation with just ? params
 	// FIXME support if?
 	// FIXME rename package
-	// FIXME fragment support?
+	// FIXME AJAX fragment support?
 }

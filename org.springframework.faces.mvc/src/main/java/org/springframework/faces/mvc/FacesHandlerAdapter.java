@@ -74,7 +74,8 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Trigger all post-processors and spring callbacks for internally managed beans.
+	 * Trigger all post-processors and spring call-backs for internally managed beans.
+	 * 
 	 * @param bean The internal bean
 	 * @throws Exception
 	 */
@@ -134,7 +135,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Factory method used to construct the servlet class.
 	 * 
-	 * @return The faces servlet instance.
+	 * @return The faces servlet instance
 	 */
 	protected Servlet newFacesServlet() {
 		try {
@@ -151,7 +152,9 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * the user has set the required parameters in their web.xml. Note: This behaviour can be disabled using
 	 * {@link #setOverrideInitParameters(boolean)}.
 	 * 
-	 * @return {@link ServletConfig} instance.
+	 * @return {@link ServletConfig} instance
+	 * 
+	 * @see #setOverrideInitParameters(boolean)
 	 */
 	protected ServletContext getFacesServletContext() {
 		if (!overrideInitParameters) {
@@ -177,8 +180,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * behaviour is not desired then this set <tt>overrideInitParameters</tt> to <tt>false</tt>
 	 * 
 	 * @param overrideInitParameters <tt>true</tt> if init parameters are automatically set for correct MVC operation or
-	 * <tt>false</tt> if parameters should be set manually in web.xml. Defaults to <tt>true</tt> when not explicitly
-	 * set.
+	 * <tt>false</tt> if parameters should be set manually in web.xml. Defaults to <tt>true</tt> when not explicitly set
 	 */
 	public void setOverrideInitParameters(boolean overrideInitParameters) {
 		this.overrideInitParameters = overrideInitParameters;
@@ -214,7 +216,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Set the {@link FacesViewIdResolver} that will be used to resolve view IDs. If the resolver is not injected a
+	 * Set the {@link FacesViewIdResolver} that will be used to resolve view IDs. If the resolver is not specified a
 	 * {@link SimpleFacesViewIdResolver} will be used.
 	 * 
 	 * @param facesViewIdResolver
@@ -226,7 +228,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Set the {@link ActionUrlMapper} that will be used to map action URLS. If the mapper is not injected a
+	 * Set the {@link ActionUrlMapper} that will be used to map action URLS. If the mapper is not specified a
 	 * {@link PageEncodedActionUrlMapper} will be used.
 	 * 
 	 * @param actionUrlMapper
@@ -238,7 +240,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Set the model binder that will be used to expose model elements to JSF. If the binder is not injected the
+	 * Set the model binder that will be used to expose model elements to JSF. If the binder is not specified the
 	 * {@link BeanScopeModelBinder} will be used.
 	 * 
 	 * @param modelBinder
@@ -250,7 +252,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Set the redirect handler that will be used to handle navigation outcome. If the handler is not injected the
+	 * Set the redirect handler that will be used to handle navigation outcome. If the handler is not specified the
 	 * {@link DefaultRedirectHandler} will be used.
 	 * 
 	 * @param redirectHandler
@@ -284,8 +286,8 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Internal method interceptor used to ensure that the {@link ServletContext} has sensible default init parameters
-	 * for MVC operation.
+	 * Internal {@link MethodInterceptor} used to ensure that the {@link ServletContext} has sensible default init
+	 * parameters for MVC operation.
 	 */
 	private static class OverrideInitParameterInterceptor implements MethodInterceptor {
 

@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
@@ -47,9 +48,12 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebArgumentResolver;
+import org.springframework.web.bind.support.WebBindingInitializer;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
@@ -65,9 +69,9 @@ import org.springframework.web.util.UrlPathHelper;
  * {@link NavigationCase} and {@link NavigationRules} annotations.
  * <p>
  * Supports the {@link ModelAttribute} annotation for exposing model attribute values to JSF.
- *
+ * 
  * @author Phillip Webb
- *
+ * 
  * @see #setPathMatcher
  * @see #setMethodNameResolver
  * @see #setWebBindingInitializer
@@ -89,7 +93,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
-	private FacesHandlerAdapter facesHandlerAdapter;
+	private HandlerAdapter facesHandlerAdapter;
 
 	// FIXME setter
 	private NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver = new NavigationOutcomeExpressionElResolver();
@@ -98,7 +102,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private final NavigationCaseAnnotationLocator navigationCaseAnnotationLocator = new NavigationCaseAnnotationLocator();
 
-	private final Map<Class<?>, NavigationCaseMethodsResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, NavigationCaseMethodsResolver>();
+	private final Map<Class<?>, NavigationCaseMethodResolver> methodResolverCache = new ConcurrentHashMap<Class<?>, NavigationCaseMethodResolver>();
 
 	private Set<BeanFactoryPostProcessor> postProcessors = new HashSet<BeanFactoryPostProcessor>();
 
@@ -107,6 +111,17 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	private String beanName;
+
+	private WebBindingInitializer webBindingInitializer;
+
+	private ParameterNameDiscoverer parameterNameDiscoverer;
+
+	private WebArgumentResolver[] completeArgumentResolvers;
+
+	public FacesAnnotationMethodHandlerAdapter() {
+		super();
+		setCustomArgumentResolvers(null);
+	}
 
 	/**
 	 * Trigger all post-processors and spring callbacks for internally managed beans.
@@ -134,53 +149,67 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return getHandlerAnnotation(handler) != null;
 	}
 
-	protected ModelAndView createView(HttpServletRequest request, HttpServletResponse response, Object handler)
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		FacesHandler facesHandler = new AnnotatedMethodFacesHandlerAdapter(handler);
+		if (!facesHandlerAdapter.supports(facesHandler)) {
+			throw new IllegalStateException("The facesHandlerAdapter " + facesHandlerAdapter.getClass()
+					+ " does not support FacesHandler objects, possible misconfiguration of setFacesHandlerAdapter");
+		}
+		return facesHandlerAdapter.handle(request, response, facesHandler);
+	}
+
+	protected final ModelAndView createView(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		return super.handle(request, response, handler);
 	}
 
-	protected Object getNavigationOutcome(HttpServletRequest request, HttpServletResponse response,
+	protected final Object getNavigationOutcome(HttpServletRequest request, HttpServletResponse response,
 			NavigationRequestEvent event, Object handler) throws Exception {
-		NavigationCaseMethodsResolver methodResolver = getMethodsResolver(handler);
-		ServletWebRequest servletWebRequest = new ServletWebRequest(request, response);
+		NavigationCaseMethodResolver methodResolver = getMethodResolver(handler);
+		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
 				event);
-		return navigationCase == null ? null : navigationCase.getOutcome(event, handler, servletWebRequest);
-	}
-
-	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-
-		FacesHandler facesHandler = new AnnotatedMethodFacesHandlerAdapter(handler);
-		return facesHandlerAdapter.handle(request, response, facesHandler);
+		Object outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler, webRequest);
+		NavigationOutcomeExpressionContextImpl context = new NavigationOutcomeExpressionContextImpl(handler,
+				webRequest, methodResolver);
+		outcome = navigationOutcomeExpressionResolver.resolveNavigationOutcome(context, outcome);
+		return outcome;
 	}
 
 	/**
-	 * Set the {@link FacesHandlerAdapter} that will be used to process the annotated controllers that are handled by
-	 * this class. The {@link FacesHandlerAdapter} may be need to be set if additional configuration is required (for
-	 * example is a specific {@link RedirectHandler} is required.
+	 * Set the {@link HandlerAdapter} that will be used to process the annotated controllers that are handled by this
+	 * class. The {@link FacesHandlerAdapter} may be need to be set if additional configuration is required (for example
+	 * is a specific {@link RedirectHandler} is required.
 	 * <p>
 	 * If this property is not injected the {@link ApplicationContext} will be used to locate a single
 	 * {@link FacesHandlerAdapter} bean. If no bean is found a new {@link FacesHandlerAdapter} with default settings
 	 * will be used.
-	 *
+	 * <p>
+	 * Note: The handler adapter set here must support {@link FacesHandler} instances.
+	 * 
 	 * @param facesHandlerAdapter
 	 */
-	public void setFacesHandlerAdapter(FacesHandlerAdapter facesHandlerAdapter) {
+	public void setFacesHandlerAdapter(HandlerAdapter facesHandlerAdapter) {
 		this.facesHandlerAdapter = facesHandlerAdapter;
 	}
 
-	private NavigationCaseMethodsResolver getMethodsResolver(Object handler) {
+	protected final HandlerAdapter getFacesHandlerAdapter() {
+		return facesHandlerAdapter;
+	}
+
+	private NavigationCaseMethodResolver getMethodResolver(Object handler) {
 		Class<?> handlerClass = ClassUtils.getUserClass(handler);
-		NavigationCaseMethodsResolver resolver = this.methodResolverCache.get(handlerClass);
+		NavigationCaseMethodResolver resolver = this.methodResolverCache.get(handlerClass);
 		if (resolver == null) {
-			resolver = new NavigationCaseMethodsResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
+			resolver = new NavigationCaseMethodResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
 			this.methodResolverCache.put(handlerClass, resolver);
 		}
 		return resolver;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void afterPropertiesSet() throws Exception {
 		if (facesHandlerAdapter == null) {
 			Map<String, FacesHandlerAdapter> facesHandlerAdapters = getApplicationContext().getBeansOfType(
@@ -203,9 +232,17 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		this.urlPathHelper = urlPathHelper;
 	}
 
+	protected final UrlPathHelper getUrlPathHelper() {
+		return urlPathHelper;
+	}
+
 	public void setMethodNameResolver(MethodNameResolver methodNameResolver) {
 		super.setMethodNameResolver(methodNameResolver);
 		this.methodNameResolver = methodNameResolver;
+	}
+
+	protected final MethodNameResolver getMethodNameResolver() {
+		return methodNameResolver;
 	}
 
 	public void setPathMatcher(PathMatcher pathMatcher) {
@@ -213,15 +250,37 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		this.pathMatcher = pathMatcher;
 	}
 
+	protected final PathMatcher getPathMatcher() {
+		return pathMatcher;
+	}
+
+	public void setWebBindingInitializer(WebBindingInitializer webBindingInitializer) {
+		super.setWebBindingInitializer(webBindingInitializer);
+		this.webBindingInitializer = webBindingInitializer;
+	}
+
+	protected final WebBindingInitializer getWebBindingInitializer() {
+		return webBindingInitializer;
+	}
+
+	public void setParameterNameDiscoverer(ParameterNameDiscoverer parameterNameDiscoverer) {
+		super.setParameterNameDiscoverer(parameterNameDiscoverer);
+		this.parameterNameDiscoverer = parameterNameDiscoverer;
+	}
+
+	protected final ParameterNameDiscoverer getParameterNameDiscoverer() {
+		return parameterNameDiscoverer;
+	}
+
 	public void setCustomArgumentResolver(WebArgumentResolver argumentResolver) {
-		setCustomArgumentResolvers(new WebArgumentResolver[] { argumentResolver });
+		setCustomArgumentResolvers(argumentResolver == null ? null : new WebArgumentResolver[] { argumentResolver });
 	}
 
 	public void setCustomArgumentResolvers(WebArgumentResolver[] argumentResolvers) {
 		if (argumentResolvers == null) {
 			super.setCustomArgumentResolvers(ARGUMENT_RESOLVERS);
 		} else {
-			WebArgumentResolver[] completeArgumentResolvers = new WebArgumentResolver[ARGUMENT_RESOLVERS.length
+			this.completeArgumentResolvers = new WebArgumentResolver[ARGUMENT_RESOLVERS.length
 					+ argumentResolvers.length];
 			System.arraycopy(argumentResolvers, 0, completeArgumentResolvers, 0, argumentResolvers.length);
 			System.arraycopy(ARGUMENT_RESOLVERS, 0, completeArgumentResolvers, argumentResolvers.length,
@@ -230,8 +289,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
-	public int getOrder() {
-		return order;
+	public void setNavigationOutcomeExpressionResolver(
+			NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver) {
+		this.navigationOutcomeExpressionResolver = navigationOutcomeExpressionResolver;
 	}
 
 	/**
@@ -242,8 +302,22 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		this.order = order;
 	}
 
+	public int getOrder() {
+		return order;
+	}
+
+	public void setBeanName(String name) {
+		this.beanName = name;
+	}
+
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
+			postProcessor.postProcessBeanFactory(beanFactory);
+		}
+	}
+
 	/**
-	 * Adapter class to convert the annotated handler into a {@link FacesController}. Also implements
+	 * Adapter class to convert the annotated handler into a {@link FacesHandler}. Also implements
 	 * {@link MvcFacesExceptionHandler} to deal with navigation based exception handling.
 	 */
 	private class AnnotatedMethodFacesHandlerAdapter implements FacesHandler, MvcFacesExceptionHandler {
@@ -271,12 +345,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				throws Exception {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			Object outcome = FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event,
-					handler);
-			outcome = navigationOutcomeExpressionResolver.resolveNavigationOutcome(outcome);
-			// FIXME expression resolve the outcome
-			// FIXME URL encode?
-			return outcome;
+			return FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event, handler);
 		}
 
 		public Object resolveVariable(String variableName) {
@@ -306,13 +375,48 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
-	public void setBeanName(String name) {
-		this.beanName = name;
+	private class AnnotatedMethodInvoker extends FacesControllerAnnotatedMethodInvoker {
+		public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver) {
+			super(resolver, webBindingInitializer, parameterNameDiscoverer, completeArgumentResolvers);
+		}
+
+		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
+				throws Exception {
+			return FacesAnnotationMethodHandlerAdapter.this.createBinder((HttpServletRequest) webRequest
+					.getNativeRequest(), target, objectName);
+		}
+
+		public WebDataBinder createDataBinder(Object handler, NativeWebRequest webRequest, String attrName,
+				Object target, String objectName) throws Exception {
+			WebDataBinder binder = createBinder(webRequest, target, objectName);
+			initBinder(handler, attrName, binder, webRequest);
+			return binder;
+		}
 	}
 
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
-			postProcessor.postProcessBeanFactory(beanFactory);
+	private class NavigationOutcomeExpressionContextImpl implements NavigationOutcomeExpressionContext {
+
+		private NativeWebRequest webRequest;
+		private AnnotatedMethodInvoker annotatedMethodInvoker;
+		private NavigationCaseMethodResolver methodResolver;
+		private Object handler;
+
+		public NavigationOutcomeExpressionContextImpl(Object handler, NativeWebRequest webRequest,
+				NavigationCaseMethodResolver methodResolver) {
+			this.handler = handler;
+			this.webRequest = webRequest;
+			this.methodResolver = methodResolver;
+		}
+
+		public NativeWebRequest getWebRequest() {
+			return webRequest;
+		}
+
+		public WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception {
+			if (annotatedMethodInvoker == null) {
+				annotatedMethodInvoker = new AnnotatedMethodInvoker(methodResolver);
+			}
+			return annotatedMethodInvoker.createDataBinder(handler, webRequest, attrName, target, objectName);
 		}
 	}
 }

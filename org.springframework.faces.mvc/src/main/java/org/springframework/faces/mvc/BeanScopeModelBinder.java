@@ -36,8 +36,8 @@ import org.springframework.util.Assert;
  */
 public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, InitializingBean {
 	// FIXME exclude org.springframework.validation.BindingResult. ?
-	private ConfigurableBeanFactory beanFactory;
 
+	private ConfigurableBeanFactory beanFactory;
 	private ModelScopeProvider modelScopeProvider;
 
 	public BeanScopeModelBinder() {
@@ -76,10 +76,10 @@ public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, Init
 	/**
 	 * Set the {@link ModelScopeProvider} that will be used to resolve the scope of each model element. For convenience
 	 * the {@link #setScope(String)} can also be used to always use the same scope for each model element. If not
-	 * specified the {@link SpecificModelScopeProvider} set to <tt>request</tt> scope with
+	 * specified the {@link SpecificModelScopeProvider} (set to <tt>request</tt> scope) with
 	 * {@link ImplicitModelScopeProvider} support will be used.
 	 * 
-	 * @param modelScopeProvider The model scope provider used to determine the scope of each model entry.
+	 * @param modelScopeProvider The model scope provider used to determine the scope of each model entry
 	 */
 	public void setModelScopeProvider(ModelScopeProvider modelScopeProvider) {
 		this.modelScopeProvider = modelScopeProvider;
@@ -88,7 +88,7 @@ public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, Init
 	/**
 	 * Convince method that can be used to bind all model elements to a specific scope.
 	 * 
-	 * @param scope The scope to bind all model elements to.
+	 * @param scope The scope to bind all model elements to
 	 */
 	public void setScope(String scope) {
 		this.modelScopeProvider = new SpecificModelScopeProvider(scope);

@@ -57,7 +57,7 @@ import org.springframework.web.util.WebUtils;
  * @author Arjen Poutsma
  * @author Phillip Webb
  */
-public class RequestMappingMethodsResolver {
+public class RequestMappingMethodResolver {
 
 	private final Set<Method> handlerMethods = new LinkedHashSet<Method>();
 	private final Set<Method> initBinderMethods = new LinkedHashSet<Method>();
@@ -72,7 +72,7 @@ public class RequestMappingMethodsResolver {
 	private UrlPathHelper urlPathHelper;
 	private PathMatcher pathMatcher;
 
-	public RequestMappingMethodsResolver(Class<?> handlerType, UrlPathHelper urlPathHelper,
+	public RequestMappingMethodResolver(Class<?> handlerType, UrlPathHelper urlPathHelper,
 			MethodNameResolver methodNameResolver, PathMatcher pathMatcher) {
 		init(handlerType);
 		this.urlPathHelper = urlPathHelper;

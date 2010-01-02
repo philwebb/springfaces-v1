@@ -30,8 +30,8 @@ public final class ScopedModelAttribute {
 	private String modelAttribute;
 
 	/**
-	 * @param scope An optional scope.
-	 * @param modelAttribute The attribute name.
+	 * @param scope An optional scope
+	 * @param modelAttribute The attribute name
 	 */
 	public ScopedModelAttribute(String scope, String modelAttribute) {
 		super();
@@ -55,9 +55,8 @@ public final class ScopedModelAttribute {
 	/**
 	 * Create a variant of this attribute in the specified scope.
 	 * 
-	 * @param scope The new scope.
-	 * @return A new {@link ScopedModelAttribute} with the same attribute name as this object but in the specified
-	 * scope.
+	 * @param scope The new scope
+	 * @return A new {@link ScopedModelAttribute} with the same attribute name as this object but in the specified scope
 	 */
 	public ScopedModelAttribute newScope(String scope) {
 		return new ScopedModelAttribute(scope, this.modelAttribute);

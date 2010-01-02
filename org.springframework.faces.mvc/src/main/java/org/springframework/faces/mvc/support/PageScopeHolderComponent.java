@@ -24,8 +24,6 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.render.Renderer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -36,8 +34,6 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 public class PageScopeHolderComponent extends UIComponentBase {
-
-	protected final static Log logger = LogFactory.getLog(PageScopeHolderComponent.class);
 
 	private static final String COMPONENT_FAMILY = "javax.faces.Parameter";
 
@@ -105,10 +101,10 @@ public class PageScopeHolderComponent extends UIComponentBase {
 	/**
 	 * Locate the {@link PageScopeHolderComponent} from the specified faces context.
 	 * @param facesContext The faces context
-	 * @param viewRoot An optional view root, if not specified <tt>facesContext.getViewRoot()</tt> is used.
-	 * @param required <tt>true</tt> if the component is required and <tt>null</tt> is not a valid return.
-	 * <tt>false</tt> if the <tt>null</tt> should be returned if the component cannot be found.
-	 * @return The {@link PageScopeHolderComponent} or <tt>null</tt> (only when <tt>required</tt> is <tt>false</tt>).
+	 * @param viewRoot An optional view root, if not specified <tt>facesContext.getViewRoot()</tt> is used
+	 * @param required <tt>true</tt> if the component is required and <tt>null</tt> is not a valid return,
+	 * <tt>false</tt> if the <tt>null</tt> should be returned if the component cannot be found
+	 * @return The {@link PageScopeHolderComponent} or <tt>null</tt> (only when <tt>required</tt> is <tt>false</tt>)
 	 */
 	public static PageScopeHolderComponent locate(FacesContext facesContext, UIViewRoot viewRoot, boolean required) {
 		viewRoot = viewRoot == null ? facesContext.getViewRoot() : viewRoot;

@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +41,8 @@ import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.js.ajax.AjaxHandler;
+import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
@@ -47,14 +50,21 @@ import org.springframework.web.servlet.support.WebContentGenerator;
 /**
  * Abstract base implementation of a MVC {@link HandlerAdapter} that can be used to process {@link FacesHandler}s.
  * 
+ * @see FacesHandlerAdapter
+ * 
  * @author Phillip Webb
  */
 public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator implements HandlerAdapter,
-		BeanFactoryPostProcessor, ApplicationListener {
+		BeanFactoryPostProcessor, ApplicationListener, InitializingBean {
 
 	private boolean detectAllExceptionHandlers = true;
 	private List userDefinedExceptionHandlers;
 	private MvcFacesExceptionHandler[] allExceptionHandlers;
+	private AjaxHandler ajaxHandler;
+
+	public long getLastModified(HttpServletRequest request, Object handler) {
+		return -1;
+	}
 
 	public boolean supports(Object handler) {
 		return handler instanceof FacesHandler;
@@ -77,6 +87,21 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			mvcFacesRequestContext.release();
 		}
 	}
+
+	/**
+	 * Internal method called to perform the actual handling of the request. The {@link MvcFacesRequestContext} will be
+	 * active when this method is called. This method is expected to completely handle the rendering of a response or
+	 * throw an exception.
+	 * 
+	 * @param mvcFacesRequestContext The MVC Faces Request Context
+	 * @param request current HTTP request
+	 * @param response current HTTP response
+	 * @throws Exception in case of errors
+	 * 
+	 * @see HandlerAdapter#handle(HttpServletRequest, HttpServletResponse, Object)
+	 */
+	protected abstract void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+			HttpServletResponse response) throws Exception;
 
 	/**
 	 * Method that is called when the handler throws an exception during processing.
@@ -120,14 +145,14 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		return false;
 	}
 
-	public long getLastModified(HttpServletRequest request, Object handler) {
-		return -1;
-	}
-
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		if (isPageScopeSupported()) {
 			beanFactory.registerScope("page", new PageScope());
 		}
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		ajaxHandler = (ajaxHandler == null ? new SpringJavascriptAjaxHandler() : ajaxHandler);
 	}
 
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -136,6 +161,11 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 	}
 
+	/**
+	 * Method called on a {@link ContextRefreshedEvent}.
+	 * 
+	 * @param context
+	 */
 	protected void onRefresh(ApplicationContext context) {
 		initExceptionHandlers(context);
 	}
@@ -161,26 +191,11 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
-	 * Internal method called to perform the actual handling of the request. The {@link MvcFacesRequestContext} will be
-	 * active when this method is called. This method is expected to completely handle the rendering of a response or
-	 * throw an exception.
-	 * 
-	 * @param mvcFacesRequestContext The MVC Faces Request Context
-	 * @param request current HTTP request
-	 * @param response current HTTP response
-	 * @throws Exception in case of errors
-	 * 
-	 * @see HandlerAdapter#handle(HttpServletRequest, HttpServletResponse, Object)
-	 */
-	protected abstract void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
-			HttpServletResponse response) throws Exception;
-
-	/**
 	 * Factory method used to construct the {@link MvcFacesContext} that will be used during request handling. By
 	 * default this method returns an instance of {@link FacesHandlerAdapterContext}. Subclasses can override this
 	 * method if required.
 	 * 
-	 * @return The {@link MvcFacesContext} instance that will be used during request handling.
+	 * @return The {@link MvcFacesContext} instance that will be used during request handling
 	 */
 	protected MvcFacesContext newFacesHandlerAdapterContext() {
 		return new FacesHandlerAdapterContext();
@@ -191,10 +206,37 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * the bean factory and a {@link PageScopeHolderComponent} will be attached when views are created. By default this
 	 * method will return <tt>true</tt> so that {@link PageScope} can be supported.
 	 * 
-	 * @return <tt>true</tt> if page scope is supported.
+	 * @return <tt>true</tt> if page scope is supported
 	 */
 	protected boolean isPageScopeSupported() {
 		return true;
+	}
+
+	/**
+	 * @return The {@link FacesViewIdResolver} that will be used to resolve faces view IDs
+	 */
+	protected abstract FacesViewIdResolver getFacesViewIdResolver();
+
+	/**
+	 * @return The {@link ModelBindingExecutor} that will be used to bind the model
+	 */
+	protected abstract ModelBindingExecutor getModelBindingExecutor();
+
+	/**
+	 * @return The {@link ActionUrlMapper} that will be used to map the action URL
+	 */
+	protected abstract ActionUrlMapper getActionUrlMapper();
+
+	/**
+	 * @return The {@link RedirectHandler} that will be used to issue redirects
+	 */
+	protected abstract RedirectHandler getRedirectHandler();
+
+	/**
+	 * @return The configured Ajax handler
+	 */
+	public AjaxHandler getAjaxHandler() {
+		return ajaxHandler;
 	}
 
 	/**
@@ -218,27 +260,15 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
-	 * @return The {@link FacesViewIdResolver} that will be used to resolve faces view IDs.
+	 * Sets the configured Ajax handler.
+	 * @param ajaxHandler the ajax handler
 	 */
-	protected abstract FacesViewIdResolver getFacesViewIdResolver();
+	public void setAjaxHandler(AjaxHandler ajaxHandler) {
+		this.ajaxHandler = ajaxHandler;
+	}
 
 	/**
-	 * @return The {@link ModelBindingExecutor} that will be used to bind the model.
-	 */
-	protected abstract ModelBindingExecutor getModelBindingExecutor();
-
-	/**
-	 * @return The {@link ActionUrlMapper} that will be used to map the action URL.
-	 */
-	protected abstract ActionUrlMapper getActionUrlMapper();
-
-	/**
-	 * @return The {@link RedirectHandler} that will be used to issue redirects.
-	 */
-	protected abstract RedirectHandler getRedirectHandler();
-
-	/**
-	 * {@link MvcFacesContext} implementation for the adapter.
+	 * {@link MvcFacesContext} implementation for the adapter
 	 */
 	protected class FacesHandlerAdapterContext implements MvcFacesContext {
 
@@ -293,10 +323,14 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		public void redirect(FacesContext facesContext, Object location) throws IOException {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(request, response, location);
+			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(ajaxHandler, request, response,
+					location);
 		}
 	}
 
+	/**
+	 * Internal implementation of {@link MvcFacesExceptionOutcome}.
+	 */
 	private class MvcFacesExceptionOutcomeImpl implements MvcFacesExceptionOutcome {
 
 		private Object redirectLocation;
@@ -322,7 +356,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 						"Illegal outcome specified, redirect or redisplay are mutually exclusive");
 			}
 			if (redirectLocation != null) {
-				getRedirectHandler().handleRedirect(request, response, redirectLocation);
+				getRedirectHandler().handleRedirect(ajaxHandler, request, response, redirectLocation);
 			}
 			if (redisplay) {
 				doHandle(mvcFacesRequestContext, request, response);

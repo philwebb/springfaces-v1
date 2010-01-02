@@ -35,14 +35,14 @@ import org.springframework.web.util.UrlPathHelper;
 
 public class NavigationCaseMethodsResolverTests extends TestCase {
 
-	private NavigationCaseMethodsResolver resolver;
+	private NavigationCaseMethodResolver resolver;
 
 	public NavigationCaseMethodsResolverTests() {
 		Class<?> handlerType = ExampleController.class;
 		UrlPathHelper urlPathHelper = new UrlPathHelper();
 		MethodNameResolver methodNameResolver = new InternalPathMethodNameResolver();
 		PathMatcher pathMatcher = new AntPathMatcher();
-		resolver = new NavigationCaseMethodsResolver(handlerType, urlPathHelper, methodNameResolver, pathMatcher);
+		resolver = new NavigationCaseMethodResolver(handlerType, urlPathHelper, methodNameResolver, pathMatcher);
 	}
 
 	private Set<String> getMethodNames(Set<Method> methods) {

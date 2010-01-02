@@ -82,5 +82,4 @@ public class PageScope implements Scope {
 		logger.warn("Destruction callback for '" + name + "' was not registered. Spring MVC Face does not "
 				+ "support destruction of scoped beans.");
 	}
-
 }

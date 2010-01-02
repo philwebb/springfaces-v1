@@ -33,8 +33,8 @@ public interface ActionUrlMapper {
 	 * return a URL based on the current request or a global post-back URL. When post-back occurs the
 	 * {@link #getViewNameForRestore(FacesContext)} method will be called to obtain the actual view to restore.
 	 * 
-	 * @param facesContext The faces context.
-	 * @param viewName The MVC view name that is being rendered.
+	 * @param facesContext The faces context
+	 * @param viewName The MVC view name that is being rendered
 	 * 
 	 * @return The action URL
 	 */
@@ -57,8 +57,8 @@ public interface ActionUrlMapper {
 	 * that is being rendered is determined by the controller and so there may not be a direct correlation to the
 	 * request URL. The {@link #writeState(FacesContext, String)} method is often used in combination with this method.
 	 * 
-	 * @param facesContext The faces context. This can be used to obtain the request URL if required.
-	 * @return The actual view name to restore.
+	 * @param facesContext The faces context. This can be used to obtain the request URL if required
+	 * @return The actual view name to restore
 	 */
 	String getViewNameForRestore(FacesContext facesContext);
 

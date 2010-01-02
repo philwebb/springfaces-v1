@@ -3,7 +3,8 @@
 - respond to flow output
 - integrate phase listener in model
 - support action listeners/events
-
+- DataBinder JSF converter integration
+- Improve logging
 
 v2
 

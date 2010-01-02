@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc;
 
 import java.io.IOException;
@@ -8,18 +23,16 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.js.ajax.AjaxHandler;
-import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 
 /**
- * Default implementation of {@link RedirectHandler}. The class is based heavily on FlowHandlerAdapter from the webflow
- * project.
+ * Default implementation of {@link RedirectHandler}. The class is based heavily on FlowHandlerAdapter from Spring Web
+ * Flow.
  * 
- * @author Phillip Webb
  * @author Keith Donald
+ * @author Phillip Webb
  */
-public class DefaultRedirectHandler implements RedirectHandler, InitializingBean {
+public class DefaultRedirectHandler implements RedirectHandler {
 
 	private static final int NONE = 0x00;
 	private static final int STRIP_PREFIX = 0x01;
@@ -68,20 +81,18 @@ public class DefaultRedirectHandler implements RedirectHandler, InitializingBean
 		URL_BUILDERS.add(new UrlBuilder("", SLASH | CONTEXT | SERVLET));
 	}
 
-	// FIXME test
-	private AjaxHandler ajaxHandler;
-
 	private boolean redirectHttp10Compatible = false;
 
 	/**
 	 * Sends a redirect to the requested url.
+	 * @param ajaxHandler The ajax handler
 	 * @param request The request
 	 * @param response The response
 	 * @param url the url to redirect to
 	 * @throws IOException an exception occurred
 	 */
-	protected void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url)
-			throws IOException {
+	protected void sendRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
+			String url) throws IOException {
 		if (ajaxHandler.isAjaxRequest(request, response)) {
 			ajaxHandler.sendAjaxRedirect(url, request, response, false);
 		} else {
@@ -96,6 +107,14 @@ public class DefaultRedirectHandler implements RedirectHandler, InitializingBean
 		}
 	}
 
+	/**
+	 * Get the actual URL that should be used for the specified location. This method will expand servletRelative,
+	 * contextRelative and serverRelative prefixes.
+	 * 
+	 * @param httpServletRequest
+	 * @param location
+	 * @return The URL
+	 */
 	protected String getLocationUrl(HttpServletRequest httpServletRequest, String location) {
 		for (Iterator iterator = URL_BUILDERS.iterator(); iterator.hasNext();) {
 			UrlBuilder urlBuilder = (UrlBuilder) iterator.next();
@@ -106,24 +125,22 @@ public class DefaultRedirectHandler implements RedirectHandler, InitializingBean
 		return location;
 	}
 
-	public void handleRedirect(HttpServletRequest request, HttpServletResponse response, Object location)
-			throws IOException {
+	public void handleRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
+			Object location) throws IOException {
 		if (location != null) {
 			String url = getLocationUrl(request, location.toString());
-			sendRedirect(request, response, url);
+			sendRedirect(ajaxHandler, request, response, url);
 		}
 	}
 
-	public void afterPropertiesSet() throws Exception {
-		ajaxHandler = (ajaxHandler == null ? new SpringJavascriptAjaxHandler() : ajaxHandler);
-	}
-
+	/**
+	 * Set if redirects should be HTTP 1.0 compatible. When this property is <tt>true</tt> redirects are handled using a
+	 * HTTP 302 header, otherwise a HTTP 303 header is used. If not set the default value of <tt>false</tt> will be
+	 * used.
+	 * 
+	 * @param redirectHttp10Compatible
+	 */
 	public void setRedirectHttp10Compatible(boolean redirectHttp10Compatible) {
 		this.redirectHttp10Compatible = redirectHttp10Compatible;
-	}
-
-	// FIXME do we need this on the adapter like webflow has
-	public void setAjaxHandler(AjaxHandler ajaxHandler) {
-		this.ajaxHandler = ajaxHandler;
 	}
 }

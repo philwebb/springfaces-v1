@@ -56,14 +56,14 @@ public class MvcFacesRequestContext {
 	}
 
 	/**
-	 * @return The {@link FacesHandler} that is handling the current request.
+	 * @return The {@link FacesHandler} that is handling the current request
 	 */
 	public FacesHandler getFacesHandler() {
 		return facesHandler;
 	}
 
 	/**
-	 * @return The {@link MvcFacesContext} for the current request.
+	 * @return The {@link MvcFacesContext} for the current request
 	 */
 	public MvcFacesContext getMvcFacesContext() {
 		return mvcFacesContext;
@@ -85,7 +85,7 @@ public class MvcFacesRequestContext {
 	 * Method called during exception handling to store the current exception. This is a framework method called by
 	 * {@link AbstractFacesHandlerAdapter} and should not be called directly by developers.
 	 * 
-	 * @param exception The exception being handled.
+	 * @param exception The exception being handled
 	 * 
 	 * @see #getException()
 	 */
@@ -95,7 +95,7 @@ public class MvcFacesRequestContext {
 
 	/**
 	 * @return The current exception that is being handled by MVC or <tt>null</tt> if an exception has not been raised.
-	 * Note: When an exception is being processes the JSF lifecycle will stop after {@link PhaseId#PROCESS_VALIDATIONS}.
+	 * Note: When an exception is being processes the JSF lifecycle will stop after {@link PhaseId#PROCESS_VALIDATIONS}
 	 */
 	public Exception getException() {
 		return exception;
@@ -105,7 +105,7 @@ public class MvcFacesRequestContext {
 	 * Method called during navigation processing to store the navigation event being processes. This is a framework
 	 * method called by {@link MvcNavigationHandler} and should not be called directly by developers.
 	 * 
-	 * @param lastNavigationRequestEvent The navigation event.
+	 * @param lastNavigationRequestEvent The navigation event
 	 */
 	void setLastNavigationRequestEvent(NavigationRequestEvent lastNavigationRequestEvent) {
 		this.lastNavigationRequestEvent = lastNavigationRequestEvent;
@@ -113,8 +113,8 @@ public class MvcFacesRequestContext {
 
 	/**
 	 * @return The last navigation event that was being processed by the system or <tt>null</tt> if a navigation request
-	 * has not yet been processed. Note: this value is reset on each request but remains availble during exception
-	 * handling.
+	 * has not yet been processed. Note: this value is reset on each request but remains available during exception
+	 * handling
 	 */
 	public NavigationRequestEvent getLastNavigationRequestEvent() {
 		return lastNavigationRequestEvent;
@@ -122,14 +122,14 @@ public class MvcFacesRequestContext {
 
 	/**
 	 * @return The current {@link MvcFacesContext} instance or <tt>null</tt> if the current request is not being handled
-	 * by Spring MVC Faces.
+	 * by Spring MVC Faces
 	 */
 	public static MvcFacesRequestContext getCurrentInstance() {
 		return (MvcFacesRequestContext) currentInstance.get();
 	}
 
 	/**
-	 * Protected method to set the current instace.
+	 * Protected method to set the current instance.
 	 * 
 	 * @param mvcFacesRequest
 	 */
