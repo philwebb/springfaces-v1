@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;
@@ -52,7 +53,7 @@ import org.springframework.web.util.WebUtils;
  * Support class for resolving web method annotations in a handler type. This class can be used to determine what
  * methods from a {@link RequestMapping} annotated class could be used to process a given request. The class is based
  * heavily on the <tt>ServletHandlerMethodResolver</tt> internal class used by {@link AnnotationMethodHandlerAdapter}s.
- *
+ * 
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @author Phillip Webb
@@ -93,6 +94,7 @@ public class RequestMappingMethodResolver {
 	 * @param handlerType the handler class to introspect
 	 */
 	public void init(Class<?> handlerType) {
+		Assert.notNull(handlerType, "handlerType is required");
 		Class<?>[] handlerTypes = Proxy.isProxyClass(handlerType) ? handlerType.getInterfaces()
 				: new Class<?>[] { handlerType };
 		for (final Class<?> currentHandlerType : handlerTypes) {
@@ -114,7 +116,7 @@ public class RequestMappingMethodResolver {
 		this.sessionAttributesFound = (sessionAttributes != null);
 		if (this.sessionAttributesFound) {
 			this.sessionAttributeNames.addAll(Arrays.asList(sessionAttributes.value()));
-			this.sessionAttributeTypes.addAll(Arrays.asList((Class<?>[])sessionAttributes.types()));
+			this.sessionAttributeTypes.addAll(Arrays.asList((Class<?>[]) sessionAttributes.types()));
 		}
 	}
 
@@ -165,7 +167,7 @@ public class RequestMappingMethodResolver {
 
 	/**
 	 * Resolve the methods that can be used to process the specified request.
-	 *
+	 * 
 	 * @param request
 	 * @return An ordered array of methods that could be used to process the request. The first item in the array is the
 	 * method that would be called by the {@link AnnotationMethodHandlerAdapter} class, remaining items are ordered by
@@ -412,7 +414,7 @@ public class RequestMappingMethodResolver {
 
 		/**
 		 * Constructor.
-		 *
+		 * 
 		 * @param typeLevelAnnotation The annotation data that is present on the class.
 		 * @param requestMapping The annotation data to process.
 		 */
@@ -428,7 +430,7 @@ public class RequestMappingMethodResolver {
 
 		/**
 		 * Constructor.
-		 *
+		 * 
 		 * @param typeLevelAnnotation
 		 * @param method
 		 */
@@ -438,7 +440,7 @@ public class RequestMappingMethodResolver {
 
 		/**
 		 * Constructor (for testing).
-		 *
+		 * 
 		 * @param paths
 		 * @param params
 		 * @param requestMethods

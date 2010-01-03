@@ -27,6 +27,10 @@ public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 	// System.out.println(resolved);
 	// }
 
+	public void testFixme() throws Exception {
+		assertTrue(true);
+	}
+
 	private static class MockNavigationOutcomeExpressionElResolver extends NavigationOutcomeExpressionElResolver {
 		protected Object resolve(NavigationOutcomeExpressionContext context, Position position, String attribute,
 				String expression) throws Exception {
