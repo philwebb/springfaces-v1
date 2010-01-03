@@ -45,6 +45,7 @@ import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
@@ -99,6 +100,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver = new NavigationOutcomeExpressionElResolver();
 
 	private String exposedControllerName = DEFAULT_CONTROLLER_NAME;
+
+	private boolean exposeController = true;
 
 	private final NavigationCaseAnnotationLocator navigationCaseAnnotationLocator = new NavigationCaseAnnotationLocator();
 
@@ -289,9 +292,51 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
+	/**
+	 * Set a {@link NavigationOutcomeExpressionResolver} that will be used to resolve any expressions contained in the
+	 * {@link NavigationCase} annotations.
+	 * 
+	 * @param navigationOutcomeExpressionResolver
+	 */
 	public void setNavigationOutcomeExpressionResolver(
 			NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver) {
+		Assert.notNull(navigationOutcomeExpressionResolver, "The navigationOutcomeExpressionResolver is required");
 		this.navigationOutcomeExpressionResolver = navigationOutcomeExpressionResolver;
+	}
+
+	/**
+	 * Set the name of the variable that is used to expose the running {@link FacesController} to JSF. Note: this name
+	 * will only be used when the annotation {@link FacesController#controllerName()} is not specified.
+	 * <p>
+	 * If a controller should not be exposed as a JSF variable the {@link FacesController#exposeController()} annotation
+	 * parameter can be used on a single controller, or {@link #setExposeController(boolean)} can be set to effect all
+	 * controllers.
+	 * <p>
+	 * When not specified the controller will be exposed using the variable name <tt>controller<tt>.
+	 * 
+	 * @param exposedControllerName The name of variable that will be used to expose the {@link FacesController}
+	 * @see FacesController#controllerName()
+	 * @see FacesController#exposeController()
+	 * @see #setExposeController(boolean)
+	 */
+	public void setExposedControllerName(String exposedControllerName) {
+		Assert.notNull(exposedControllerName, "The exposedControllerName is required");
+		this.exposedControllerName = exposedControllerName;
+	}
+
+	/**
+	 * Determine if the running {@link FacesController} should be exposed as a JSF variable. If either this property or
+	 * the {@link FacesController#exposeController()} parameter is <tt>false</tt> the controller will not be exposed as
+	 * a JSF variable.
+	 * <p>
+	 * The default setting is to expose controllers using the variable name <tt>controller</tt>.
+	 * 
+	 * @param exposeController If the controller should be exposed as a JSF variable
+	 * @see FacesController#exposeController()
+	 * @see #setExposedControllerName(String)
+	 */
+	public void setExposeController(boolean exposeController) {
+		this.exposeController = exposeController;
 	}
 
 	/**
@@ -329,7 +374,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			super();
 			this.handler = handler;
 			FacesController annotation = FacesAnnotationMethodHandlerAdapter.this.getHandlerAnnotation(handler);
-			if (annotation.exposeController()) {
+			if (FacesAnnotationMethodHandlerAdapter.this.exposeController && annotation.exposeController()) {
 				exposedControllerName = (StringUtils.hasLength(annotation.controllerName()) ? annotation
 						.controllerName() : FacesAnnotationMethodHandlerAdapter.this.exposedControllerName);
 			}

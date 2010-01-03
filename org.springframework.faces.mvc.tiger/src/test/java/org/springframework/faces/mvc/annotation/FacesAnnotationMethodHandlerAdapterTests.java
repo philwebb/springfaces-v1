@@ -16,7 +16,11 @@
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,16 +44,24 @@ import org.easymock.EasyMock;
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.DefaultAopProxyFactory;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
+import org.springframework.faces.mvc.MvcFacesExceptionHandler;
+import org.springframework.faces.mvc.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
+import org.springframework.faces.mvc.support.MvcFacesContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -63,14 +75,24 @@ import org.springframework.web.util.UrlPathHelper;
 
 public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 
+	private static final Date D25_12_2009;
+	static {
+		Calendar c = Calendar.getInstance();
+		c.set(2009, Calendar.DECEMBER, 25, 0, 0, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		D25_12_2009 = c.getTime();
+	}
+
 	private MockFacesHandlerAdapter underlyingAdapter;
 	private FacesAnnotationMethodHandlerAdapter adapter;
 	private StaticWebApplicationContext context;
+	private HttpServletRequest request;
+	private HttpServletResponse response;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.underlyingAdapter = new MockFacesHandlerAdapter();
-		this.context = new StaticWebApplicationContext();
+		underlyingAdapter = new MockFacesHandlerAdapter();
+		context = new StaticWebApplicationContext();
 		ServletContext servletContext = EasyMock.createNiceMock(ServletContext.class);
 		EasyMock.expect(servletContext.getInitParameter((String) EasyMock.anyObject())).andReturn(null);
 		EasyMock.replay(servletContext);
@@ -82,6 +104,8 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		adapter.setApplicationContext(context);
 		adapter.setBeanName("testMethodAdapterBean");
 		adapter.afterPropertiesSet();
+		request = EasyMock.createNiceMock(HttpServletRequest.class);
+		response = EasyMock.createMock(HttpServletResponse.class);
 	}
 
 	private Set<Class<? extends WebArgumentResolver>> assertHasFacesResolvers(
@@ -114,8 +138,6 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	public void testHandle() throws Exception {
-		HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
-		HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
 		SampleFacesController handler = new SampleFacesController();
 		adapter.handle(request, response, handler);
 		assertSame(request, underlyingAdapter.getRequest());
@@ -123,8 +145,6 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	public void testHandleBadlyConfigured() throws Exception {
-		HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
-		HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
 		SampleFacesController handler = new SampleFacesController();
 		underlyingAdapter.setSupports(false);
 		try {
@@ -145,8 +165,6 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	public void testCreateView() throws Exception {
-		HttpServletRequest request = EasyMock.createNiceMock(HttpServletRequest.class);
-		HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
 		setupMockRequestUlr(request);
 		SampleFacesController handler = new SampleFacesController();
 		EasyMock.replay(request, response);
@@ -157,8 +175,6 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	private void doTestGetNavigationOutcomeLocation(String eventOutcome, String expected) throws Exception {
-		HttpServletRequest request = EasyMock.createNiceMock(HttpServletRequest.class);
-		HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
 		setupMockRequestUlr(request);
 		SampleFacesController handler = new SampleFacesController();
 		EasyMock.replay(request, response);
@@ -185,6 +201,25 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 			}
 		});
 		doTestGetNavigationOutcomeLocation("outcome", "resolvedtestview");
+	}
+
+	public void testGetNavigationOutcomeContext() throws Exception {
+		final boolean[] called = new boolean[] { false };
+		adapter.setNavigationOutcomeExpressionResolver(new NavigationOutcomeExpressionResolver() {
+			public Object resolveNavigationOutcome(NavigationOutcomeExpressionContext context, Object outcome)
+					throws Exception {
+				called[0] = true;
+				assertSame(request, context.getWebRequest().getNativeRequest());
+				WebDataBinder binder;
+				binder = context.createDataBinder("field1", null, null);
+				assertEquals(D25_12_2009, binder.convertIfNecessary("2009/25/12", Date.class));
+				binder = context.createDataBinder("field2", null, null);
+				assertEquals(D25_12_2009, binder.convertIfNecessary("25/12/2009", Date.class));
+				return outcome;
+			}
+		});
+		doTestGetNavigationOutcomeLocation("outcome", "testview");
+		assertTrue(called[0]);
 	}
 
 	private void doTestHandlerFromContext() throws Exception {
@@ -301,6 +336,74 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		assertEquals(123, adapter.getOrder());
 	}
 
+	private void doTestExposeContoller(Object handler, String name, boolean expected) throws Exception {
+		adapter.handle(request, response, handler);
+		Object controller = underlyingAdapter.getHandler().resolveVariable(name);
+		if (expected) {
+			assertSame(handler, controller);
+		} else {
+			assertNull(controller);
+		}
+	}
+
+	public void testExposeControllerDefaults() throws Exception {
+		doTestExposeContoller(new SampleFacesController(), "controller", true);
+		doTestExposeContoller(new SampleFacesController(), "madeupname", false);
+	}
+
+	public void testExposeControllerWhenDisabledByAnnotation() throws Exception {
+		doTestExposeContoller(new FacesControllerWithoutExposedVaraible(), "controller", false);
+	}
+
+	public void testExposeControllerWithCustomNameByAnnotation() throws Exception {
+		doTestExposeContoller(new FacesControllerWithCustomExposedVaraible(), "controller", false);
+		doTestExposeContoller(new FacesControllerWithCustomExposedVaraible(), "customcontroller", true);
+	}
+
+	public void testExposeControllerDisabled() throws Exception {
+		adapter.setExposeController(false);
+		doTestExposeContoller(new SampleFacesController(), "controller", false);
+	}
+
+	public void testExposeControllerWithCustomName() throws Exception {
+		adapter.setExposedControllerName("globalcustomcontroller");
+		doTestExposeContoller(new SampleFacesController(), "controller", false);
+		doTestExposeContoller(new SampleFacesController(), "globalcustomcontroller", true);
+		doTestExposeContoller(new FacesControllerWithCustomExposedVaraible(), "customcontroller", true);
+	}
+
+	private void doTestHandleException(Exception exception, String redirect) throws Exception {
+		adapter.handle(request, response, new SampleFacesController());
+		MvcFacesExceptionHandler[] exceptionHandlers = underlyingAdapter.getHandler().getExceptionHandlers();
+		assertEquals(1, exceptionHandlers.length);
+		MvcFacesExceptionHandler exceptionHandler = exceptionHandlers[0];
+		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
+		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
+		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
+		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, underlyingAdapter
+				.getHandler()) {
+			public NavigationRequestEvent getLastNavigationRequestEvent() {
+				return event;
+			}
+		};
+		setupMockRequestUlr(request);
+		if (redirect != null) {
+			outcome.redirect(redirect);
+			EasyMock.expectLastCall();
+		}
+		EasyMock.replay(request, response, outcome);
+		boolean handled = exceptionHandler.handleException(exception, requestContext, request, response, outcome);
+		assertEquals(redirect != null, handled);
+	}
+
+	public void testHandleException() throws Exception {
+		doTestHandleException(new IllegalAccessException(), "errorview");
+	}
+
+	public void testHandleExceptionNotMapped() throws Exception {
+		doTestHandleException(new RuntimeException(), null);
+	}
+
 	private Object createCglibProxy(Class<?> targetClass) {
 		AdvisedSupport aopConfig = new AdvisedSupport();
 		aopConfig.setTargetClass(targetClass);
@@ -318,13 +421,36 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 
 	@FacesController
 	public static class SampleFacesController {
+		@InitBinder("field1")
+		public void initBinder1(WebDataBinder dataBinder) {
+			DateFormat df = new SimpleDateFormat("yyyy/dd/MM");
+			df.setLenient(false);
+			dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(df, false));
+		}
+
+		@InitBinder("field2")
+		public void initBinder2(WebDataBinder dataBinder) {
+			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			df.setLenient(false);
+			dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(df, false));
+		}
+
 		@RequestMapping("/test")
-		@NavigationCase(on = "outcome", to = "testview")
+		@NavigationRules( { @NavigationCase(on = "outcome", to = "testview"),
+				@NavigationCase(onException = IllegalAccessException.class, to = "errorview") })
 		public ModelAndView handle() {
 			ModelAndView modelAndView = new ModelAndView();
 			modelAndView.setViewName("testView");
 			return modelAndView;
 		}
+	}
+
+	@FacesController(exposeController = false)
+	public static class FacesControllerWithoutExposedVaraible {
+	}
+
+	@FacesController(controllerName = "customcontroller")
+	public static class FacesControllerWithCustomExposedVaraible {
 	}
 
 	@Controller
