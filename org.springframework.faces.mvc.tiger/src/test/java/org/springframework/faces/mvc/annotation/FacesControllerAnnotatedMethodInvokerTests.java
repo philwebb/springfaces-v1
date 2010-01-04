@@ -30,6 +30,8 @@ import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -86,15 +88,15 @@ public class FacesControllerAnnotatedMethodInvokerTests extends TestCase {
 		setupInvoker();
 		WebDataBinder binder = new WebDataBinder(null);
 		invoker.initBinder(handler, null, binder, webRequest);
-		((SampleController) handler).assertCalled(SampleControllerMethod.INIT_FOR_ALL);
-		((SampleController) handler).assertNotCalled(SampleControllerMethod.INIT_FOR_ATTRIBUTE);
+		((AbstractController) handler).assertCalled(SampleControllerMethod.INIT);
+		((AbstractController) handler).assertNotCalled(SampleControllerMethod.INIT_FOR_ATTRIBUTE);
 	}
 
 	public void testInitBinderWithSpecificAttributeName() throws Exception {
 		setupInvoker();
 		WebDataBinder binder = new WebDataBinder(null);
 		invoker.initBinder(handler, "attribute", binder, webRequest);
-		((SampleController) handler).assertCalled(SampleControllerMethod.INIT_FOR_ALL,
+		((AbstractController) handler).assertCalled(SampleControllerMethod.INIT,
 				SampleControllerMethod.INIT_FOR_ATTRIBUTE);
 	}
 
@@ -113,25 +115,41 @@ public class FacesControllerAnnotatedMethodInvokerTests extends TestCase {
 		}
 	}
 
-	private enum SampleControllerMethod {
-		INIT_FOR_ATTRIBUTE, INIT_FOR_ALL
+	public void testInitBinderWithRequestParam() throws Exception {
+		handler = new ParamsController();
+		setupInvoker();
+		WebDataBinder binder = new WebDataBinder(null);
+		invoker.initBinder(handler, null, binder, webRequest);
+		((AbstractController) handler).assertCalled(SampleControllerMethod.INIT);
+	}
+
+	public void testIllegalInitBinderModelAttribute() throws Exception {
+		handler = new IllegalInitBinderModelAttributeController();
+		setupInvoker();
+		WebDataBinder binder = new WebDataBinder(null);
+		try {
+			invoker.initBinder(handler, null, binder, webRequest);
+			fail();
+		} catch (IllegalStateException e) {
+			assertEquals(
+					"@ModelAttribute is not supported on @InitBinder methods: "
+							+ "public void org.springframework.faces.mvc.annotation.FacesControllerAnnotatedMethodInvokerTests$"
+							+ "IllegalInitBinderModelAttributeController.initBinder("
+							+ "org.springframework.web.bind.WebDataBinder,java.lang.String)", e.getMessage());
+		}
 	}
 
 	// FIXME more tests
 
-	@FacesController
-	public static class SampleController {
+	private enum SampleControllerMethod {
+		INIT, INIT_FOR_ATTRIBUTE
+	}
 
+	public static abstract class AbstractController {
 		private Set<SampleControllerMethod> called = new HashSet<SampleControllerMethod>();
 
-		@InitBinder
-		public void initForAll(WebDataBinder binder) {
-			this.called.add(SampleControllerMethod.INIT_FOR_ALL);
-		}
-
-		@InitBinder("attribute")
-		public void initForAttribute(WebDataBinder binder) {
-			this.called.add(SampleControllerMethod.INIT_FOR_ATTRIBUTE);
+		protected void called(SampleControllerMethod method) {
+			this.called.add(method);
 		}
 
 		public void assertCalled(SampleControllerMethod... methods) {
@@ -144,10 +162,48 @@ public class FacesControllerAnnotatedMethodInvokerTests extends TestCase {
 	}
 
 	@FacesController
+	public static class SampleController extends AbstractController {
+
+		@InitBinder
+		public void initForAll(WebDataBinder binder) {
+			called(SampleControllerMethod.INIT);
+		}
+
+		@InitBinder("attribute")
+		public void initForAttribute(WebDataBinder binder) {
+			called(SampleControllerMethod.INIT_FOR_ATTRIBUTE);
+		}
+	}
+
+	@FacesController
+	public static class ParamsController extends AbstractController {
+
+		@InitBinder
+		public void initBinder(WebDataBinder binder, @RequestParam("requestParam") String requestParam) {
+			assertEquals(requestParam, "requestParamValue");
+			called(SampleControllerMethod.INIT);
+		}
+	}
+
+	@FacesController
 	public static class IllegalInitBinderReturnController {
 		@InitBinder
 		public String initBinder(WebDataBinder binder) {
 			return "";
+		}
+	}
+
+	@FacesController
+	public static class IllegalInitBinderModelAttributeController {
+		@InitBinder
+		public void initBinder(WebDataBinder binder, @ModelAttribute("modelAttribute") String modelAttribute) {
+		}
+	}
+
+	@FacesController
+	public static class CustomArgumentResolverController extends AbstractController {
+		@InitBinder
+		public void initBinder(WebDataBinder binder) {
 		}
 	}
 
