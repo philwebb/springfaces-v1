@@ -5,6 +5,7 @@
 - support action listeners/events
 - DataBinder JSF converter integration
 - Improve logging
+- HTTP cache header
 
 v2
 
