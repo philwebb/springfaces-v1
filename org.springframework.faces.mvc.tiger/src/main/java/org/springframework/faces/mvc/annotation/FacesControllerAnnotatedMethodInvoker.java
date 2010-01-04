@@ -43,7 +43,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -172,7 +171,6 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 
 	private Object resolveRequestParam(String paramName, boolean paramRequired, MethodParameter methodParam,
 			NativeWebRequest webRequest, Object handlerForInitBinderCall) throws Exception {
-
 		Class paramType = methodParam.getParameterType();
 		if ("".equals(paramName)) {
 			paramName = methodParam.getParameterName();
@@ -224,13 +222,8 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 		throw new MissingServletRequestParameterException(paramName, paramType.getName());
 	}
 
-	protected void raiseSessionRequiredException(String message) throws Exception {
-		throw new HttpSessionRequiredException(message);
-	}
-
 	protected Object resolveCommonArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
 			throws Exception {
-
 		// Invoke custom argument resolvers if present...
 		if (this.customArgumentResolvers != null) {
 			for (WebArgumentResolver argumentResolver : this.customArgumentResolvers) {
@@ -253,29 +246,33 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 	}
 
 	protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
-		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-		HttpServletResponse response = (HttpServletResponse) webRequest.getNativeResponse();
+		if ((webRequest.getNativeRequest() instanceof HttpServletRequest)
+				&& (webRequest.getNativeResponse() instanceof HttpServletResponse)) {
 
-		if (ServletRequest.class.isAssignableFrom(parameterType)) {
-			return request;
-		} else if (ServletResponse.class.isAssignableFrom(parameterType)) {
-			return response;
-		} else if (HttpSession.class.isAssignableFrom(parameterType)) {
-			return request.getSession();
-		} else if (Principal.class.isAssignableFrom(parameterType)) {
-			return request.getUserPrincipal();
-		} else if (Locale.class.equals(parameterType)) {
-			return RequestContextUtils.getLocale(request);
-		} else if (InputStream.class.isAssignableFrom(parameterType)) {
-			return request.getInputStream();
-		} else if (Reader.class.isAssignableFrom(parameterType)) {
-			return request.getReader();
-		} else if (OutputStream.class.isAssignableFrom(parameterType)) {
-			return response.getOutputStream();
-		} else if (Writer.class.isAssignableFrom(parameterType)) {
-			return response.getWriter();
-		} else if (WebRequest.class.isAssignableFrom(parameterType)) {
-			return webRequest;
+			HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+			HttpServletResponse response = (HttpServletResponse) webRequest.getNativeResponse();
+
+			if (ServletRequest.class.isAssignableFrom(parameterType)) {
+				return request;
+			} else if (ServletResponse.class.isAssignableFrom(parameterType)) {
+				return response;
+			} else if (HttpSession.class.isAssignableFrom(parameterType)) {
+				return request.getSession();
+			} else if (Principal.class.isAssignableFrom(parameterType)) {
+				return request.getUserPrincipal();
+			} else if (Locale.class.equals(parameterType)) {
+				return RequestContextUtils.getLocale(request);
+			} else if (InputStream.class.isAssignableFrom(parameterType)) {
+				return request.getInputStream();
+			} else if (Reader.class.isAssignableFrom(parameterType)) {
+				return request.getReader();
+			} else if (OutputStream.class.isAssignableFrom(parameterType)) {
+				return response.getOutputStream();
+			} else if (Writer.class.isAssignableFrom(parameterType)) {
+				return response.getWriter();
+			} else if (WebRequest.class.isAssignableFrom(parameterType)) {
+				return webRequest;
+			}
 		}
 		return WebArgumentResolver.UNRESOLVED;
 	}
