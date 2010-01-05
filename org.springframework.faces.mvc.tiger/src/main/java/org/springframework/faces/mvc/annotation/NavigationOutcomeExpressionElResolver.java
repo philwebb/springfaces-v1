@@ -27,7 +27,6 @@ import javax.faces.context.FacesContext;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.faces.mvc.ReverseDataBinder;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
@@ -68,8 +67,10 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 			String attribute = matcher.group(1);
 			String expression = matcher.group(2);
 			String converted = resolveConvertAndUrlEncode(context, position, attribute, expression);
-			Assert.notNull(converted, "Unable resolve and convert expression '" + expression + "' for outcome '" + s
-					+ "'");
+			if (converted == null) {
+				throw new IllegalStateException("Unable resolve and convert expression '" + expression
+						+ "' for outcome '" + s + "'");
+			}
 			rtn.append(converted);
 			i = matcher.end();
 		}
@@ -80,7 +81,6 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 	protected String resolveConvertAndUrlEncode(NavigationOutcomeExpressionContext context, Position position,
 			String attribute, String expression) throws Exception {
 		Object resolved = resolve(context, position, attribute, expression);
-
 		return convertAndUrlEncode(context, position, attribute, expression, resolved);
 	}
 
