@@ -30,17 +30,38 @@ import junit.framework.TestCase;
 import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotation;
 import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotationMatch;
 import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotationMatchComparator;
+import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver;
 import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
 import org.springframework.web.util.UrlPathHelper;
 
 public class RequestMappingMethodsResolverTests extends TestCase {
+
+	private Set<String> getMethodNames(Method[] methods) {
+		Set<String> rtn = new HashSet<String>();
+		for (Method method : methods) {
+			rtn.add(method.getName());
+		}
+		return rtn;
+	}
+
+	private void assertMethods(Method[] methods, String... expected) {
+		Set<String> resolvedNames = getMethodNames(methods);
+		Set<String> expectedNames = new HashSet<String>(Arrays.asList(expected));
+		assertTrue("expected " + expectedNames + " got " + resolvedNames, expectedNames.equals(resolvedNames));
+	}
+
+	private void assertMethods(Set<Method> methods, String... expected) {
+		assertMethods(methods.toArray(new Method[] {}), expected);
+	}
 
 	private RequestMappingAnnotationMatch newMatch(String[] paths, RequestMethod[] requestMethods, String[] params) {
 		RequestMappingAnnotation annotation = new RequestMappingAnnotation(paths, new HashSet<String>(Arrays
@@ -81,11 +102,12 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		return resolver;
 	}
 
-	public void testLookup() throws Exception {
+	private void doTestLookup(Class<?> controllerClass, boolean expectedTypeLevelMapping) throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/go.do");
 		request.setParameter("param", "value");
 		request.setParameter("param2", "value2");
-		RequestMappingMethodResolver resolver = newResolver(ExampleController.class);
+		RequestMappingMethodResolver resolver = newResolver(controllerClass);
+		assertEquals(expectedTypeLevelMapping, resolver.hasTypeLevelMapping());
 		Method[] resolved = resolver.resolveHandlerMethods(request);
 		assertEquals(3, resolved.length);
 		assertEquals("exact", resolved[0].getName());
@@ -93,17 +115,19 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		assertEquals("paramValue", resolved[2].getName());
 	}
 
+	public void testLookup() throws Exception {
+		doTestLookup(ExampleController.class, false);
+	}
+
+	public void testLookupWithTypeLevel() throws Exception {
+		doTestLookup(TypeLevelExample.class, true);
+	}
+
 	public void testParams() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/go.do");
 		request.setParameter("param", "value");
 		RequestMappingMethodResolver resolver = newResolver(ParamsExample.class);
-		Method[] resolved = resolver.resolveHandlerMethods(request);
-		Set<String> actual = new HashSet<String>();
-		for (Method method : resolved) {
-			actual.add(method.getName());
-		}
-		Set<String> expected = new HashSet<String>(Arrays.asList("param", "paramValue", "notParam"));
-		assertTrue("expected " + expected + " got " + actual, expected.equals(actual));
+		assertMethods(resolver.resolveHandlerMethods(request), "param", "paramValue", "notParam");
 	}
 
 	public void testAmbiguous() throws Exception {
@@ -126,16 +150,29 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 	public void testRequestMethod() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/an/example/path/go.do");
 		RequestMappingMethodResolver resolver = newResolver(RequestMethodExample.class);
-		Method[] resolved = resolver.resolveHandlerMethods(request);
-		Set<String> actual = new HashSet<String>();
-		for (Method method : resolved) {
-			actual.add(method.getName());
-		}
-		Set<String> expected = new HashSet<String>(Arrays.asList("get", "getAndPost"));
-		assertTrue("expected " + expected + " got " + actual, expected.equals(actual));
+		assertTrue(resolver.hasHandlerMethods());
+		assertMethods(resolver.resolveHandlerMethods(request), "get", "getAndPost");
 	}
 
-	@Controller
+	public void testInitBinderMethod() throws Exception {
+		RequestMappingMethodResolver resolver = newResolver(InitBinderExample.class);
+		assertMethods(resolver.getInitBinderMethods(), "initBinder");
+	}
+
+	public void testModelAttributeMethod() throws Exception {
+		RequestMappingMethodResolver resolver = newResolver(ModelAttributeExample.class);
+		assertMethods(resolver.getModelAttributeMethods(), "getModelAttribute");
+	}
+
+	public void testSessionAttributes() throws Exception {
+		RequestMappingMethodResolver resolver = newResolver(SessionAttributesExample.class);
+		assertTrue(resolver.hasSessionAttributes());
+		assertTrue(resolver.isSessionAttribute("sa", String.class));
+		assertFalse(resolver.isSessionAttribute("madeup", String.class));
+		assertEquals(new HashSet<String>(Arrays.asList("sa")), resolver.getActualSessionAttributeNames());
+	}
+
+	@FacesController
 	static class ExampleController {
 		@RequestMapping(value = "/an/example/path/go.do")
 		public void exact() {
@@ -154,7 +191,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		};
 	}
 
-	@Controller
+	@FacesController
 	static class ParamsExample {
 		@RequestMapping(params = "param")
 		public void param() {
@@ -185,6 +222,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		};
 	}
 
+	@FacesController
 	static class AmbiguousExample {
 		@RequestMapping(params = "param")
 		public void ambiguous(HttpServletRequest request) {
@@ -195,7 +233,7 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		};
 	}
 
-	@Controller
+	@FacesController
 	static class RequestMethodExample {
 		@RequestMapping(method = { RequestMethod.GET })
 		public void get() {
@@ -210,4 +248,28 @@ public class RequestMappingMethodsResolverTests extends TestCase {
 		};
 	}
 
+	@FacesController
+	@RequestMapping("/an/example/**")
+	static class TypeLevelExample extends ExampleController {
+	}
+
+	@FacesController
+	static class InitBinderExample {
+		@InitBinder
+		public void initBinder() {
+		}
+	}
+
+	@FacesController
+	static class ModelAttributeExample {
+		@ModelAttribute
+		public String getModelAttribute() {
+			return "model";
+		}
+	}
+
+	@FacesController
+	@SessionAttributes("sa")
+	static class SessionAttributesExample {
+	}
 }

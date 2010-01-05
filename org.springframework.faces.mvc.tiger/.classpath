@@ -28,6 +28,7 @@
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.aopalliance/com.springsource.org.aopalliance/1.0.0/com.springsource.org.aopalliance-1.0.0.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.objectweb.asm/com.springsource.org.objectweb.asm/3.1.0/com.springsource.org.objectweb.asm-3.1.0.jar"/>
 	<classpathentry kind="var" path="FACES_IVY_CACHE/org.objectweb.asm/com.springsource.org.objectweb.asm.commons/3.1.0/com.springsource.org.objectweb.asm.commons-3.1.0.jar"/>
+	<classpathentry kind="var" path="FACES_IVY_CACHE/org.apache.log4j/com.springsource.org.apache.log4j/1.2.15/com.springsource.org.apache.log4j-1.2.15.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.springframework.faces.mvc"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

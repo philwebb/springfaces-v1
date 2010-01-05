@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SampleController {
 
 	private boolean methodCalled = false;
+	private String outcome = null;
 
 	@RequestMapping("/withrules/*")
 	@NavigationRules( { @NavigationCase(on = "mon1", to = "mto1"),
@@ -68,19 +69,36 @@ public class SampleController {
 		return "someview";
 	}
 
-	@NavigationCase(on = "methodcallwithrequestmapping")
+	@NavigationCase(on = "methodcallwithrequestmappingandnoto")
+	@RequestMapping
+	public String methodCallWithRequestMappingAndNoTo() {
+		methodCalled = true;
+		return "someview";
+	}
+
+	@NavigationCase(on = "methodcallwithrequestmapping", to = "test")
 	@RequestMapping
 	public String methodCallWithRequestMapping() {
+		methodCalled = true;
 		return "someview";
 	}
 
 	@NavigationCase(on = "methodcallwithto", to = "test")
-	public String methodCallWithTo() {
-		Assert.fail("Method called");
-		return null;
+	public void methodCallWithTo() {
+		this.methodCalled = true;
+	}
+
+	@NavigationCase(on = "methodcallwithtoandreturn", to = "test")
+	public String methodCallWithToAndReturn() {
+		this.methodCalled = true;
+		return outcome;
 	}
 
 	public boolean isMethodCalled() {
 		return methodCalled;
+	}
+
+	public void setOutcome(String outcome) {
+		this.outcome = outcome;
 	}
 }

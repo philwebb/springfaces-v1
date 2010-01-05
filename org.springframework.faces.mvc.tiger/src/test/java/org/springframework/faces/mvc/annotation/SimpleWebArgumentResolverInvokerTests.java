@@ -15,6 +15,7 @@
  */
 package org.springframework.faces.mvc.annotation;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
@@ -55,7 +56,7 @@ public class SimpleWebArgumentResolverInvokerTests extends TestCase {
 		try {
 			invoker.invoke(method, this, webRequest);
 			fail();
-		} catch (IllegalStateException e) {
+		} catch (IOException e) {
 			assertEquals("test", e.getMessage());
 		}
 
@@ -68,8 +69,8 @@ public class SimpleWebArgumentResolverInvokerTests extends TestCase {
 		assertEquals("test", a3);
 	}
 
-	public void methodThatThrows() {
-		throw new IllegalStateException("test");
+	public void methodThatThrows() throws IOException {
+		throw new IOException("test");
 	}
 
 	private static class MockWebArgumentResolver implements WebArgumentResolver {

@@ -45,6 +45,7 @@
 
 		<!-- test time only dependencies -->
 		<dependency org="org.apache.shale" name="com.springsource.org.apache.shale.test" rev="1.0.4" conf="test->runtime" />
+		<dependency org="org.apache.log4j" name="com.springsource.org.apache.log4j" rev="1.2.15" conf="test->runtime" />
 		<dependency org="org.easymock" name="com.springsource.org.easymock" rev="2.3.0" conf="test->runtime" />
 		<dependency org="net.sourceforge.cglib" name="com.springsource.net.sf.cglib" rev="2.2.0" conf="test->runtime"/>
 		<dependency org="org.junit" name="com.springsource.junit" rev="3.8.2" conf="test->runtime" />

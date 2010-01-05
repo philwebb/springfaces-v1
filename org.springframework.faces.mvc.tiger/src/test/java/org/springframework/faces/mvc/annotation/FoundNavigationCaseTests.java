@@ -16,6 +16,7 @@
 package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
@@ -28,12 +29,13 @@ import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 
 public class FoundNavigationCaseTests extends TestCase {
 
-	private void doTest(Object owner, FoundNavigationCaseType type) throws Exception {
+	private FoundNavigationCase doTest(Object owner, FoundNavigationCaseType type) throws Exception {
 		NavigationCase navigationCase = EasyMock.createMock(NavigationCase.class);
 		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, owner);
 		assertEquals(type, fnc.getType());
 		assertSame(owner, fnc.getOwner());
 		assertSame(navigationCase, fnc.getNavigationCase());
+		return fnc;
 	}
 
 	public void testPackage() throws Exception {
@@ -46,6 +48,15 @@ public class FoundNavigationCaseTests extends TestCase {
 
 	public void testMethod() throws Exception {
 		doTest(SampleController.class.getMethod("withRules", new Class<?>[] {}), FoundNavigationCaseType.METHOD);
+	}
+
+	public void testToString() throws Exception {
+		FoundNavigationCase found = doTest(SampleController.class, FoundNavigationCaseType.CLASS);
+		System.out.println(found.toString());
+		Pattern pattern = Pattern.compile("\\Q[FoundNavigationCase@\\E\\S+\\Q navigationCase = EasyMock "
+				+ "for interface org.springframework.faces.mvc.bind.annotation.NavigationCase, "
+				+ "type = CLASS, owner = SampleController]\\E");
+		assertTrue(pattern.matcher(found.toString()).matches());
 	}
 
 	public void testIllegal() throws Exception {
@@ -75,33 +86,59 @@ public class FoundNavigationCaseTests extends TestCase {
 		assertEquals("someview", outcome);
 	}
 
-	// FIXME revisit navigation with methods
-	// public void testOutcomeWithTo() throws Exception {
-	// Method method = SampleController.class.getMethod("methodCallWithTo", new Class<?>[] {});
-	// NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
-	// FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
-	// SampleController target = new SampleController();
-	// Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), "#{action.test}",
-	// "methodcallwithto"), target, null);
-	// assertEquals("test", outcome);
-	// }
-	//
-	// FIXME revisit navigation with methods
-	// public void testOutcomeMethodCallWithRequestMapping() throws Exception {
-	// Method method = SampleController.class.getMethod("methodCallWithRequestMapping", new Class<?>[] {});
-	// NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
-	// FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
-	// SampleController target = new SampleController();
-	// try {
-	// fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null, "methodcallwithrequestmapping"),
-	// target, null);
-	// fail();
-	// } catch (IllegalStateException e) {
-	// assertEquals(
-	// "Unable to call method methodCallWithRequestMapping from class class org.springframework.faces.mvc.annotation.sample.SampleController "
-	// +
-	// "in order to resolve @NavigationCase for JSF Navigation Request Event (fromAction=\"null\", outcome=\"methodcallwithrequestmapping\", exception=\"null\") as "
-	// + "method also includes @RequestMapping annotation", e.getMessage());
-	// }
-	// }
+	private void doTestOutcomeWithToAndReturn(String methodName, String returnOutcome, String expectedOutcome)
+			throws Exception {
+		Method method = SampleController.class.getMethod(methodName, new Class<?>[] {});
+		NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
+		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
+		SampleController target = new SampleController();
+		target.setOutcome(returnOutcome);
+		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), "#{action.test}",
+				"methodcallwithto"), target, null);
+		assertEquals(expectedOutcome, outcome);
+		assertTrue(target.isMethodCalled());
+	}
+
+	public void testMethodCallWithTo() throws Exception {
+		doTestOutcomeWithToAndReturn("methodCallWithTo", null, "test");
+	}
+
+	public void testMethodCallWithToAndNullReturn() throws Exception {
+		doTestOutcomeWithToAndReturn("methodCallWithToAndReturn", null, "test");
+	}
+
+	public void testMethodCallWithToAndOverrideReturn() throws Exception {
+		doTestOutcomeWithToAndReturn("methodCallWithToAndReturn", "override", "override");
+	}
+
+	public void testOutcomeMethodCallWithRequestMappingAndNoTo() throws Exception {
+		Method method = SampleController.class.getMethod("methodCallWithRequestMappingAndNoTo", new Class<?>[] {});
+		NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
+		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
+		SampleController target = new SampleController();
+		try {
+			fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null,
+					"methodcallwithrequestmappingandnoto"), target, null);
+			fail();
+		} catch (IllegalStateException e) {
+			assertFalse(target.isMethodCalled());
+			assertEquals(
+					"Unable to call method methodCallWithRequestMappingAndNoTo from class class org.springframework.faces.mvc.annotation.sample.SampleController "
+							+ "in order to resolve empty @NavigationCase.to() for JSF Navigation Request Event (fromAction=\"null\", "
+							+ "outcome=\"methodcallwithrequestmappingandnoto\", exception=\"null\") as "
+							+ "method also includes @RequestMapping annotation", e.getMessage());
+		}
+	}
+
+	public void testOutcomeMethodCallWithRequestMapping() throws Exception {
+		Method method = SampleController.class.getMethod("methodCallWithRequestMapping", new Class<?>[] {});
+		NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
+		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
+		SampleController target = new SampleController();
+		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null,
+				"methodcallwithrequestmapping"), target, null);
+		assertEquals("test", outcome);
+		assertFalse(target.isMethodCalled());
+	}
+
 }

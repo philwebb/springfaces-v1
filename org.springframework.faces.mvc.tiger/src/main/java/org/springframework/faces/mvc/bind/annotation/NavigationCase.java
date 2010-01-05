@@ -66,7 +66,7 @@ public @interface NavigationCase {
 	public Class<?> onException() default void.class;
 
 	/**
-	 * The navigation outcome used to redirect the user when the navigation case applies. This value is omitted the
+	 * The navigation outcome used to redirect the user when the navigation case applies. If this value is omitted the
 	 * result of the method will be used or, if the result is unavailable, a <tt>null</tt> outcome will be returned.
 	 * <p>
 	 * The value can also include expressions that will be resolved before navigation occurs. By default, EL expressions

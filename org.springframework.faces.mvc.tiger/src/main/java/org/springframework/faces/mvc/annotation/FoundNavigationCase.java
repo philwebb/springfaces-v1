@@ -17,6 +17,8 @@ package org.springframework.faces.mvc.annotation;
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.faces.mvc.NavigationRequestEvent;
@@ -29,10 +31,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * A {@link NavigationCase} as found by the {@link NavigationCaseAnnotationLocator} class.
- *
+ * 
  * @author Phillip Webb
  */
 public final class FoundNavigationCase {
+
+	private static final Log logger = LogFactory.getLog(FoundNavigationCase.class);
 
 	protected enum FoundNavigationCaseType {
 		METHOD, CLASS, PACKAGE
@@ -89,14 +93,23 @@ public final class FoundNavigationCase {
 	 * @throws Exception
 	 */
 	public Object getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request) throws Exception {
-		// FIXME update test
 		Object rtn = null;
 		if (StringUtils.hasText(navigationCase.to())) {
 			rtn = navigationCase.to();
 		}
 		if (FoundNavigationCaseType.METHOD.equals(type)) {
 			Method method = (Method) owner;
-			if (method.getAnnotation(RequestMapping.class) == null) {
+			if (method.getAnnotation(RequestMapping.class) != null) {
+				if (rtn == null) {
+					throw new IllegalStateException("Unable to call method " + method.getName() + " from class "
+							+ method.getDeclaringClass() + " in order to resolve empty @NavigationCase.to() for "
+							+ event + " as method also includes @RequestMapping annotation");
+				}
+				if (logger.isDebugEnabled()) {
+					logger.debug("@NavigationCase method will not be "
+							+ "called as @RequestMapping annotation also present");
+				}
+			} else {
 				// FIXME model binder to allow use of model attributes
 				SimpleWebArgumentResolverInvoker invoker = new SimpleWebArgumentResolverInvoker(null,
 						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event),
@@ -105,11 +118,6 @@ public final class FoundNavigationCase {
 				rtn = methodResult != null ? methodResult : rtn;
 			}
 		}
-		// FIXME throw id null?
-		// throw new IllegalStateException("Unable to call method " + method.getName() + " from class "
-		// + method.getDeclaringClass() + " in order to resolve @NavigationCase for " + event
-		// + " as method also includes @RequestMapping annotation");
-
 		return rtn;
 	}
 
@@ -119,7 +127,6 @@ public final class FoundNavigationCase {
 	}
 
 	private class NavigationRequestEventWebArgumentResolver implements WebArgumentResolver {
-
 		private NavigationRequestEvent event;
 
 		public NavigationRequestEventWebArgumentResolver(NavigationRequestEvent event) {
