@@ -19,6 +19,7 @@ import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 
 /**
@@ -41,8 +42,9 @@ public class MvcNavigationHandler extends NavigationHandler {
 			NavigationRequestEvent event = new NavigationRequestEvent(this, fromAction, outcome);
 			try {
 				requestContext.setLastNavigationRequestEvent(event);
-				Object location = requestContext.getFacesHandler().getNavigationOutcomeLocation(facesContext, event);
-				if (location != null) {
+				NavigationLocation location = requestContext.getFacesHandler().getNavigationOutcomeLocation(
+						facesContext, event);
+				if (location != null && location.getLocation() != null) {
 					requestContext.getMvcFacesContext().redirect(facesContext, location);
 					return;
 				}

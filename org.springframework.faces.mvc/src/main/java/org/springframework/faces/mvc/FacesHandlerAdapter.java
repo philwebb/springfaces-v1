@@ -85,6 +85,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
 		if (facesViewIdResolver == null) {
 			facesViewIdResolver = new SimpleFacesViewIdResolver();
 			initializeInternalBean(facesViewIdResolver);

@@ -49,7 +49,8 @@ public interface FacesHandler {
 	 * @param event The navigation request event
 	 * @return The navigation outcome
 	 */
-	Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event) throws Exception;
+	NavigationLocation getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event)
+			throws Exception;
 
 	/**
 	 * Called to resolve read-only variables from the handler. This method can be used to expose variables from the

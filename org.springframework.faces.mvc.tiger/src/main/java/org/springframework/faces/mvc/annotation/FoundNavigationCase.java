@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.util.Assert;
@@ -92,15 +93,16 @@ public final class FoundNavigationCase {
 	 * {@link NavigationCase#to()} or if this is not specified the result of the method call.
 	 * @throws Exception
 	 */
-	public Object getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request) throws Exception {
-		Object rtn = null;
+	public NavigationLocation getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request)
+			throws Exception {
+		Object location = null;
 		if (StringUtils.hasText(navigationCase.to())) {
-			rtn = navigationCase.to();
+			location = navigationCase.to();
 		}
 		if (FoundNavigationCaseType.METHOD.equals(type)) {
 			Method method = (Method) owner;
 			if (method.getAnnotation(RequestMapping.class) != null) {
-				if (rtn == null) {
+				if (location == null) {
 					throw new IllegalStateException("Unable to call method " + method.getName() + " from class "
 							+ method.getDeclaringClass() + " in order to resolve empty @NavigationCase.to() for "
 							+ event + " as method also includes @RequestMapping annotation");
@@ -115,10 +117,10 @@ public final class FoundNavigationCase {
 						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event),
 								new FacesWebArgumentResolver() });
 				Object methodResult = invoker.invoke(method, target, request);
-				rtn = methodResult != null ? methodResult : rtn;
+				location = methodResult != null ? methodResult : location;
 			}
 		}
-		return rtn;
+		return new NavigationLocation(location, navigationCase.popup());
 	}
 
 	public String toString() {

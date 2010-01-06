@@ -15,6 +15,8 @@
  */
 package org.springframework.faces.mvc.annotation;
 
+import org.springframework.faces.mvc.NavigationLocation;
+
 /**
  * Strategy interface used to resolve navigation outcome expressions.
  * 
@@ -33,5 +35,6 @@ public interface NavigationOutcomeExpressionResolver {
 	 * 
 	 * @throws Exception
 	 */
-	public Object resolveNavigationOutcome(NavigationOutcomeExpressionContext context, Object outcome) throws Exception;
+	public NavigationLocation resolveNavigationOutcome(NavigationOutcomeExpressionContext context,
+			NavigationLocation outcome) throws Exception;
 }

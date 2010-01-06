@@ -38,6 +38,7 @@ import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.faces.mvc.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.MvcFacesExceptionOutcome;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
@@ -167,14 +168,15 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return super.handle(request, response, handler);
 	}
 
-	protected final Object getNavigationOutcome(HttpServletRequest request, HttpServletResponse response,
+	protected final NavigationLocation getNavigationOutcome(HttpServletRequest request, HttpServletResponse response,
 			NavigationRequestEvent event, Object handler) throws Exception {
 		NavigationCaseMethodResolver methodResolver = getMethodResolver(handler);
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
 				event);
-		Object outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler, webRequest);
+		NavigationLocation outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler,
+				webRequest);
 		NavigationOutcomeExpressionContextImpl context = new NavigationOutcomeExpressionContextImpl(handler,
 				webRequest, methodResolver);
 		outcome = navigationOutcomeExpressionResolver.resolveNavigationOutcome(context, outcome);
@@ -386,7 +388,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return FacesAnnotationMethodHandlerAdapter.this.createView(request, response, handler);
 		}
 
-		public Object getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event)
+		public NavigationLocation getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event)
 				throws Exception {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
@@ -410,8 +412,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			requestContext.getFacesHandler();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, requestContext
 					.getLastNavigationRequestEvent(), exception);
-			Object location = FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request, response, event,
-					handler);
+			NavigationLocation location = FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request,
+					response, event, handler);
 			if (location != null) {
 				outcome.redirect(location);
 				return true;

@@ -26,6 +26,7 @@ import javax.faces.context.FacesContext;
 
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.ReverseDataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
@@ -49,13 +50,14 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 		URL, QUERY
 	}
 
-	public Object resolveNavigationOutcome(NavigationOutcomeExpressionContext context, Object outcome) throws Exception {
-		if (outcome == null || !(outcome instanceof String)) {
+	public NavigationLocation resolveNavigationOutcome(NavigationOutcomeExpressionContext context,
+			NavigationLocation outcome) throws Exception {
+		if (outcome == null || outcome.getLocation() == null || !(outcome.getLocation() instanceof String)) {
 			return outcome;
 		}
 		Position position = Position.URL;
-		String s = (String) outcome;
-		StringBuffer rtn = new StringBuffer();
+		String s = (String) outcome.getLocation();
+		StringBuffer resolvedLocation = new StringBuffer();
 		Matcher matcher = EL_PATTERN.matcher(s);
 		int i = 0;
 		while (matcher.find()) {
@@ -63,7 +65,7 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 			if (beforeMatch.indexOf('?') != -1) {
 				position = Position.QUERY;
 			}
-			rtn.append(beforeMatch);
+			resolvedLocation.append(beforeMatch);
 			String attribute = matcher.group(1);
 			String expression = matcher.group(2);
 			String converted = resolveConvertAndUrlEncode(context, position, attribute, expression);
@@ -71,11 +73,11 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 				throw new IllegalStateException("Unable resolve and convert expression '" + expression
 						+ "' for outcome '" + s + "'");
 			}
-			rtn.append(converted);
+			resolvedLocation.append(converted);
 			i = matcher.end();
 		}
-		rtn.append(s.substring(i, s.length()));
-		return rtn.toString();
+		resolvedLocation.append(s.substring(i, s.length()));
+		return new NavigationLocation(resolvedLocation.toString(), outcome.getPopup());
 	}
 
 	protected String resolveConvertAndUrlEncode(NavigationOutcomeExpressionContext context, Position position,

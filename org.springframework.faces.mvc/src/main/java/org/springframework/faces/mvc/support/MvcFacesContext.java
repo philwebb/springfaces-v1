@@ -26,6 +26,7 @@ import javax.faces.event.PhaseListener;
 import org.springframework.faces.mvc.AbstractFacesHandlerAdapter;
 import org.springframework.faces.mvc.ActionUrlMapper;
 import org.springframework.faces.mvc.FacesViewIdResolver;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.RedirectHandler;
 import org.springframework.web.servlet.HandlerAdapter;
 
@@ -111,9 +112,9 @@ public interface MvcFacesContext {
 	/**
 	 * Called after a navigation outcome has been determined to redirect the browser.
 	 * 
-	 * @param facesContext
-	 * @param location
+	 * @param facesContext The faces context
+	 * @param location The location to redirect to
 	 * @throws IOException
 	 */
-	void redirect(FacesContext facesContext, Object location) throws IOException;
+	void redirect(FacesContext facesContext, NavigationLocation location) throws IOException;
 }

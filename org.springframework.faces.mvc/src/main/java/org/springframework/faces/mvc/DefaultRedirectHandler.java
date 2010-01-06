@@ -86,15 +86,16 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	/**
 	 * Sends a redirect to the requested url.
 	 * @param ajaxHandler The ajax handler
+	 * @param url the url to redirect to
 	 * @param request The request
 	 * @param response The response
-	 * @param url the url to redirect to
+	 * @param popup whether the redirect should be sent from a new popup dialog window
 	 * @throws IOException an exception occurred
 	 */
-	protected void sendRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
-			String url) throws IOException {
+	protected void sendRedirect(AjaxHandler ajaxHandler, String url, HttpServletRequest request,
+			HttpServletResponse response, boolean popup) throws IOException {
 		if (ajaxHandler.isAjaxRequest(request, response)) {
-			ajaxHandler.sendAjaxRedirect(url, request, response, false);
+			ajaxHandler.sendAjaxRedirect(url, request, response, popup);
 		} else {
 			if (redirectHttp10Compatible) {
 				// Always send status code 302.
@@ -126,10 +127,10 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	}
 
 	public void handleRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
-			Object location) throws IOException {
-		if (location != null) {
-			String url = getLocationUrl(request, location.toString());
-			sendRedirect(ajaxHandler, request, response, url);
+			NavigationLocation location) throws IOException {
+		if (location != null && location.getLocation() != null) {
+			String url = getLocationUrl(request, location.getLocation().toString());
+			sendRedirect(ajaxHandler, url, request, response, location.getPopup());
 		}
 	}
 

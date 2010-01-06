@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockApplication12;
 import org.apache.shale.test.mock.MockFacesContext12;
 import org.easymock.EasyMock;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.annotation.NavigationOutcomeExpressionElResolver.Position;
 import org.springframework.web.bind.WebDataBinder;
 
@@ -53,11 +54,13 @@ public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 	}
 
 	public void testNonString() throws Exception {
-		assertEquals(new Long(123), resolver.resolveNavigationOutcome(context, new Long(123)));
+		assertEquals(new NavigationLocation(new Long(123)), resolver.resolveNavigationOutcome(context,
+				new NavigationLocation(new Long(123))));
 	}
 
 	public void testNoExpression() throws Exception {
-		assertEquals("contextRelative:/test", resolver.resolveNavigationOutcome(context, "contextRelative:/test"));
+		assertEquals(new NavigationLocation("contextRelative:/test"), resolver.resolveNavigationOutcome(context,
+				new NavigationLocation("contextRelative:/test")));
 	}
 
 	public void testSimpleQuery() throws Exception {
@@ -65,13 +68,13 @@ public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 		EasyMock.expect(context.createDataBinder(null, null, null)).andReturn(dataBinder);
 		EasyMock.expect(context.createDataBinder("value", null, null)).andReturn(dataBinder);
 		EasyMock.replay(context);
-		assertEquals("contextRelative:/test/123/x?value=456", resolver.resolveNavigationOutcome(context,
-				"contextRelative:/test/#{i1}/x?value=#{i2}"));
+		assertEquals(new NavigationLocation("contextRelative:/test/123/x?value=456"), resolver
+				.resolveNavigationOutcome(context, new NavigationLocation("contextRelative:/test/#{i1}/x?value=#{i2}")));
 	}
 
 	public void testNullResovle() throws Exception {
 		try {
-			resolver.resolveNavigationOutcome(context, "contextRelative:/test/#{xxx}");
+			resolver.resolveNavigationOutcome(context, new NavigationLocation("contextRelative:/test/#{xxx}"));
 		} catch (IllegalStateException e) {
 			assertEquals("Unable resolve and convert expression '#{xxx}' "
 					+ "for outcome 'contextRelative:/test/#{xxx}'", e.getMessage());
@@ -83,8 +86,8 @@ public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 		WebDataBinder dataBinder = new WebDataBinder(e1);
 		EasyMock.expect(context.createDataBinder(null, e1, null)).andReturn(dataBinder);
 		EasyMock.replay(context);
-		assertEquals("contextRelative:/test?a=one&b=t+w%26o", resolver.resolveNavigationOutcome(context,
-				"contextRelative:/test?#{e1}"));
+		assertEquals(new NavigationLocation("contextRelative:/test?a=one&b=t+w%26o"), resolver
+				.resolveNavigationOutcome(context, new NavigationLocation("contextRelative:/test?#{e1}")));
 	}
 
 	public void testRealResolve() throws Exception {

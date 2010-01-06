@@ -320,7 +320,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		public void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
 		}
 
-		public void redirect(FacesContext facesContext, Object location) throws IOException {
+		public void redirect(FacesContext facesContext, NavigationLocation location) throws IOException {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(ajaxHandler, request, response,
@@ -333,7 +333,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 */
 	private class MvcFacesExceptionOutcomeImpl implements MvcFacesExceptionOutcome {
 
-		private Object redirectLocation;
+		private NavigationLocation redirectLocation;
 		private boolean redisplay;
 
 		private void reset() {
@@ -341,7 +341,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			this.redisplay = false;
 		}
 
-		public void redirect(Object location) {
+		public void redirect(NavigationLocation location) {
 			this.redirectLocation = location;
 		}
 

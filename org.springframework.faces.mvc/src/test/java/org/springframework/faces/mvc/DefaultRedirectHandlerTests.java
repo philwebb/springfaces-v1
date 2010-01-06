@@ -31,7 +31,7 @@ public class DefaultRedirectHandlerTests extends TestCase {
 	private static final int TYPE_HTTP10 = 2;
 	private static final int TYPE_AJAX = 3;
 
-	private void doTestRedirect(Object location, final String expectedUrl, int type) throws Exception {
+	private void doTestRedirect(NavigationLocation location, final String expectedUrl, int type) throws Exception {
 		DefaultRedirectHandler handler = new DefaultRedirectHandler();
 		handler.setRedirectHttp10Compatible(type == TYPE_HTTP10);
 		ServletContext context = (ServletContext) EasyMock.createMock(ServletContext.class);
@@ -70,9 +70,10 @@ public class DefaultRedirectHandlerTests extends TestCase {
 	}
 
 	private void doTestRedirects(Object location, final String expectedUrl) throws Exception {
-		doTestRedirect(location, expectedUrl, TYPE_NORMAL);
-		doTestRedirect(location, expectedUrl, TYPE_HTTP10);
-		doTestRedirect(location, expectedUrl, TYPE_AJAX);
+		NavigationLocation navigationLocation = new NavigationLocation(location);
+		doTestRedirect(navigationLocation, expectedUrl, TYPE_NORMAL);
+		doTestRedirect(navigationLocation, expectedUrl, TYPE_HTTP10);
+		doTestRedirect(navigationLocation, expectedUrl, TYPE_AJAX);
 	}
 
 	public void testAssertsWorks() throws Exception {
@@ -111,14 +112,4 @@ public class DefaultRedirectHandlerTests extends TestCase {
 		doTestRedirects("test", "/context/servlet/test");
 		doTestRedirects("/test", "/context/servlet/test");
 	}
-	//
-	// private static class MockAjaxHandler implements AjaxHandler {
-	// public boolean isAjaxRequest(HttpServletRequest arg0, HttpServletResponse arg1) {
-	// return false;
-	// }
-	//
-	// public void sendAjaxRedirect(String arg0, HttpServletRequest arg1, HttpServletResponse arg2, boolean arg3)
-	// throws IOException {
-	// }
-	// }
 }

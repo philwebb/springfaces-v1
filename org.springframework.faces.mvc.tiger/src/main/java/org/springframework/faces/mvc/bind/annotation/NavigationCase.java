@@ -91,6 +91,13 @@ public @interface NavigationCase {
 	 * @return The navigation outcome.
 	 */
 	public String to() default "";
+
+	// FIXME doc comment
+	// FIXME test new NavigationOutcome class
+	// FIXME tests for NavigationOutcome.location == null
+	// FIXME frament support
+	public boolean popup() default false;
+
 	// FIXME support if?
 	// FIXME rename package
 	// FIXME AJAX fragment support?

@@ -24,6 +24,7 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
 import org.springframework.faces.mvc.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
@@ -34,7 +35,7 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 		super(name);
 	}
 
-	public void doTestNavigate(final String navigate) throws Exception {
+	public void doTestNavigate(final NavigationLocation location) throws Exception {
 		NavigationHandler delegate = (NavigationHandler) MvcFacesTestUtils
 				.methodTrackingObject(NavigationHandler.class);
 		final MvcNavigationHandler handler = new MvcNavigationHandler(delegate);
@@ -48,12 +49,12 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 						NavigationRequestEvent event = (NavigationRequestEvent) EasyMock.getCurrentArguments()[1];
 						assertEquals("action", event.getFromAction());
 						assertEquals("outcome", event.getOutcome());
-						return navigate;
+						return location;
 					}
 				});
 				// if navigating ensure the context is called
-				if (navigate != null) {
-					mvcFacesRequestContext.getMvcFacesContext().redirect(facesContext, navigate);
+				if (location != null) {
+					mvcFacesRequestContext.getMvcFacesContext().redirect(facesContext, location);
 					EasyMock.expectLastCall();
 				}
 			}
@@ -65,7 +66,7 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 			}
 		});
 		MethodCallAssertor assertor = (MethodCallAssertor) delegate;
-		if (navigate != null) {
+		if (location != null) {
 			// if navigating ensure delegate was not called
 			assertor.assertNotCalled("handleNavigation");
 		} else {
@@ -76,7 +77,7 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 	}
 
 	public void testNavigate() throws Exception {
-		doTestNavigate("navigate");
+		doTestNavigate(new NavigationLocation("navigate"));
 	}
 
 	public void testNavigateWithNoneFound() throws Exception {

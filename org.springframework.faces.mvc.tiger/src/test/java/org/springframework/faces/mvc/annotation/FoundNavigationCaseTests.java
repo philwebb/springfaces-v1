@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.FoundNavigationCase.FoundNavigationCaseType;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
@@ -83,11 +84,11 @@ public class FoundNavigationCaseTests extends TestCase {
 		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), "#{action.test}",
 				"methodcall"), target, null);
 		assertTrue(target.isMethodCalled());
-		assertEquals("someview", outcome);
+		assertEquals(new NavigationLocation("someview"), outcome);
 	}
 
-	private void doTestOutcomeWithToAndReturn(String methodName, String returnOutcome, String expectedOutcome)
-			throws Exception {
+	private void doTestOutcomeWithToAndReturn(String methodName, String returnOutcome,
+			NavigationLocation expectedOutcome) throws Exception {
 		Method method = SampleController.class.getMethod(methodName, new Class<?>[] {});
 		NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
 		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
@@ -100,15 +101,15 @@ public class FoundNavigationCaseTests extends TestCase {
 	}
 
 	public void testMethodCallWithTo() throws Exception {
-		doTestOutcomeWithToAndReturn("methodCallWithTo", null, "test");
+		doTestOutcomeWithToAndReturn("methodCallWithTo", null, new NavigationLocation("test"));
 	}
 
 	public void testMethodCallWithToAndNullReturn() throws Exception {
-		doTestOutcomeWithToAndReturn("methodCallWithToAndReturn", null, "test");
+		doTestOutcomeWithToAndReturn("methodCallWithToAndReturn", null, new NavigationLocation("test"));
 	}
 
 	public void testMethodCallWithToAndOverrideReturn() throws Exception {
-		doTestOutcomeWithToAndReturn("methodCallWithToAndReturn", "override", "override");
+		doTestOutcomeWithToAndReturn("methodCallWithToAndReturn", "override", new NavigationLocation("override"));
 	}
 
 	public void testOutcomeMethodCallWithRequestMappingAndNoTo() throws Exception {
@@ -137,7 +138,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		SampleController target = new SampleController();
 		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null,
 				"methodcallwithrequestmapping"), target, null);
-		assertEquals("test", outcome);
+		assertEquals(new NavigationLocation("test"), outcome);
 		assertFalse(target.isMethodCalled());
 	}
 

@@ -33,7 +33,7 @@ public class MainController {
     @RequestMapping("/search2")
     @NavigationRules( {
 	    @NavigationCase(on = "select", to = "reviewHotel?id=#{hotels.selectedRow.id}"),
-	    @NavigationCase(on = "changeSearch", to = "/main2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}") })
+	    @NavigationCase(on = "changeSearch", to = "/main2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true) })
     public String search(@ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria, Model model) {
 	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
 	DataModel hotelsDataModel = (DataModel) conversionService.executeConversion(hotels, DataModel.class);

@@ -31,7 +31,7 @@ public interface MvcFacesExceptionOutcome {
 	 * 
 	 * @param location The redirect location.
 	 */
-	public void redirect(Object location);
+	public void redirect(NavigationLocation location);
 
 	/**
 	 * Re-rendered the current view up to the point of {@link PhaseId#PROCESS_VALIDATIONS}.

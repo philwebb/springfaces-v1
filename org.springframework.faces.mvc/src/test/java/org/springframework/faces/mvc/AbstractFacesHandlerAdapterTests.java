@@ -282,13 +282,14 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
 		HttpServletRequest frequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 		HttpServletResponse fresponse = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-		redirectHandler.handleRedirect(ajaxHandler, frequest, fresponse, "location");
+		redirectHandler.handleRedirect(ajaxHandler, frequest, fresponse, new NavigationLocation("location"));
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().redirect(facesContext, "location");
+				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().redirect(facesContext,
+						new NavigationLocation("location"));
 			}
 		};
 		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
@@ -366,7 +367,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		MockMvcFacesExceptionHandler exceptionHandler = new MockMvcFacesExceptionHandler(true);
 		exceptionHandler.setRedirect("location");
 		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
-		redirectHandler.handleRedirect(ajaxHandler, request, response, "location");
+		redirectHandler.handleRedirect(ajaxHandler, request, response, new NavigationLocation("location"));
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter.setExceptionHandlers(Collections.singletonList(exceptionHandler));
@@ -467,7 +468,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 				outcome.redisplay();
 			}
 			if (redirect != null) {
-				outcome.redirect(redirect);
+				outcome.redirect(new NavigationLocation(redirect));
 			}
 			return handle;
 		}

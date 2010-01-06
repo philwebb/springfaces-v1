@@ -52,6 +52,7 @@ import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.faces.mvc.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.MvcFacesExceptionOutcome;
+import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
@@ -174,7 +175,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		assertEquals("testView", view.getViewName());
 	}
 
-	private void doTestGetNavigationOutcomeLocation(String eventOutcome, String expected) throws Exception {
+	private void doTestGetNavigationOutcomeLocation(String eventOutcome, NavigationLocation expected) throws Exception {
 		setupMockRequestUlr(request);
 		SampleFacesController handler = new SampleFacesController();
 		EasyMock.replay(request, response);
@@ -186,7 +187,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	public void testGetNavigationOutcomeLocation() throws Exception {
-		doTestGetNavigationOutcomeLocation("outcome", "testview");
+		doTestGetNavigationOutcomeLocation("outcome", new NavigationLocation("testview"));
 	}
 
 	public void testGetNavigationOutcomeLocationNotFound() throws Exception {
@@ -195,19 +196,19 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 
 	public void testGetNavigationOutcomeLocationWithCustomResolver() throws Exception {
 		adapter.setNavigationOutcomeExpressionResolver(new NavigationOutcomeExpressionResolver() {
-			public Object resolveNavigationOutcome(NavigationOutcomeExpressionContext context, Object outcome)
-					throws Exception {
-				return "resolved" + outcome;
+			public NavigationLocation resolveNavigationOutcome(NavigationOutcomeExpressionContext context,
+					NavigationLocation outcome) throws Exception {
+				return new NavigationLocation("resolved" + outcome.getLocation());
 			}
 		});
-		doTestGetNavigationOutcomeLocation("outcome", "resolvedtestview");
+		doTestGetNavigationOutcomeLocation("outcome", new NavigationLocation("resolvedtestview"));
 	}
 
 	public void testGetNavigationOutcomeContext() throws Exception {
 		final boolean[] called = new boolean[] { false };
 		adapter.setNavigationOutcomeExpressionResolver(new NavigationOutcomeExpressionResolver() {
-			public Object resolveNavigationOutcome(NavigationOutcomeExpressionContext context, Object outcome)
-					throws Exception {
+			public NavigationLocation resolveNavigationOutcome(NavigationOutcomeExpressionContext context,
+					NavigationLocation outcome) throws Exception {
 				called[0] = true;
 				assertSame(request, context.getWebRequest().getNativeRequest());
 				WebDataBinder binder;
@@ -218,7 +219,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 				return outcome;
 			}
 		});
-		doTestGetNavigationOutcomeLocation("outcome", "testview");
+		doTestGetNavigationOutcomeLocation("outcome", new NavigationLocation("testview"));
 		assertTrue(called[0]);
 	}
 
@@ -372,7 +373,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		doTestExposeContoller(new FacesControllerWithCustomExposedVaraible(), "customcontroller", true);
 	}
 
-	private void doTestHandleException(Exception exception, String redirect) throws Exception {
+	private void doTestHandleException(Exception exception, NavigationLocation redirect) throws Exception {
 		adapter.handle(request, response, new SampleFacesController());
 		MvcFacesExceptionHandler[] exceptionHandlers = underlyingAdapter.getHandler().getExceptionHandlers();
 		assertEquals(1, exceptionHandlers.length);
@@ -397,7 +398,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	public void testHandleException() throws Exception {
-		doTestHandleException(new IllegalAccessException(), "errorview");
+		doTestHandleException(new IllegalAccessException(), new NavigationLocation("errorview"));
 	}
 
 	public void testHandleExceptionNotMapped() throws Exception {
