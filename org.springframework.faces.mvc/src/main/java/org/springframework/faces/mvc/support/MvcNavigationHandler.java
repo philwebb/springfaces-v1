@@ -37,8 +37,9 @@ public class MvcNavigationHandler extends NavigationHandler {
 	}
 
 	public void handleNavigation(FacesContext facesContext, String fromAction, String outcome) {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+			MvcFacesRequestContextControl requestContext = (MvcFacesRequestContextControl) MvcFacesRequestContextHolder
+					.getRequestContext();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, fromAction, outcome);
 			try {
 				requestContext.setLastNavigationRequestEvent(event);

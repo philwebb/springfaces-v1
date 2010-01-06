@@ -40,6 +40,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextControl;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
@@ -73,8 +75,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		FacesHandler facesHandler = (FacesHandler) handler;
-		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestContext(newFacesHandlerAdapterContext(),
-				facesHandler);
+		MvcFacesRequestContextControlImpl mvcFacesRequestContext = new MvcFacesRequestContextControlImpl(
+				newFacesHandlerAdapterContext(), facesHandler);
 		try {
 			try {
 				doHandle(mvcFacesRequestContext, request, response);
@@ -114,7 +116,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 */
 	protected void handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 			HttpServletResponse response, Exception exception) throws Exception {
-		mvcFacesRequestContext.setException(exception);
+		// FIXME create mutable interface MvcFacesRequestContextControl like SWF
+		((MvcFacesRequestContextControl) mvcFacesRequestContext).setException(exception);
 		MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome = new MvcFacesExceptionOutcomeImpl();
 		// Try the handler specified exception handlers
 		boolean handled = handleException(mvcFacesRequestContext, request, response, exception,

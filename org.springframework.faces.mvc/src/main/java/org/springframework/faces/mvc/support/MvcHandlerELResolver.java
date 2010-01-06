@@ -46,11 +46,11 @@ public class MvcHandlerELResolver extends ELResolver {
 	}
 
 	public Object getValue(ELContext elContext, Object base, Object property) {
-		if (base != null || MvcFacesRequestContext.getCurrentInstance() == null) {
+		if (base != null || MvcFacesRequestContextHolder.getRequestContext() == null) {
 			return null;
 		}
 		String propertyName = property.toString();
-		MvcFacesRequestContext mvcFacesRequestContext = MvcFacesRequestContext.getCurrentInstance();
+		MvcFacesRequestContext mvcFacesRequestContext = MvcFacesRequestContextHolder.getRequestContext();
 		Object value = mvcFacesRequestContext.getFacesHandler().resolveVariable(propertyName);
 		if (value != null) {
 			elContext.setPropertyResolved(true);

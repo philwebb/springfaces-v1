@@ -36,7 +36,7 @@ import org.springframework.web.servlet.HandlerAdapter;
  * {@link MvcNavigationHandler}, {@link MvcPhaseListener}, {@link MvcStateManager} and {@link MvcViewHandler} JSF
  * classes. The context will most likely delegate to a MVC {@link HandlerAdapter} and the {@link FacesViewIdResolver},
  * {@link RedirectHandler} & {@link ActionUrlMapper} interfaces. Note: This interface will only be called for MVC faces
- * requests (that is when {@link MvcFacesRequestContext#getCurrentInstance()} does not return <tt>null</tt>).
+ * requests (that is when {@link MvcFacesRequestContext#getRequestContext()} does not return <tt>null</tt>).
  * 
  * @see AbstractFacesHandlerAdapter
  * @see FacesViewIdResolver

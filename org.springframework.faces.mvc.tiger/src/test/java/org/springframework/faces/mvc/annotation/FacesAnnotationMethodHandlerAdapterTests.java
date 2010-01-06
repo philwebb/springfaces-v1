@@ -58,7 +58,7 @@ import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.faces.mvc.support.MvcFacesContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.WebDataBinder;
@@ -381,20 +381,24 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
 		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
 		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
-		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, underlyingAdapter
+		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, underlyingAdapter
 				.getHandler()) {
 			public NavigationRequestEvent getLastNavigationRequestEvent() {
 				return event;
 			}
 		};
-		setupMockRequestUlr(request);
-		if (redirect != null) {
-			outcome.redirect(redirect);
-			EasyMock.expectLastCall();
+		try {
+			setupMockRequestUlr(request);
+			if (redirect != null) {
+				outcome.redirect(redirect);
+				EasyMock.expectLastCall();
+			}
+			EasyMock.replay(request, response, outcome);
+			boolean handled = exceptionHandler.handleException(exception, requestContext, request, response, outcome);
+			assertEquals(redirect != null, handled);
+		} finally {
+			requestContext.release();
 		}
-		EasyMock.replay(request, response, outcome);
-		boolean handled = exceptionHandler.handleException(exception, requestContext, request, response, outcome);
-		assertEquals(redirect != null, handled);
 	}
 
 	public void testHandleException() throws Exception {

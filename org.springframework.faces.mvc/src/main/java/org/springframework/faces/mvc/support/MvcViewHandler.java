@@ -46,8 +46,8 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public UIViewRoot createView(FacesContext context, String viewId) {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
 			ModelAndView modelAndView;
 			try {
 				modelAndView = requestContext.getFacesHandler().createView(context);
@@ -71,8 +71,8 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public UIViewRoot restoreView(FacesContext context, String viewId) {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
 			String originalViewId = viewId;
 			viewId = requestContext.getMvcFacesContext().getViewIdForRestore(context, viewId);
 			Assert.notNull(viewId, "The MVC Faces Context could not map the view \"" + originalViewId
@@ -82,7 +82,7 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public void renderView(FacesContext context, UIViewRoot viewToRender) throws IOException, FacesException {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
 			// Check to see if the response has already been rendered
 			if (viewToRender instanceof EmptyUIViewRoot) {
 				return;
@@ -92,8 +92,8 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public String getActionURL(FacesContext context, String viewId) {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
 			String actionUrl = requestContext.getMvcFacesContext().getActionUlr(context, viewId);
 			Assert.notNull(actionUrl, "The action URL for the view \"" + viewId + "\" is not mapped");
 			return actionUrl;

@@ -35,8 +35,8 @@ public class MvcStateManager extends StateManager {
 	}
 
 	public void writeState(FacesContext context, StateManager.SerializedView state) throws IOException {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().writeState(context);
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+			MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().writeState(context);
 		}
 		delegate.writeState(context, state);
 	}

@@ -33,8 +33,8 @@ import org.springframework.web.jsf.DelegatingPhaseListenerMulticaster;
 public class MvcPhaseListener extends DelegatingPhaseListenerMulticaster {
 
 	protected Collection getDelegates(FacesContext facesContext) {
-		if (MvcFacesRequestContext.getCurrentInstance() != null) {
-			final MvcFacesRequestContext requestContext = MvcFacesRequestContext.getCurrentInstance();
+		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+			final MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
 			return Collections.singleton(new PhaseListener() {
 
 				public PhaseId getPhaseId() {

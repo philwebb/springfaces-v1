@@ -32,6 +32,7 @@ import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
 
 public class MvcFacesTestUtils {
 
@@ -90,7 +91,8 @@ public class MvcFacesTestUtils {
 	public static void doWithMockMvcFacesRequestContext(MockMvcFacesRequestContextCallback callback) throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		MvcFacesRequestContextControlImpl mvcFacesRequestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext,
+				facesHandler);
 		try {
 			callback.prepare(mvcFacesRequestContext);
 			EasyMock.replay(new Object[] { mvcFacesContext, facesHandler });

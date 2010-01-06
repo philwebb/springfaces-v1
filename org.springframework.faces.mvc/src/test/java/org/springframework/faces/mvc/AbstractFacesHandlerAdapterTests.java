@@ -37,6 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextControl;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
 import org.springframework.faces.mvc.support.PageScopeHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
@@ -103,7 +105,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().resolveViewId("viewname");
+				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().resolveViewId("viewname");
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -117,7 +119,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().getActionUlr(facesContext, "viewid");
+				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().getActionUlr(facesContext,
+						"viewid");
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -131,8 +134,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().getViewIdForRestore(facesContext,
-						"viewid");
+				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().getViewIdForRestore(
+						facesContext, "viewid");
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -197,7 +200,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().writeState(facesContext);
+				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().writeState(facesContext);
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -244,7 +247,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				mvcFacesRequestContext.setException(exception);
+				((MvcFacesRequestContextControl) mvcFacesRequestContext).setException(exception);
 				PhaseEvent event = new PhaseEvent(facesContext, phaseId, lifecycle);
 				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
 			}
@@ -273,7 +276,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				assertEquals("customhandler", MvcFacesRequestContext.getCurrentInstance().getFacesHandler().toString());
+				assertEquals("customhandler", MvcFacesRequestContextHolder.getRequestContext().getFacesHandler()
+						.toString());
 			}
 		};
 	}
@@ -288,7 +292,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext().redirect(facesContext,
+				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().redirect(facesContext,
 						new NavigationLocation("location"));
 			}
 		};

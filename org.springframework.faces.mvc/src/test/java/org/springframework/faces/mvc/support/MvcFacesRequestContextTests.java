@@ -33,7 +33,8 @@ public class MvcFacesRequestContextTests extends TestCase {
 		public void run() {
 			MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 			FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-			final MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+			final MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext,
+					facesHandler);
 			try {
 				while (wait) {
 					try {
@@ -42,8 +43,8 @@ public class MvcFacesRequestContextTests extends TestCase {
 						Thread.currentThread().interrupt();
 					}
 				}
-				assertSame(facesHandler, MvcFacesRequestContext.getCurrentInstance().getFacesHandler());
-				assertSame(mvcFacesContext, MvcFacesRequestContext.getCurrentInstance().getMvcFacesContext());
+				assertSame(facesHandler, MvcFacesRequestContextHolder.getRequestContext().getFacesHandler());
+				assertSame(mvcFacesContext, MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext());
 			} finally {
 				requestContext.release();
 			}
@@ -68,7 +69,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 	public void testDoubleRelease() throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
 		requestContext.release();
 		try {
 			requestContext.release();
@@ -81,7 +82,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 	public void testSetGetException() throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
 		Exception exception = new Exception();
 		requestContext.setException(exception);
 		assertSame(exception, requestContext.getException());
@@ -90,7 +91,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 	public void testSetGetLastNavigationRequestEvent() throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContext requestContext = new MvcFacesRequestContext(mvcFacesContext, facesHandler);
+		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
 		NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
 		requestContext.setLastNavigationRequestEvent(event);
 		assertSame(event, requestContext.getLastNavigationRequestEvent());
