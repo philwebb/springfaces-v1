@@ -46,7 +46,7 @@ public class MvcNavigationHandler extends NavigationHandler {
 				NavigationLocation location = requestContext.getFacesHandler().getNavigationOutcomeLocation(
 						facesContext, event);
 				if (location != null && location.getLocation() != null) {
-					requestContext.getMvcFacesContext().redirect(facesContext, location);
+					requestContext.getMvcFacesContext().redirect(facesContext, requestContext, location);
 					return;
 				}
 			} catch (Exception e) {

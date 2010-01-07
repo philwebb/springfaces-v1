@@ -36,7 +36,7 @@ import org.springframework.web.servlet.HandlerAdapter;
  * {@link MvcNavigationHandler}, {@link MvcPhaseListener}, {@link MvcStateManager} and {@link MvcViewHandler} JSF
  * classes. The context will most likely delegate to a MVC {@link HandlerAdapter} and the {@link FacesViewIdResolver},
  * {@link RedirectHandler} & {@link ActionUrlMapper} interfaces. Note: This interface will only be called for MVC faces
- * requests (that is when {@link MvcFacesRequestContext#getRequestContext()} does not return <tt>null</tt>).
+ * requests (that is when {@link MvcFacesRequestContextHolder#getRequestContext()} does not return <tt>null</tt>).
  * 
  * @see AbstractFacesHandlerAdapter
  * @see FacesViewIdResolver
@@ -112,9 +112,11 @@ public interface MvcFacesContext {
 	/**
 	 * Called after a navigation outcome has been determined to redirect the browser.
 	 * 
-	 * @param facesContext The faces context
+	 * @param facesContext
+	 * @param mvcFacesRequestContext
 	 * @param location The location to redirect to
 	 * @throws IOException
 	 */
-	void redirect(FacesContext facesContext, NavigationLocation location) throws IOException;
+	void redirect(FacesContext facesContext, MvcFacesRequestContext mvcFacesRequestContext, NavigationLocation location)
+			throws IOException;
 }

@@ -120,7 +120,7 @@ public final class FoundNavigationCase {
 				location = methodResult != null ? methodResult : location;
 			}
 		}
-		return new NavigationLocation(location, navigationCase.popup());
+		return new NavigationLocation(location, navigationCase.popup(), navigationCase.fragments());
 	}
 
 	public String toString() {

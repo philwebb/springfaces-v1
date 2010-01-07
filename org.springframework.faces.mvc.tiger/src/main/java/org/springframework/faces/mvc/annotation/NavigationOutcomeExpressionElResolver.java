@@ -77,7 +77,7 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 			i = matcher.end();
 		}
 		resolvedLocation.append(s.substring(i, s.length()));
-		return new NavigationLocation(resolvedLocation.toString(), outcome.getPopup());
+		return new NavigationLocation(resolvedLocation.toString(), outcome.getPopup(), outcome.getFragments());
 	}
 
 	protected String resolveConvertAndUrlEncode(NavigationOutcomeExpressionContext context, Position position,

@@ -23,6 +23,7 @@ public class MainController {
     private BookingService bookingService;
     private ConversionService conversionService;
 
+    // FIXME resetPage
     @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
     @RequestMapping("/main2")
     public String main(@ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria) {
@@ -33,7 +34,7 @@ public class MainController {
     @RequestMapping("/search2")
     @NavigationRules( {
 	    @NavigationCase(on = "select", to = "reviewHotel?id=#{hotels.selectedRow.id}"),
-	    @NavigationCase(on = "changeSearch", to = "/main2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true) })
+	    @NavigationCase(on = "changeSearch", to = "/main2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true, fragments = "hotelSearchFragment") })
     public String search(@ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria, Model model) {
 	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
 	DataModel hotelsDataModel = (DataModel) conversionService.executeConversion(hotels, DataModel.class);

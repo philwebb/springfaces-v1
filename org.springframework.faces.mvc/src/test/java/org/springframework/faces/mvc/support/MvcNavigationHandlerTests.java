@@ -54,7 +54,8 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 				});
 				// if navigating ensure the context is called
 				if (location != null) {
-					mvcFacesRequestContext.getMvcFacesContext().redirect(facesContext, location);
+					mvcFacesRequestContext.getMvcFacesContext()
+							.redirect(facesContext, mvcFacesRequestContext, location);
 					EasyMock.expectLastCall();
 				}
 			}

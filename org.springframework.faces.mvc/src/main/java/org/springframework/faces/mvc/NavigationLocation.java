@@ -7,14 +7,16 @@ public final class NavigationLocation {
 
 	private Object location;
 	private Boolean popup;
+	private String[] fragments;
 
-	public NavigationLocation(Object location, boolean popup) {
+	public NavigationLocation(Object location, boolean popup, String[] fragments) {
 		this.location = location;
 		this.popup = new Boolean(popup);
+		this.fragments = fragments == null ? new String[] {} : fragments;
 	}
 
 	public NavigationLocation(Object location) {
-		this(location, false);
+		this(location, false, null);
 	}
 
 	public Object getLocation() {
@@ -25,12 +27,17 @@ public final class NavigationLocation {
 		return popup.booleanValue();
 	}
 
+	public String[] getFragments() {
+		return fragments;
+	}
+
 	public String toString() {
-		return new ToStringCreator(this).append("location", location).append("popup", popup).toString();
+		return new ToStringCreator(this).append("location", location).append("popup", popup).append("fragments",
+				fragments).toString();
 	}
 
 	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(new Object[] { location, popup });
+		return ObjectUtils.nullSafeHashCode(new Object[] { location, popup, fragments });
 	}
 
 	public boolean equals(Object obj) {
@@ -42,7 +49,8 @@ public final class NavigationLocation {
 		}
 		if (obj instanceof NavigationLocation) {
 			NavigationLocation other = (NavigationLocation) obj;
-			return ObjectUtils.nullSafeEquals(location, other.location) && popup.equals(other.popup);
+			return ObjectUtils.nullSafeEquals(location, other.location) && popup.equals(other.popup)
+					&& ObjectUtils.nullSafeEquals(fragments, other.fragments);
 		}
 		return false;
 	}

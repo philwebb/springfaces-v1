@@ -33,12 +33,6 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class MvcViewHandler extends ViewHandler {
 
-	/**
-	 * {@link UIViewRoot} instance that is used when a view does not need to be rendered.
-	 */
-	private static class EmptyUIViewRoot extends UIViewRoot {
-	}
-
 	private ViewHandler delegate;
 
 	public MvcViewHandler(ViewHandler delegate) {
@@ -115,5 +109,11 @@ public class MvcViewHandler extends ViewHandler {
 
 	public void writeState(FacesContext context) throws IOException {
 		delegate.writeState(context);
+	}
+
+	/**
+	 * {@link UIViewRoot} instance that is used when a view does not need to be rendered.
+	 */
+	private static class EmptyUIViewRoot extends UIViewRoot {
 	}
 }

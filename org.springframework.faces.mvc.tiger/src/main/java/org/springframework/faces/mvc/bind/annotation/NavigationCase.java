@@ -98,6 +98,8 @@ public @interface NavigationCase {
 	// FIXME frament support
 	public boolean popup() default false;
 
+	public String[] fragments() default {};
+
 	// FIXME support if?
 	// FIXME rename package
 	// FIXME AJAX fragment support?

@@ -48,6 +48,7 @@ import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
+import org.springframework.webflow.execution.View;
 
 /**
  * Abstract base implementation of a MVC {@link HandlerAdapter} that can be used to process {@link FacesHandler}s.
@@ -116,7 +117,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 */
 	protected void handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 			HttpServletResponse response, Exception exception) throws Exception {
-		// FIXME create mutable interface MvcFacesRequestContextControl like SWF
 		((MvcFacesRequestContextControl) mvcFacesRequestContext).setException(exception);
 		MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome = new MvcFacesExceptionOutcomeImpl();
 		// Try the handler specified exception handlers
@@ -309,8 +309,13 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		private void stopAtProcessValidationsWhenHasCurrentException(MvcFacesRequestContext mvcFacesRequestContext,
 				PhaseEvent event) {
 			if (PhaseId.PROCESS_VALIDATIONS.equals(event.getPhaseId()) && mvcFacesRequestContext.getException() != null) {
+				clearFlashScope(mvcFacesRequestContext);
 				event.getFacesContext().renderResponse();
 			}
+		}
+
+		private void clearFlashScope(MvcFacesRequestContext mvcFacesRequestContext) {
+			// FIXME work out where to clear flash scope mvcFacesRequestContext.getFlashScope().clear();
 		}
 
 		public void beforePhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
@@ -321,9 +326,16 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 
 		public void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
+			if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
+				clearFlashScope(mvcFacesRequestContext);
+			}
 		}
 
-		public void redirect(FacesContext facesContext, NavigationLocation location) throws IOException {
+		public void redirect(FacesContext facesContext, MvcFacesRequestContext requestContext,
+				NavigationLocation location) throws IOException {
+			if (location.getFragments().length > 0) {
+				requestContext.getFlashScope().put(View.RENDER_FRAGMENTS_ATTRIBUTE, location.getFragments());
+			}
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(ajaxHandler, request, response,

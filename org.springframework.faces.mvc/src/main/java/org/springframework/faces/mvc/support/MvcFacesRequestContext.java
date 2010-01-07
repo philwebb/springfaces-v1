@@ -19,6 +19,7 @@ import javax.faces.event.PhaseId;
 
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
  * A context for a single JSF request that is being handled by the Spring MVC framework. The
@@ -54,4 +55,7 @@ public interface MvcFacesRequestContext {
 	 * handling
 	 */
 	NavigationRequestEvent getLastNavigationRequestEvent();
+
+	// FIXME
+	MutableAttributeMap getFlashScope();
 }

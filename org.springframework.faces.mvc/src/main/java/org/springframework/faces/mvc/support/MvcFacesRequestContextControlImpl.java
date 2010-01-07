@@ -3,6 +3,8 @@ package org.springframework.faces.mvc.support;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.util.Assert;
+import org.springframework.webflow.core.collection.LocalAttributeMap;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
  * Default implementation of {@link MvcFacesRequestContextControl}.
@@ -16,6 +18,9 @@ public class MvcFacesRequestContextControlImpl implements MvcFacesRequestContext
 	private FacesHandler facesHandler;
 	private Exception exception;
 	private NavigationRequestEvent lastNavigationRequestEvent;
+
+	// FIXME how to do flash scope
+	private static MutableAttributeMap flashScope = new LocalAttributeMap();
 
 	/**
 	 * Public constructor.
@@ -69,4 +74,7 @@ public class MvcFacesRequestContextControlImpl implements MvcFacesRequestContext
 		return lastNavigationRequestEvent;
 	}
 
+	public MutableAttributeMap getFlashScope() {
+		return flashScope;
+	}
 }
