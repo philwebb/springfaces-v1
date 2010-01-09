@@ -38,6 +38,8 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class SimpleWebArgumentResolverInvoker {
 
+	// FIXME Delete this it is a duplicate of FacesContollerAnnotatedMethodInvoker
+
 	private ParameterNameDiscoverer parameterNameDiscoverer;
 	private WebArgumentResolver[] webArgumentResolvers;
 

@@ -43,6 +43,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -66,6 +67,18 @@ import org.springframework.web.servlet.support.RequestContextUtils;
  */
 public abstract class FacesControllerAnnotatedMethodInvoker {
 	private static final Log logger = LogFactory.getLog(HandlerMethodInvoker.class);
+
+	private static final ModelArgumentResolver INIT_BINDER_NO_MODEL_ARGUMENT_RESOLVER = new ModelArgumentResolver() {
+		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
+				WebRequest webRequest, boolean failOnErrors) {
+			if (modelAttributeName == null) {
+				throw new IllegalStateException("Unsupported argument [" + methodParameter.getParameterType().getName()
+						+ "] for @InitBinder method: " + methodParameter.getMethod());
+			}
+			throw new IllegalStateException("@ModelAttribute is not supported on @InitBinder methods: "
+					+ methodParameter.getMethod());
+		}
+	};
 
 	private WebBindingInitializer bindingInitializer;
 
@@ -117,56 +130,97 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 		}
 	}
 
-	private Object[] resolveInitBinderArguments(Object handler, Method initBinderMethod, WebDataBinder binder,
+	private Object[] resolveInitBinderArguments(Object handler, Method initBinderMethod, final WebDataBinder binder,
 			NativeWebRequest webRequest) throws Exception {
+		WebArgumentResolver initBinderArgumentResolver = new WebArgumentResolver() {
+			public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
+					throws Exception {
+				if (methodParameter.getParameterType().isInstance(binder)) {
+					return binder;
+				}
+				return WebArgumentResolver.UNRESOLVED;
+			}
+		};
+		WebArgumentResolver[] argumentResolvers = { initBinderArgumentResolver };
+		return resolveArguments(handler, initBinderMethod, webRequest, argumentResolvers,
+				INIT_BINDER_NO_MODEL_ARGUMENT_RESOLVER);
+	}
 
-		Class[] initBinderParams = initBinderMethod.getParameterTypes();
-		Object[] initBinderArgs = new Object[initBinderParams.length];
+	private Object[] resolveArguments(Object handler, Method handlerMethod, NativeWebRequest webRequest,
+			WebArgumentResolver[] argumentResolvers, ModelArgumentResolver modelArgumentResolver) throws Exception {
 
-		for (int i = 0; i < initBinderArgs.length; i++) {
-			MethodParameter methodParam = new MethodParameter(initBinderMethod, i);
-			methodParam.initParameterNameDiscovery(this.parameterNameDiscoverer);
-			GenericTypeResolver.resolveParameterType(methodParam, handler.getClass());
-			String paramName = null;
-			boolean paramRequired = false;
-			Object[] paramAnns = methodParam.getParameterAnnotations();
+		Class[] paramTypes = handlerMethod.getParameterTypes();
+		Object[] args = new Object[paramTypes.length];
 
-			for (int j = 0; j < paramAnns.length; j++) {
-				Object paramAnn = paramAnns[j];
-				if (RequestParam.class.isInstance(paramAnn)) {
-					RequestParam requestParam = (RequestParam) paramAnn;
-					paramName = requestParam.value();
-					paramRequired = requestParam.required();
+		for (int i = 0; i < args.length; i++) {
+			MethodParameter methodParameter = new MethodParameter(handlerMethod, i);
+			methodParameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+			GenericTypeResolver.resolveParameterType(methodParameter, handler.getClass());
+			String requestParamName = null;
+			boolean requestParamRequired = false;
+			String modelAttributeName = null;
+			Object[] methodParamAnnotations = methodParameter.getParameterAnnotations();
+
+			for (int j = 0; j < methodParamAnnotations.length; j++) {
+				Object methodParamAnnotation = methodParamAnnotations[j];
+				if (RequestParam.class.isInstance(methodParamAnnotation)) {
+					RequestParam requestParam = (RequestParam) methodParamAnnotation;
+					requestParamName = requestParam.value();
+					requestParamRequired = requestParam.required();
 					break;
-				} else if (ModelAttribute.class.isInstance(paramAnn)) {
-					throw new IllegalStateException("@ModelAttribute is not supported on @InitBinder methods: "
-							+ initBinderMethod);
+				} else if (ModelAttribute.class.isInstance(methodParamAnnotation)) {
+					ModelAttribute modelAttribute = (ModelAttribute) methodParamAnnotation;
+					modelAttributeName = modelAttribute.value();
 				}
 			}
+			if (requestParamName != null && modelAttributeName != null) {
+				throw new IllegalStateException("@RequestParam and @ModelAttribute are an exclusive choice -"
+						+ "do not specify both on the same parameter: " + handlerMethod);
+			}
 
-			if (paramName == null) {
-				Object argValue = resolveCommonArgument(methodParam, webRequest);
+			if (requestParamName == null && modelAttributeName == null) {
+				Object argValue = resolveCommonArgument(methodParameter, webRequest);
 				if (argValue != WebArgumentResolver.UNRESOLVED) {
-					initBinderArgs[i] = argValue;
+					args[i] = argValue;
 				} else {
-					Class paramType = initBinderParams[i];
-					if (paramType.isInstance(binder)) {
-						initBinderArgs[i] = binder;
-					} else if (BeanUtils.isSimpleProperty(paramType)) {
-						paramName = "";
-					} else {
-						throw new IllegalStateException("Unsupported argument [" + paramType.getName()
-								+ "] for @InitBinder method: " + initBinderMethod);
+					Class paramType = paramTypes[i];
+					if (Errors.class.isAssignableFrom(paramType)) {
+						throw new IllegalStateException("Errors/BindingResult argument declared "
+								+ "without preceding model attribute. Check your handler method signature!");
+					}
+					args[i] = invokeArgumentResolvers(methodParameter, webRequest, argumentResolvers);
+					if (args[i] == WebArgumentResolver.UNRESOLVED) {
+						if (BeanUtils.isSimpleProperty(paramType)) {
+							// Set the request param to a non null value to trigger a resolve
+							requestParamName = "";
+						} else {
+							// Set the model attribute name to a non null value to trigger a model resolve
+							modelAttributeName = "";
+						}
 					}
 				}
 			}
 
-			if (paramName != null) {
-				initBinderArgs[i] = resolveRequestParam(paramName, paramRequired, methodParam, webRequest, null);
+			if (requestParamName != null) {
+				args[i] = resolveRequestParam(requestParamName, requestParamRequired, methodParameter, webRequest, null);
+			} else if (modelAttributeName != null) {
+				boolean assignBindingResult = (args.length > i + 1 && Errors.class.isAssignableFrom(paramTypes[i + 1]));
+				ResolvedModelArgument resolved = null;
+				if (modelArgumentResolver != null) {
+					modelArgumentResolver.resolve((modelAttributeName.length() == 0 ? null : modelAttributeName),
+							methodParameter, webRequest, !assignBindingResult);
+				}
+				if (resolved != null) {
+					args[i] = resolved.getResult();
+					if (assignBindingResult) {
+						args[i + 1] = resolved.getErrors();
+						i++;
+					}
+				}
 			}
 		}
 
-		return initBinderArgs;
+		return args;
 	}
 
 	private Object resolveRequestParam(String paramName, boolean paramRequired, MethodParameter methodParam,
@@ -225,13 +279,9 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 	protected Object resolveCommonArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
 			throws Exception {
 		// Invoke custom argument resolvers if present...
-		if (this.customArgumentResolvers != null) {
-			for (WebArgumentResolver argumentResolver : this.customArgumentResolvers) {
-				Object value = argumentResolver.resolveArgument(methodParameter, webRequest);
-				if (value != WebArgumentResolver.UNRESOLVED) {
-					return value;
-				}
-			}
+		Object custom = invokeArgumentResolvers(methodParameter, webRequest, customArgumentResolvers);
+		if (custom != WebArgumentResolver.UNRESOLVED) {
+			return custom;
 		}
 
 		// Resolution of standard parameter types...
@@ -243,6 +293,19 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 					+ "]. Consider declaring the argument type in a less specific fashion.");
 		}
 		return value;
+	}
+
+	private Object invokeArgumentResolvers(MethodParameter methodParameter, NativeWebRequest webRequest,
+			WebArgumentResolver[] resolvers) throws Exception {
+		if (resolvers != null) {
+			for (WebArgumentResolver resolver : resolvers) {
+				Object value = resolver.resolveArgument(methodParameter, webRequest);
+				if (value != WebArgumentResolver.UNRESOLVED) {
+					return value;
+				}
+			}
+		}
+		return WebArgumentResolver.UNRESOLVED;
 	}
 
 	protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
@@ -275,6 +338,33 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 			}
 		}
 		return WebArgumentResolver.UNRESOLVED;
+	}
+
+	protected static interface ResolvedModelArgument {
+
+		public Object getResult();
+
+		/**
+		 * @return Errors or <tt>null</tt>
+		 */
+		public Errors getErrors();
+	}
+
+	/**
+	 * Internal resolver called when a method argument contains a {@link ModelAttribute} annotation or when all other
+	 * attribute resolution has failed.
+	 */
+	protected static interface ModelArgumentResolver {
+		/**
+		 * @param modelAttributeName The model attribute name or <tt>null</tt> if the model attribute is being deduced
+		 * by type alone.
+		 * @param methodParameter
+		 * @param webRequest
+		 * @param failOnErrors
+		 * @return
+		 */
+		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
+				WebRequest webRequest, boolean failOnErrors);
 	}
 
 }
