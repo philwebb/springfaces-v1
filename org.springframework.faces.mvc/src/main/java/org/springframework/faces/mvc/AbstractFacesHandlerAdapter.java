@@ -315,7 +315,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 
 		private void clearFlashScope(MvcFacesRequestContext mvcFacesRequestContext) {
-			// FIXME work out where to clear flash scope mvcFacesRequestContext.getFlashScope().clear();
+			mvcFacesRequestContext.getFlashScope().clear();
 		}
 
 		public void beforePhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
@@ -327,7 +327,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 		public void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
 			if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
-				clearFlashScope(mvcFacesRequestContext);
+				if (mvcFacesRequestContext.getLastNavigationRequestEvent() == null) {
+					clearFlashScope(mvcFacesRequestContext);
+				}
 			}
 		}
 

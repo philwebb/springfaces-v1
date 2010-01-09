@@ -21,8 +21,13 @@ import java.util.Locale;
 import javax.faces.FacesException;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.faces.ui.AjaxViewRoot;
+import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,6 +37,8 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  */
 public class MvcViewHandler extends ViewHandler {
+
+	private static SpringJavascriptAjaxHandler springJsAjaxHandler = new SpringJavascriptAjaxHandler();
 
 	private ViewHandler delegate;
 
@@ -59,9 +66,24 @@ public class MvcViewHandler extends ViewHandler {
 			viewId = requestContext.getMvcFacesContext().resolveViewId(modelAndView.getViewName());
 			UIViewRoot view = delegate.createView(context, viewId);
 			requestContext.getMvcFacesContext().viewCreated(context, requestContext, view, modelAndView.getModel());
+
+			// FIXME Need to detect this and create, possibly move elsewhere
+			if (isSpringJavascriptAjaxRequest(context.getExternalContext())) {
+				view = new AjaxViewRoot(view);
+			}
 			return view;
 		}
 		return delegate.createView(context, viewId);
+	}
+
+	private boolean isSpringJavascriptAjaxRequest(ExternalContext context) {
+		// consider factoring out into external context
+		if (context.getRequest() instanceof HttpServletRequest) {
+			return springJsAjaxHandler.isAjaxRequest((HttpServletRequest) context.getRequest(),
+					(HttpServletResponse) context.getResponse());
+		} else {
+			return false;
+		}
 	}
 
 	public UIViewRoot restoreView(FacesContext context, String viewId) {
@@ -72,7 +94,8 @@ public class MvcViewHandler extends ViewHandler {
 			Assert.notNull(viewId, "The MVC Faces Context could not map the view \"" + originalViewId
 					+ "\" to a valid viewId");
 		}
-		return delegate.restoreView(context, viewId);
+		UIViewRoot view = delegate.restoreView(context, viewId);
+		return view;
 	}
 
 	public void renderView(FacesContext context, UIViewRoot viewToRender) throws IOException, FacesException {
