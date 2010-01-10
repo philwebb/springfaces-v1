@@ -17,4 +17,5 @@
 	<import resource="data-access-config.xml" />
 	<import resource="security-config.xml" />
 
+	<bean name="debug" class="org.springframework.webflow.samples.booking.Debug"/>
 </beans>

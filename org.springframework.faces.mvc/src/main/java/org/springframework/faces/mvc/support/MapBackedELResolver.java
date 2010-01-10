@@ -25,7 +25,7 @@ public abstract class MapBackedELResolver extends ELResolver {
 	 * 
 	 * @return Result of the operation
 	 */
-	private Object handle(ELContext elContext, Object base, Object property, ScopeOperation operation) {
+	protected Object handle(ELContext elContext, Object base, Object property, ScopeOperation operation) {
 		Map map = getMap();
 		if (base != null || map == null) {
 			return null;
@@ -85,7 +85,7 @@ public abstract class MapBackedELResolver extends ELResolver {
 	/**
 	 * Internal callback interface used to perform a scope operation.
 	 */
-	private static interface ScopeOperation {
+	protected static interface ScopeOperation {
 		public Object execute(Map scope, String attributeName);
 	}
 }

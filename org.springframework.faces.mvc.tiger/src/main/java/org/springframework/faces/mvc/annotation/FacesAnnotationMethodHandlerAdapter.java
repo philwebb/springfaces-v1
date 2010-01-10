@@ -83,7 +83,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter implements InitializingBean,
 		BeanNameAware, BeanFactoryPostProcessor, Ordered {
 
-	private static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
+	static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
 
 	private static final String DEFAULT_CONTROLLER_NAME = "controller";
 
@@ -175,10 +175,10 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
 				event);
-		NavigationLocation outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler,
-				webRequest);
 		NavigationOutcomeExpressionContextImpl context = new NavigationOutcomeExpressionContextImpl(handler,
 				webRequest, methodResolver);
+		NavigationLocation outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler,
+				webRequest, context);
 		outcome = navigationOutcomeExpressionResolver.resolveNavigationOutcome(context, outcome);
 		return outcome;
 	}
@@ -282,16 +282,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	}
 
 	public void setCustomArgumentResolvers(WebArgumentResolver[] argumentResolvers) {
-		if (argumentResolvers == null) {
-			super.setCustomArgumentResolvers(ARGUMENT_RESOLVERS);
-		} else {
-			this.completeArgumentResolvers = new WebArgumentResolver[ARGUMENT_RESOLVERS.length
-					+ argumentResolvers.length];
-			System.arraycopy(argumentResolvers, 0, completeArgumentResolvers, 0, argumentResolvers.length);
-			System.arraycopy(ARGUMENT_RESOLVERS, 0, completeArgumentResolvers, argumentResolvers.length,
-					ARGUMENT_RESOLVERS.length);
-			super.setCustomArgumentResolvers(completeArgumentResolvers);
-		}
+		this.completeArgumentResolvers = mergeResolvers(argumentResolvers, ARGUMENT_RESOLVERS);
+		super.setCustomArgumentResolvers(completeArgumentResolvers);
 	}
 
 	/**
@@ -363,6 +355,15 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
+	static WebArgumentResolver[] mergeResolvers(WebArgumentResolver[] r1, WebArgumentResolver[] r2) {
+		r1 = (r1 == null ? new WebArgumentResolver[] {} : r1);
+		r2 = (r2 == null ? new WebArgumentResolver[] {} : r2);
+		WebArgumentResolver[] rtn = new WebArgumentResolver[r1.length + r2.length];
+		System.arraycopy(r1, 0, rtn, 0, r1.length);
+		System.arraycopy(r2, 0, rtn, r1.length, r2.length);
+		return rtn;
+	}
+
 	/**
 	 * Adapter class to convert the annotated handler into a {@link FacesHandler}. Also implements
 	 * {@link MvcFacesExceptionHandler} to deal with navigation based exception handling.
@@ -423,8 +424,11 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	}
 
 	private class AnnotatedMethodInvoker extends FacesControllerAnnotatedMethodInvoker {
-		public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver) {
-			super(resolver, webBindingInitializer, parameterNameDiscoverer, completeArgumentResolvers);
+
+		public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
+				WebArgumentResolver[] additionalArgumentResolvers) {
+			super(resolver, webBindingInitializer, parameterNameDiscoverer, FacesAnnotationMethodHandlerAdapter
+					.mergeResolvers(completeArgumentResolvers, additionalArgumentResolvers));
 		}
 
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
@@ -441,10 +445,11 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
-	private class NavigationOutcomeExpressionContextImpl implements NavigationOutcomeExpressionContext {
+	private class NavigationOutcomeExpressionContextImpl implements NavigationOutcomeExpressionContext,
+			FacesControllerAnnotatedMethodInvokerFactory {
 
 		private NativeWebRequest webRequest;
-		private AnnotatedMethodInvoker annotatedMethodInvoker;
+		private AnnotatedMethodInvoker dataBinderMethodInvoker;
 		private NavigationCaseMethodResolver methodResolver;
 		private Object handler;
 
@@ -460,10 +465,14 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 
 		public WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception {
-			if (annotatedMethodInvoker == null) {
-				annotatedMethodInvoker = new AnnotatedMethodInvoker(methodResolver);
+			if (dataBinderMethodInvoker == null) {
+				dataBinderMethodInvoker = new AnnotatedMethodInvoker(methodResolver, null);
 			}
-			return annotatedMethodInvoker.createDataBinder(handler, webRequest, attrName, target, objectName);
+			return dataBinderMethodInvoker.createDataBinder(handler, webRequest, attrName, target, objectName);
+		}
+
+		public FacesControllerAnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
+			return new AnnotatedMethodInvoker(methodResolver, additionalArgumentResolvers);
 		}
 	}
 }

@@ -22,13 +22,31 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.FoundNavigationCase.FoundNavigationCaseType;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.support.WebArgumentResolver;
+import org.springframework.web.bind.support.WebBindingInitializer;
+import org.springframework.web.context.request.NativeWebRequest;
 
 public class FoundNavigationCaseTests extends TestCase {
+
+	private FacesControllerAnnotatedMethodInvokerFactory invokerFactory;
+	private NativeWebRequest nativeWebRequest;
+
+	protected void setUp() throws Exception {
+		this.invokerFactory = new FacesControllerAnnotatedMethodInvokerFactory() {
+			public FacesControllerAnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
+				return new MockFacesControllerAnnotatedMethodInvoker(null, null, null, additionalArgumentResolvers);
+			}
+		};
+		nativeWebRequest = EasyMock.createNiceMock(NativeWebRequest.class);
+
+	}
 
 	private FoundNavigationCase doTest(Object owner, FoundNavigationCaseType type) throws Exception {
 		NavigationCase navigationCase = EasyMock.createMock(NavigationCase.class);
@@ -82,7 +100,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		SampleController target = new SampleController();
 		assertFalse(target.isMethodCalled());
 		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), "#{action.test}",
-				"methodcall"), target, null);
+				"methodcall"), target, nativeWebRequest, invokerFactory);
 		assertTrue(target.isMethodCalled());
 		assertEquals(new NavigationLocation("someview"), outcome);
 	}
@@ -95,7 +113,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		SampleController target = new SampleController();
 		target.setOutcome(returnOutcome);
 		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), "#{action.test}",
-				"methodcallwithto"), target, null);
+				"methodcallwithto"), target, nativeWebRequest, invokerFactory);
 		assertEquals(expectedOutcome, outcome);
 		assertTrue(target.isMethodCalled());
 	}
@@ -119,7 +137,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		SampleController target = new SampleController();
 		try {
 			fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null,
-					"methodcallwithrequestmappingandnoto"), target, null);
+					"methodcallwithrequestmappingandnoto"), target, nativeWebRequest, invokerFactory);
 			fail();
 		} catch (IllegalStateException e) {
 			assertFalse(target.isMethodCalled());
@@ -137,9 +155,26 @@ public class FoundNavigationCaseTests extends TestCase {
 		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
 		SampleController target = new SampleController();
 		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null,
-				"methodcallwithrequestmapping"), target, null);
+				"methodcallwithrequestmapping"), target, nativeWebRequest, invokerFactory);
 		assertEquals(new NavigationLocation("test"), outcome);
 		assertFalse(target.isMethodCalled());
+	}
+
+	private class MockFacesControllerAnnotatedMethodInvoker extends FacesControllerAnnotatedMethodInvoker {
+
+		public MockFacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
+				WebBindingInitializer bindingInitializer, ParameterNameDiscoverer parameterNameDiscoverer,
+				WebArgumentResolver[] customArgumentResolvers) {
+			super(resolver, bindingInitializer, parameterNameDiscoverer, FacesAnnotationMethodHandlerAdapter
+					.mergeResolvers(customArgumentResolvers, FacesAnnotationMethodHandlerAdapter.ARGUMENT_RESOLVERS));
+		}
+
+		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
+				throws Exception {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Auto-generated method stub");
+		}
+
 	}
 
 }

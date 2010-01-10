@@ -87,14 +87,19 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public UIViewRoot restoreView(FacesContext context, String viewId) {
+		boolean mvcRequest = false;
 		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
 			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
 			String originalViewId = viewId;
 			viewId = requestContext.getMvcFacesContext().getViewIdForRestore(context, viewId);
 			Assert.notNull(viewId, "The MVC Faces Context could not map the view \"" + originalViewId
 					+ "\" to a valid viewId");
+			mvcRequest = true;
 		}
 		UIViewRoot view = delegate.restoreView(context, viewId);
+		if (mvcRequest && isSpringJavascriptAjaxRequest(context.getExternalContext())) {
+			view = new AjaxViewRoot(view);
+		}
 		return view;
 	}
 

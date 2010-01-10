@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.el.ELContext;
+import javax.el.ELResolver;
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.support.HandlerMethodInvocationException;
 import org.springframework.web.bind.annotation.support.HandlerMethodInvoker;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -65,7 +69,10 @@ import org.springframework.web.servlet.support.RequestContextUtils;
  * @author Juergen Hoeller
  * @author Phillip Webb
  */
-public abstract class FacesControllerAnnotatedMethodInvoker {
+abstract class FacesControllerAnnotatedMethodInvoker {
+
+	// FIXME tidy up, dc, tests
+
 	private static final Log logger = LogFactory.getLog(HandlerMethodInvoker.class);
 
 	private static final ModelArgumentResolver INIT_BINDER_NO_MODEL_ARGUMENT_RESOLVER = new ModelArgumentResolver() {
@@ -100,6 +107,23 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 
 	protected abstract WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 			throws Exception;
+
+	public final Object invokeOnActiveHandler(Method handlerMethod, Object handler, NativeWebRequest webRequest)
+			throws Exception {
+
+		Method handlerMethodToInvoke = BridgeMethodResolver.findBridgedMethod(handlerMethod);
+		try {
+			ModelArgumentResolver modelResolver = new FacesModelArgumentResolver(FacesContext.getCurrentInstance());
+			Object[] args = resolveArguments(handler, handlerMethod, webRequest, null, modelResolver);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Invoking method and active handler: " + handlerMethodToInvoke);
+			}
+			return doInvokeMethod(handlerMethodToInvoke, handler, args);
+		} catch (IllegalStateException ex) {
+			// Throw exception with full handler method context...
+			throw new HandlerMethodInvocationException(handlerMethodToInvoke, ex);
+		}
+	}
 
 	protected final void initBinder(Object handler, String attrName, WebDataBinder binder, NativeWebRequest webRequest)
 			throws Exception {
@@ -207,8 +231,8 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 				boolean assignBindingResult = (args.length > i + 1 && Errors.class.isAssignableFrom(paramTypes[i + 1]));
 				ResolvedModelArgument resolved = null;
 				if (modelArgumentResolver != null) {
-					modelArgumentResolver.resolve((modelAttributeName.length() == 0 ? null : modelAttributeName),
-							methodParameter, webRequest, !assignBindingResult);
+					resolved = modelArgumentResolver.resolve((modelAttributeName.length() == 0 ? null
+							: modelAttributeName), methodParameter, webRequest, !assignBindingResult);
 				}
 				if (resolved != null) {
 					args[i] = resolved.getResult();
@@ -340,14 +364,30 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 		return WebArgumentResolver.UNRESOLVED;
 	}
 
-	protected static interface ResolvedModelArgument {
+	protected static final class ResolvedModelArgument {
 
-		public Object getResult();
+		private Object result;
+		private Errors errors;
+
+		public ResolvedModelArgument(Object result) {
+			this(result, null);
+		}
+
+		public ResolvedModelArgument(Object result, Errors errors) {
+			this.result = result;
+			this.errors = errors;
+		}
+
+		public Object getResult() {
+			return result;
+		}
 
 		/**
 		 * @return Errors or <tt>null</tt>
 		 */
-		public Errors getErrors();
+		public Errors getErrors() {
+			return errors;
+		}
 	}
 
 	/**
@@ -361,10 +401,31 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 		 * @param methodParameter
 		 * @param webRequest
 		 * @param failOnErrors
-		 * @return
+		 * @return A resolved model argument or <tt>null</tt>
 		 */
 		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
 				WebRequest webRequest, boolean failOnErrors);
 	}
 
+	protected static class FacesModelArgumentResolver implements ModelArgumentResolver {
+
+		private FacesContext facesContext;
+
+		public FacesModelArgumentResolver(FacesContext facesContext) {
+			this.facesContext = facesContext;
+		}
+
+		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
+				WebRequest webRequest, boolean failOnErrors) {
+
+			ELContext elContext = facesContext.getELContext();
+			ELResolver resolver = elContext.getELResolver();
+			Object resolved = resolver.getValue(elContext, null, modelAttributeName);
+			if (!elContext.isPropertyResolved()) {
+				return null;
+			}
+			return new ResolvedModelArgument(resolved);
+		}
+
+	}
 }

@@ -17,6 +17,7 @@ package org.springframework.faces.mvc.support;
 
 import java.util.Map;
 
+import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.faces.context.FacesContext;
 
@@ -32,6 +33,21 @@ import org.springframework.faces.mvc.PageScope;
  * @author Phillip Webb
  */
 public class PageScopeELResolver extends MapBackedELResolver {
+
+	private static final String PREFIX = "pageScope.";
+
+	protected Object handle(ELContext elContext, Object base, Object property, ScopeOperation operation) {
+		return super.handle(elContext, base, stripPrefix(property), operation);
+	}
+
+	private Object stripPrefix(Object property) {
+		// FIXME should we do this using scope searching? perhaps with pageScope/requestScope exposed on context
+		if ((property != null) && (property instanceof String) && (property.toString().startsWith(PREFIX))) {
+			return property.toString().substring(PREFIX.length());
+		}
+		return property;
+	}
+
 	protected Map getMap() {
 		PageScopeHolderComponent stateHolder = PageScopeHolderComponent
 				.locate(FacesContext.getCurrentInstance(), false);

@@ -35,7 +35,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  * 
  * @author Phillip Webb
  */
-public final class FoundNavigationCase {
+final class FoundNavigationCase {
 
 	private static final Log logger = LogFactory.getLog(FoundNavigationCase.class);
 
@@ -93,8 +93,8 @@ public final class FoundNavigationCase {
 	 * {@link NavigationCase#to()} or if this is not specified the result of the method call.
 	 * @throws Exception
 	 */
-	public NavigationLocation getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request)
-			throws Exception {
+	public NavigationLocation getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request,
+			FacesControllerAnnotatedMethodInvokerFactory invokerFactory) throws Exception {
 		Object location = null;
 		if (StringUtils.hasText(navigationCase.to())) {
 			location = navigationCase.to();
@@ -112,11 +112,9 @@ public final class FoundNavigationCase {
 							+ "called as @RequestMapping annotation also present");
 				}
 			} else {
-				// FIXME model binder to allow use of model attributes
-				SimpleWebArgumentResolverInvoker invoker = new SimpleWebArgumentResolverInvoker(null,
-						new WebArgumentResolver[] { new NavigationRequestEventWebArgumentResolver(event),
-								new FacesWebArgumentResolver() });
-				Object methodResult = invoker.invoke(method, target, request);
+				FacesControllerAnnotatedMethodInvoker invoker = invokerFactory
+						.newInvoker(new NavigationRequestEventWebArgumentResolver(event));
+				Object methodResult = invoker.invokeOnActiveHandler(method, target, request);
 				location = methodResult != null ? methodResult : location;
 			}
 		}

@@ -48,7 +48,6 @@ import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
-import org.springframework.webflow.execution.View;
 
 /**
  * Abstract base implementation of a MVC {@link HandlerAdapter} that can be used to process {@link FacesHandler}s.
@@ -335,9 +334,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 		public void redirect(FacesContext facesContext, MvcFacesRequestContext requestContext,
 				NavigationLocation location) throws IOException {
-			if (location.getFragments().length > 0) {
-				requestContext.getFlashScope().put(View.RENDER_FRAGMENTS_ATTRIBUTE, location.getFragments());
-			}
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(ajaxHandler, request, response,

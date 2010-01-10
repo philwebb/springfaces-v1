@@ -21,6 +21,7 @@ import javax.faces.context.FacesContext;
 
 import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.webflow.execution.View;
 
 /**
  * JSF {@link NavigationHandler} that provides integration with Spring MVC.
@@ -45,8 +46,12 @@ public class MvcNavigationHandler extends NavigationHandler {
 				requestContext.setLastNavigationRequestEvent(event);
 				NavigationLocation location = requestContext.getFacesHandler().getNavigationOutcomeLocation(
 						facesContext, event);
+				if (location != null && location.getFragments().length > 0) {
+					requestContext.getFlashScope().put(View.RENDER_FRAGMENTS_ATTRIBUTE, location.getFragments());
+				}
 				if (location != null && location.getLocation() != null) {
 					requestContext.getMvcFacesContext().redirect(facesContext, requestContext, location);
+					FacesContext.getCurrentInstance().responseComplete();
 					return;
 				}
 			} catch (Exception e) {
