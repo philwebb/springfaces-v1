@@ -34,6 +34,7 @@ import org.springframework.faces.mvc.PageScope;
  */
 public class PageScopeELResolver extends MapBackedELResolver {
 
+	// FIXME rename to viewscope
 	// FIXME refactor the EL resolvers to be like SWF
 
 	private static final String PREFIX = "pageScope.";
@@ -53,6 +54,6 @@ public class PageScopeELResolver extends MapBackedELResolver {
 	protected Map getMap() {
 		MvcFacesStateHolderComponent stateHolder = MvcFacesStateHolderComponent.locate(FacesContext
 				.getCurrentInstance(), false);
-		return stateHolder == null ? null : stateHolder.getPageScope().asMap();
+		return stateHolder == null ? null : stateHolder.getViewScope().asMap();
 	}
 }

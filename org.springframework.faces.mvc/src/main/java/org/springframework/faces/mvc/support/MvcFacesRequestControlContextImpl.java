@@ -1,5 +1,7 @@
 package org.springframework.faces.mvc.support;
 
+import javax.faces.context.FacesContext;
+
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.util.Assert;
@@ -19,8 +21,13 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	private Exception exception;
 	private NavigationRequestEvent lastNavigationRequestEvent;
 
+	private MutableAttributeMap requestScope = new LocalAttributeMap();
+
 	// FIXME how to do flash scope
 	private static MutableAttributeMap flashScope = new LocalAttributeMap();
+
+	// Late binding
+	private MutableAttributeMap viewScope = null;
 
 	/**
 	 * Public constructor.
@@ -74,7 +81,20 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 		return lastNavigationRequestEvent;
 	}
 
+	public MutableAttributeMap getRequestScope() {
+		return requestScope;
+	}
+
 	public MutableAttributeMap getFlashScope() {
 		return flashScope;
+	}
+
+	public MutableAttributeMap getViewScope() throws IllegalStateException {
+		if (viewScope == null) {
+			FacesContext facesContext = FacesContext.getCurrentInstance();
+			Assert.notNull(facesContext, "Faces context is not active");
+			viewScope = MvcFacesStateHolderComponent.locate(facesContext, true).getViewScope();
+		}
+		return viewScope;
 	}
 }

@@ -37,8 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.support.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
@@ -142,11 +142,11 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.verify(new Object[] { facesViewIdResolver, actionUrlMapper });
 	}
 
-	public void testPageScopeGetsRegistered() throws Exception {
+	public void testViewScopeGetsRegistered() throws Exception {
 		facesHandlerAdapter = new MockFacesHandlerAdapter();
 		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) EasyMock
 				.createMock(ConfigurableListableBeanFactory.class);
-		beanFactory.registerScope((String) EasyMock.eq("page"), (PageScope) EasyMock.isA(PageScope.class));
+		beanFactory.registerScope((String) EasyMock.eq("view"), (PageScope) EasyMock.isA(PageScope.class));
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { beanFactory });
 		facesHandlerAdapter.postProcessBeanFactory(beanFactory);

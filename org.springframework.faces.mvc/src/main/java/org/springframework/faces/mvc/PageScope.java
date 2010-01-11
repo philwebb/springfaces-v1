@@ -72,7 +72,7 @@ public class PageScope implements Scope {
 
 	private MutableAttributeMap getScope() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		return MvcFacesStateHolderComponent.locate(context, context.getViewRoot(), true).getPageScope();
+		return MvcFacesStateHolderComponent.locate(context, context.getViewRoot(), true).getViewScope();
 	}
 
 	public String getConversationId() {

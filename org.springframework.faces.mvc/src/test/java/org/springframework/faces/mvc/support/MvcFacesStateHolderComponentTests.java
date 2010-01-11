@@ -58,11 +58,11 @@ public class MvcFacesStateHolderComponentTests extends TestCase {
 	}
 
 	public void testStateSaveAndRestore() throws Exception {
-		component.getPageScope().put("test", "value");
+		component.getViewScope().put("test", "value");
 		Object state = component.saveState(null);
 		component = new MvcFacesStateHolderComponent();
 		component.restoreState(null, state);
-		assertEquals("value", component.getPageScope().get("test"));
+		assertEquals("value", component.getViewScope().get("test"));
 	}
 
 	public void testAttachAndLocate() throws Exception {

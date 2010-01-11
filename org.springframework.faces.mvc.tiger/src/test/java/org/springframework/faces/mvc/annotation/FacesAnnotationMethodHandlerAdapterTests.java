@@ -253,11 +253,11 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	}
 
 	public void testNoHandlerInContext() throws Exception {
-		assertNull(context.getBeanFactory().getRegisteredScope("page"));
+		assertNull(context.getBeanFactory().getRegisteredScope("view"));
 		doTestHandlerFromContext();
 		assertNotNull(adapter.getFacesHandlerAdapter());
 		// Ensure that post process gets called on the FacesHandlerAdapter and page scope is registered
-		assertNotNull(context.getBeanFactory().getRegisteredScope("page"));
+		assertNotNull(context.getBeanFactory().getRegisteredScope("view"));
 	}
 
 	public void testSetUrlPathHelper() throws Exception {
@@ -381,8 +381,8 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
 		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
 		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
-		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, underlyingAdapter
-				.getHandler()) {
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext,
+				underlyingAdapter.getHandler()) {
 			public NavigationRequestEvent getLastNavigationRequestEvent() {
 				return event;
 			}

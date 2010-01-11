@@ -86,7 +86,7 @@ public class MvcFacesStateHolderComponent extends UIComponentBase {
 		return values;
 	}
 
-	public MutableAttributeMap getPageScope() {
+	public MutableAttributeMap getViewScope() {
 		if (pageScope == null) {
 			pageScope = new LocalAttributeMap();
 		}

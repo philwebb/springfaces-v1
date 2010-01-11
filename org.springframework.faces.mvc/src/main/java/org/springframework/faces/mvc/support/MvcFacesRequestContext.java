@@ -33,7 +33,6 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  */
 public interface MvcFacesRequestContext {
 
-	// FIXME add viewScope and requestScope support
 	// FIXME rename to just RequestContext ?
 
 	/**
@@ -59,6 +58,24 @@ public interface MvcFacesRequestContext {
 	 */
 	NavigationRequestEvent getLastNavigationRequestEvent();
 
-	// FIXME
-	MutableAttributeMap getFlashScope();
+	/**
+	 * Returns a mutable map for accessing and/or setting attributes in request scope. <b>Request scoped attributes
+	 * exist for the duration of this request only.</b>
+	 * @return the request scope
+	 */
+	public MutableAttributeMap getRequestScope();
+
+	/**
+	 * Returns a mutable map for accessing and/or setting attributes in flash scope. <b>Flash scoped attributes exist
+	 * until the after next view is rendered.</b>
+	 * @return the flash scope
+	 */
+	public MutableAttributeMap getFlashScope();
+
+	/**
+	 * Returns a mutable map for accessing and/or setting attributes in view scope. <b>View scoped attributes exist for
+	 * the life of the current view state, including post-back.</b>
+	 * @return the view scope
+	 */
+	public MutableAttributeMap getViewScope() throws IllegalStateException;
 }

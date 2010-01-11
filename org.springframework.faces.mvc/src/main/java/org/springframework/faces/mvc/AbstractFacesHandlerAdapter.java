@@ -149,7 +149,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		// FIXME don't auto-register scopes create a new registrar
-		beanFactory.registerScope("page", new PageScope());
+		beanFactory.registerScope("view", new PageScope());
 	}
 
 	public void afterPropertiesSet() throws Exception {

@@ -36,7 +36,7 @@ public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory
 		return object;
 	}
 
-	public void testPageScope() throws Exception {
+	public void testViewScope() throws Exception {
 		MvcFacesStateHolderComponent.attach(facesContext, facesContext.getViewRoot());
 		PageScope pageScope = new PageScope();
 		this.object = "value1";
@@ -46,9 +46,9 @@ public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory
 		assertEquals("value1", pageScope.get("test", this));
 
 		// Test the removal
-		assertTrue(MvcFacesStateHolderComponent.locate(facesContext, true).getPageScope().contains("test"));
+		assertTrue(MvcFacesStateHolderComponent.locate(facesContext, true).getViewScope().contains("test"));
 		pageScope.remove("test");
-		assertFalse(MvcFacesStateHolderComponent.locate(facesContext, true).getPageScope().contains("test"));
+		assertFalse(MvcFacesStateHolderComponent.locate(facesContext, true).getViewScope().contains("test"));
 	}
 
 	public void testNoPageScopeHolder() throws Exception {
