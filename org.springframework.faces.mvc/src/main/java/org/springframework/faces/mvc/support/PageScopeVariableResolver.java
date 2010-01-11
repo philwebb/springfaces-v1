@@ -32,6 +32,8 @@ import org.springframework.faces.mvc.PageScope;
  */
 public class PageScopeVariableResolver extends ELDelegatingVariableResolver {
 
+	// FIXME rename this to ViewScope
+
 	private static final CompositeELResolver composite = new CompositeELResolver();
 	static {
 		composite.add(new PageScopeELResolver());

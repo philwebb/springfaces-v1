@@ -51,6 +51,7 @@ public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, Init
 			ScopedModelAttribute scopedModelAttribute = new ScopedModelAttribute((String) modelEntry.getKey());
 			scopedModelAttribute = modelScopeProvider.getModelScope(scopedModelAttribute, modelValue);
 			Assert.notNull(scopedModelAttribute.getScope());
+			// FIXME use MVC implicit scopes first, then fallback to spring scopes
 			Scope scope = beanFactory.getRegisteredScope(scopedModelAttribute.getScope());
 			Assert.notNull(scope, "Unable to locate " + scopedModelAttribute.getScope() + " from beanFactory");
 			scope.get(scopedModelAttribute.getModelAttribute(), new ObjectFactory() {

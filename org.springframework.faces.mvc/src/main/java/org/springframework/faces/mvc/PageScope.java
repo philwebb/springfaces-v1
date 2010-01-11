@@ -38,6 +38,9 @@ import org.springframework.util.Assert;
  */
 public class PageScope implements Scope {
 
+	// FIXME refactor this to be like SWF scope implementations
+	// FIXME should be named viewscope
+
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	public Object get(String name, ObjectFactory objectFactory) {

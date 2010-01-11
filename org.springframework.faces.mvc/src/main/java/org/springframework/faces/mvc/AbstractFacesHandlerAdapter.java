@@ -148,6 +148,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		// FIXME don't auto-register scopes create a new registrar
 		if (isPageScopeSupported()) {
 			beanFactory.registerScope("page", new PageScope());
 		}
@@ -211,6 +212,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * @return <tt>true</tt> if page scope is supported
 	 */
 	protected boolean isPageScopeSupported() {
+		// FIXME disable this and always include the PageScope component
 		return true;
 	}
 

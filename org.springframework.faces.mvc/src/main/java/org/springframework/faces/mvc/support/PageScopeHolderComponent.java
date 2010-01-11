@@ -35,6 +35,8 @@ import org.springframework.util.Assert;
  */
 public class PageScopeHolderComponent extends UIComponentBase {
 
+	// FIXME rename this to MvcComponent ? or ViewScopeHolder
+
 	private static final String COMPONENT_FAMILY = "javax.faces.Parameter";
 
 	/**

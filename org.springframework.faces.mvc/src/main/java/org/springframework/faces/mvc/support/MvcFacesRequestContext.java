@@ -33,6 +33,9 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  */
 public interface MvcFacesRequestContext {
 
+	// FIXME add viewScope and requestScope support
+	// FIXME rename to just RequestContext ?
+
 	/**
 	 * @return The {@link FacesHandler} that is handling the current request
 	 */

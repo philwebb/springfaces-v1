@@ -34,6 +34,8 @@ import org.springframework.faces.mvc.PageScope;
  */
 public class PageScopeELResolver extends MapBackedELResolver {
 
+	// FIXME refactor the EL resolvers to be like SWF
+
 	private static final String PREFIX = "pageScope.";
 
 	protected Object handle(ELContext elContext, Object base, Object property, ScopeOperation operation) {
