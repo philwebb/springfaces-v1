@@ -19,7 +19,10 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.FacesHandler;
-import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.faces.mvc.context.MvcFacesContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 public class MvcFacesRequestContextTests extends TestCase {
 

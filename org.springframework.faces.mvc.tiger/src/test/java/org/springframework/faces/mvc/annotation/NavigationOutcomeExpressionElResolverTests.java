@@ -27,8 +27,8 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockApplication12;
 import org.apache.shale.test.mock.MockFacesContext12;
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.NavigationLocation;
 import org.springframework.faces.mvc.annotation.NavigationOutcomeExpressionElResolver.Position;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.web.bind.WebDataBinder;
 
 public class NavigationOutcomeExpressionElResolverTests extends TestCase {

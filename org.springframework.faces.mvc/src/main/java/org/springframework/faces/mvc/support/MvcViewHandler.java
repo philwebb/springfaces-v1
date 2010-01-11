@@ -26,6 +26,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 import org.springframework.faces.ui.AjaxViewRoot;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.util.Assert;

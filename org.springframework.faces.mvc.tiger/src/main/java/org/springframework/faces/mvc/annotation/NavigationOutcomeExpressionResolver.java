@@ -15,7 +15,7 @@
  */
 package org.springframework.faces.mvc.annotation;
 
-import org.springframework.faces.mvc.NavigationLocation;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
 
 /**
  * Strategy interface used to resolve navigation outcome expressions.

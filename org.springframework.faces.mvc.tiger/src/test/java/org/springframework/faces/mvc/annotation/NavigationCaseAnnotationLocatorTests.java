@@ -22,8 +22,8 @@ import javax.faces.context.FacesContext;
 import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext;
-import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 public class NavigationCaseAnnotationLocatorTests extends TestCase {
 

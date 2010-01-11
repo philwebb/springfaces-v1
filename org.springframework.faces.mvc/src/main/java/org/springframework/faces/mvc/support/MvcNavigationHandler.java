@@ -19,8 +19,10 @@ import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 
-import org.springframework.faces.mvc.NavigationLocation;
-import org.springframework.faces.mvc.NavigationRequestEvent;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.webflow.execution.View;
 
 /**

@@ -1,6 +1,6 @@
 package org.springframework.faces.mvc.el;
 
-import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 
 public class ImplicitMvcFacesRequestContextElResolver extends BeanBackedElResolver {
 

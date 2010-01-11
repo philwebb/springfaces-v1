@@ -20,8 +20,8 @@ import javax.faces.application.ApplicationFactory;
 
 import junit.framework.TestCase;
 
-import org.springframework.faces.mvc.MvcFacesTestUtils;
-import org.springframework.faces.mvc.MvcFacesTestUtils.MethodCallAssertor;
+import org.springframework.faces.mvc.test.MvcFacesTestUtils;
+import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
 
 public class MvcApplicationFactoryTests extends TestCase {
 

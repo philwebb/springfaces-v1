@@ -17,6 +17,9 @@ package org.springframework.faces.mvc;
 
 import javax.faces.context.FacesContext;
 
+import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.web.servlet.ModelAndView;
 
 /**

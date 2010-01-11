@@ -1,8 +1,8 @@
 package org.springframework.faces.mvc.el;
 
-import org.springframework.faces.mvc.ScopeType;
-import org.springframework.faces.mvc.support.MvcFacesRequestContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.ScopeType;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 public class ScopeSearchingElResolver extends AbstractELResolver {

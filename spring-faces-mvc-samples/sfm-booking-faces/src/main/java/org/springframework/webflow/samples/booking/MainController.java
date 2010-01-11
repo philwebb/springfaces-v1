@@ -7,11 +7,11 @@ import javax.faces.model.DataModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.binding.convert.ConversionService;
-import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.stereotype.FacesController;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;

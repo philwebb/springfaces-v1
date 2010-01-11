@@ -22,7 +22,7 @@ import javax.faces.application.StateManager;
 import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockApplication12;
-import org.springframework.faces.mvc.MvcFacesTestUtils;
+import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.webflow.FlowViewStateManager;
 
 public class MvcApplicationTests extends TestCase {

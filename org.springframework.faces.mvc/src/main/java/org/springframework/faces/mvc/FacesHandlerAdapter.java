@@ -35,7 +35,17 @@ import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.bind.DefaultModelBinder;
+import org.springframework.faces.mvc.bind.ModelBinder;
+import org.springframework.faces.mvc.bind.ModelBindingExecutor;
+import org.springframework.faces.mvc.bind.RequestMappedModelBindingExecutor;
+import org.springframework.faces.mvc.execution.ActionUrlMapper;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.PageEncodedActionUrlMapper;
+import org.springframework.faces.mvc.navigation.DefaultRedirectHandler;
+import org.springframework.faces.mvc.navigation.RedirectHandler;
+import org.springframework.faces.mvc.view.FacesViewIdResolver;
+import org.springframework.faces.mvc.view.SimpleFacesViewIdResolver;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerAdapter;
 

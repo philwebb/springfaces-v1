@@ -21,6 +21,8 @@ import javax.faces.application.StateManager;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+
 /**
  * {@link StateManager} implementation that provides integration with Spring MVC.
  * 

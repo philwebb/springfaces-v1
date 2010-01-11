@@ -26,8 +26,8 @@ import javax.faces.context.FacesContext;
 
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
-import org.springframework.faces.mvc.NavigationLocation;
-import org.springframework.faces.mvc.ReverseDataBinder;
+import org.springframework.faces.mvc.bind.ReverseDataBinder;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.web.bind.WebDataBinder;
 
 /**

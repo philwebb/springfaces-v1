@@ -21,9 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.util.StringUtils;
 
 /**
