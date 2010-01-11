@@ -28,11 +28,8 @@ import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -57,7 +54,7 @@ import org.springframework.web.servlet.support.WebContentGenerator;
  * @author Phillip Webb
  */
 public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator implements HandlerAdapter,
-		BeanFactoryPostProcessor, ApplicationListener, InitializingBean {
+		ApplicationListener, InitializingBean {
 
 	private boolean detectAllExceptionHandlers = true;
 	private List userDefinedExceptionHandlers;
@@ -145,11 +142,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			}
 		}
 		return false;
-	}
-
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		// FIXME don't auto-register scopes create a new registrar
-		beanFactory.registerScope("view", new PageScope());
 	}
 
 	public void afterPropertiesSet() throws Exception {

@@ -8,9 +8,7 @@
 	<application>
 		<view-handler>org.springframework.faces.mvc.support.MvcViewHandler</view-handler>
 		<navigation-handler>org.springframework.faces.mvc.support.MvcNavigationHandler</navigation-handler>
-		<variable-resolver>org.springframework.faces.mvc.support.PageScopeVariableResolver</variable-resolver>
-		<variable-resolver>org.springframework.faces.mvc.support.FlashScopeVariableResolver</variable-resolver>
-		<variable-resolver>org.springframework.faces.mvc.support.MvcHandlerVariableResolver</variable-resolver>
+		<variable-resolver>org.springframework.faces.mvc.support.MvcFacesVariableResolver</variable-resolver>
 	</application>
 
 	<factory>

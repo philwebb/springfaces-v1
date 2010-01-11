@@ -32,7 +32,6 @@ import junit.framework.Assert;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.support.MvcFacesContext;
@@ -140,17 +139,6 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
 		EasyMock.verify(new Object[] { facesViewIdResolver, actionUrlMapper });
-	}
-
-	public void testViewScopeGetsRegistered() throws Exception {
-		facesHandlerAdapter = new MockFacesHandlerAdapter();
-		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) EasyMock
-				.createMock(ConfigurableListableBeanFactory.class);
-		beanFactory.registerScope((String) EasyMock.eq("view"), (PageScope) EasyMock.isA(PageScope.class));
-		EasyMock.expectLastCall();
-		EasyMock.replay(new Object[] { beanFactory });
-		facesHandlerAdapter.postProcessBeanFactory(beanFactory);
-		EasyMock.verify(new Object[] { beanFactory });
 	}
 
 	public void testViewCreatedWithPageScope() throws Exception {

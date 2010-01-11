@@ -252,14 +252,6 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		}
 	}
 
-	public void testNoHandlerInContext() throws Exception {
-		assertNull(context.getBeanFactory().getRegisteredScope("view"));
-		doTestHandlerFromContext();
-		assertNotNull(adapter.getFacesHandlerAdapter());
-		// Ensure that post process gets called on the FacesHandlerAdapter and page scope is registered
-		assertNotNull(context.getBeanFactory().getRegisteredScope("view"));
-	}
-
 	public void testSetUrlPathHelper() throws Exception {
 		UrlPathHelper urlPathHelper = new UrlPathHelper();
 		adapter.setUrlPathHelper(urlPathHelper);

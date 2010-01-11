@@ -27,7 +27,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.el.ELContext;
-import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -418,9 +419,11 @@ abstract class FacesControllerAnnotatedMethodInvoker {
 		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
 				WebRequest webRequest, boolean failOnErrors) {
 
-			ELContext elContext = facesContext.getELContext();
-			ELResolver resolver = elContext.getELResolver();
-			Object resolved = resolver.getValue(elContext, null, modelAttributeName);
+			ExpressionFactory expressionFactory = facesContext.getApplication().getExpressionFactory();
+			ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+			ValueExpression valueExpression = expressionFactory.createValueExpression(elContext, "#{"
+					+ modelAttributeName + "}", Object.class);
+			Object resolved = valueExpression.getValue(elContext);
 			if (!elContext.isPropertyResolved()) {
 				return null;
 			}

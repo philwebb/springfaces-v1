@@ -11,7 +11,7 @@ import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
-import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,15 +62,11 @@ public class MainController {
     // to = "/search2?#{searchCriteria}
     public void sort(FacesContext facesContext, NavigationRequestEvent event,
 	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria,
-	    @RequestParam("sortBy") String sortBy2) {
-	System.out.println("sort");
-	// FIXME should be command line param
-	String sortBy = facesContext.getExternalContext().getRequestParameterMap().get("sortBy");
+	    @RequestParam("sortBy") String sortBy) {
 	searchCriteria.setSortBy(sortBy);
-	MvcFacesStateHolderComponent pshc = MvcFacesStateHolderComponent.locate(facesContext, true);
 	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
 	DataModel hotelsDataModel = (DataModel) conversionService.executeConversion(hotels, DataModel.class);
-	pshc.getViewScope().put("hotels", hotelsDataModel);
+	MvcFacesRequestContextHolder.getRequestContext().getViewScope().put("hotels", hotelsDataModel);
     }
 
     @RequestMapping("/reviewHotel")

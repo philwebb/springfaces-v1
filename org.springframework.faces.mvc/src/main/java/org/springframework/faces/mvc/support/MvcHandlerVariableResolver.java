@@ -29,6 +29,7 @@ import org.springframework.faces.mvc.FacesHandler;
  */
 public class MvcHandlerVariableResolver extends ELDelegatingVariableResolver {
 
+	// FIXME delete
 	private static final CompositeELResolver composite = new CompositeELResolver();
 	static {
 		composite.add(new MvcHandlerELResolver());

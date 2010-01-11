@@ -34,6 +34,7 @@ import org.springframework.faces.mvc.PageScope;
  */
 public class PageScopeELResolver extends MapBackedELResolver {
 
+	// FIXME delete
 	// FIXME rename to viewscope
 	// FIXME refactor the EL resolvers to be like SWF
 
