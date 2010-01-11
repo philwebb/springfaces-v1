@@ -27,7 +27,7 @@ import org.springframework.faces.mvc.PageScope;
  * {@link ELResolver} that will resolve elements in page scope.
  * 
  * @see PageScope
- * @see PageScopeHolderComponent
+ * @see MvcFacesStateHolderComponent
  * @see PageScopeVariableResolver
  * 
  * @author Phillip Webb
@@ -51,8 +51,8 @@ public class PageScopeELResolver extends MapBackedELResolver {
 	}
 
 	protected Map getMap() {
-		PageScopeHolderComponent stateHolder = PageScopeHolderComponent
-				.locate(FacesContext.getCurrentInstance(), false);
-		return stateHolder == null ? null : stateHolder.getPageScope();
+		MvcFacesStateHolderComponent stateHolder = MvcFacesStateHolderComponent.locate(FacesContext
+				.getCurrentInstance(), false);
+		return stateHolder == null ? null : stateHolder.getPageScope().asMap();
 	}
 }

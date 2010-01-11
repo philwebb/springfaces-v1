@@ -11,7 +11,7 @@ import org.springframework.faces.mvc.NavigationRequestEvent;
 import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +67,7 @@ public class MainController {
 	// FIXME should be command line param
 	String sortBy = facesContext.getExternalContext().getRequestParameterMap().get("sortBy");
 	searchCriteria.setSortBy(sortBy);
-	PageScopeHolderComponent pshc = PageScopeHolderComponent.locate(facesContext, true);
+	MvcFacesStateHolderComponent pshc = MvcFacesStateHolderComponent.locate(facesContext, true);
 	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
 	DataModel hotelsDataModel = (DataModel) conversionService.executeConversion(hotels, DataModel.class);
 	pshc.getPageScope().put("hotels", hotelsDataModel);

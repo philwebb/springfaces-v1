@@ -39,7 +39,7 @@ import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContextControl;
 import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.context.support.StaticWebApplicationContext;
@@ -177,13 +177,13 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	public void testViewCreatedWithPageScope() throws Exception {
 		doTestViewCreated(true);
-		assertNotNull(PageScopeHolderComponent.locate(facesContext, false));
+		assertNotNull(MvcFacesStateHolderComponent.locate(facesContext, false));
 	}
 
 	public void testViewCreatedWithoutPageScope() throws Exception {
 		doTestViewCreated(false);
 		try {
-			PageScopeHolderComponent.locate(facesContext, true);
+			MvcFacesStateHolderComponent.locate(facesContext, true);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}

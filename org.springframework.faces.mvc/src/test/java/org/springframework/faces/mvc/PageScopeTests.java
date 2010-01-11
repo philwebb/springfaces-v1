@@ -22,7 +22,7 @@ import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.apache.shale.test.mock.MockFacesContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 
 public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory {
 
@@ -37,7 +37,7 @@ public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory
 	}
 
 	public void testPageScope() throws Exception {
-		PageScopeHolderComponent.attach(facesContext, facesContext.getViewRoot());
+		MvcFacesStateHolderComponent.attach(facesContext, facesContext.getViewRoot());
 		PageScope pageScope = new PageScope();
 		this.object = "value1";
 		assertEquals("value1", pageScope.get("test", this));
@@ -46,9 +46,9 @@ public class PageScopeTests extends AbstractJsfTestCase implements ObjectFactory
 		assertEquals("value1", pageScope.get("test", this));
 
 		// Test the removal
-		assertTrue(PageScopeHolderComponent.locate(facesContext, true).getPageScope().containsKey("test"));
+		assertTrue(MvcFacesStateHolderComponent.locate(facesContext, true).getPageScope().contains("test"));
 		pageScope.remove("test");
-		assertFalse(PageScopeHolderComponent.locate(facesContext, true).getPageScope().containsKey("test"));
+		assertFalse(MvcFacesStateHolderComponent.locate(facesContext, true).getPageScope().contains("test"));
 	}
 
 	public void testNoPageScopeHolder() throws Exception {

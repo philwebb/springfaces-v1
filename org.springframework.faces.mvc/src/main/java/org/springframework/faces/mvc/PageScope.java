@@ -16,7 +16,6 @@
 package org.springframework.faces.mvc;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
@@ -25,8 +24,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.util.Assert;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
  * {@link Scope} implementation that allows beans to be tied to a JSF Page. Page scope store bean definitions inside a
@@ -44,7 +44,7 @@ public class PageScope implements Scope {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	public Object get(String name, ObjectFactory objectFactory) {
-		Map scope = getScope();
+		MutableAttributeMap scope = getScope();
 		Object scopedObject = scope.get(name);
 		if (scopedObject == null) {
 			if (logger.isDebugEnabled()) {
@@ -70,9 +70,9 @@ public class PageScope implements Scope {
 		return null;
 	}
 
-	private Map getScope() {
+	private MutableAttributeMap getScope() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		return PageScopeHolderComponent.locate(context, context.getViewRoot(), true).getPageScope();
+		return MvcFacesStateHolderComponent.locate(context, context.getViewRoot(), true).getPageScope();
 	}
 
 	public String getConversationId() {

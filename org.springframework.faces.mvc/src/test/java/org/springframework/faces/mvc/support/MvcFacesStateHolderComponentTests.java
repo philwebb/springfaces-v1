@@ -22,21 +22,21 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext12;
 
-public class PageScopeHolderComponentTests extends TestCase {
+public class MvcFacesStateHolderComponentTests extends TestCase {
 
-	private PageScopeHolderComponent component;
+	private MvcFacesStateHolderComponent component;
 
 	protected void setUp() throws Exception {
-		this.component = new PageScopeHolderComponent();
+		this.component = new MvcFacesStateHolderComponent();
 	}
 
 	public void testId() throws Exception {
-		assertEquals(PageScopeHolderComponent.COMPONENT_ID, component.getId());
+		assertEquals(MvcFacesStateHolderComponent.COMPONENT_ID, component.getId());
 	}
 
 	public void testIdCannotBeSet() throws Exception {
 		component.setId("newId");
-		assertEquals(PageScopeHolderComponent.COMPONENT_ID, component.getId());
+		assertEquals(MvcFacesStateHolderComponent.COMPONENT_ID, component.getId());
 	}
 
 	public void testGetFamily() throws Exception {
@@ -48,7 +48,7 @@ public class PageScopeHolderComponentTests extends TestCase {
 	}
 
 	public void testGetClientId() throws Exception {
-		assertEquals(PageScopeHolderComponent.COMPONENT_ID, component.getClientId(null));
+		assertEquals(MvcFacesStateHolderComponent.COMPONENT_ID, component.getClientId(null));
 	}
 
 	public void testTransient() throws Exception {
@@ -60,7 +60,7 @@ public class PageScopeHolderComponentTests extends TestCase {
 	public void testStateSaveAndRestore() throws Exception {
 		component.getPageScope().put("test", "value");
 		Object state = component.saveState(null);
-		component = new PageScopeHolderComponent();
+		component = new MvcFacesStateHolderComponent();
 		component.restoreState(null, state);
 		assertEquals("value", component.getPageScope().get("test"));
 	}
@@ -68,20 +68,20 @@ public class PageScopeHolderComponentTests extends TestCase {
 	public void testAttachAndLocate() throws Exception {
 		UIViewRoot viewRoot = new UIViewRoot();
 		try {
-			PageScopeHolderComponent.locate(null, viewRoot, true);
+			MvcFacesStateHolderComponent.locate(null, viewRoot, true);
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
-		PageScopeHolderComponent.attach(null, viewRoot);
-		assertNotNull(PageScopeHolderComponent.locate(null, viewRoot, true));
+		MvcFacesStateHolderComponent.attach(null, viewRoot);
+		assertNotNull(MvcFacesStateHolderComponent.locate(null, viewRoot, true));
 	}
 
 	public void testLocateFromFacesContext() throws Exception {
 		FacesContext facesContext = new MockFacesContext12();
 		UIViewRoot viewRoot = new UIViewRoot();
 		facesContext.setViewRoot(viewRoot);
-		PageScopeHolderComponent.attach(null, viewRoot);
-		assertNotNull(PageScopeHolderComponent.locate(facesContext, true));
-		assertNotNull(PageScopeHolderComponent.locate(facesContext, null, true));
+		MvcFacesStateHolderComponent.attach(null, viewRoot);
+		assertNotNull(MvcFacesStateHolderComponent.locate(facesContext, true));
+		assertNotNull(MvcFacesStateHolderComponent.locate(facesContext, null, true));
 	}
 }

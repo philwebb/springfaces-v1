@@ -30,8 +30,8 @@ public class PageScopeVariableResolverTests extends TestCase {
 		UIViewRoot viewRoot = new UIViewRoot();
 		FacesContext facesContext = new MockFacesContext12();
 		facesContext.setViewRoot(viewRoot);
-		PageScopeHolderComponent.attach(facesContext, viewRoot);
-		PageScopeHolderComponent.locate(facesContext, true).getPageScope().put("test", "value");
+		MvcFacesStateHolderComponent.attach(facesContext, viewRoot);
+		MvcFacesStateHolderComponent.locate(facesContext, true).getPageScope().put("test", "value");
 		VariableResolver nextResolver = (VariableResolver) MvcFacesTestUtils.nullImplementation(VariableResolver.class);
 		PageScopeVariableResolver resolver = new PageScopeVariableResolver(nextResolver);
 		assertEquals("value", resolver.resolveVariable(facesContext, "test"));

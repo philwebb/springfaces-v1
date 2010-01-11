@@ -42,7 +42,7 @@ import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContextControl;
 import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
-import org.springframework.faces.mvc.support.PageScopeHolderComponent;
+import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -206,7 +206,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	/**
 	 * Method called to determine if a page scope is supported. When page scope is supported it will be registered with
-	 * the bean factory and a {@link PageScopeHolderComponent} will be attached when views are created. By default this
+	 * the bean factory and a {@link MvcFacesStateHolderComponent} will be attached when views are created. By default this
 	 * method will return <tt>true</tt> so that {@link PageScope} can be supported.
 	 * 
 	 * @return <tt>true</tt> if page scope is supported
@@ -297,7 +297,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 				UIViewRoot view, Map model) {
 			AbstractFacesHandlerAdapter.this.getModelBindingExecutor().storeModelToBind(facesContext, model);
 			if (AbstractFacesHandlerAdapter.this.isPageScopeSupported()) {
-				PageScopeHolderComponent.attach(facesContext, view);
+				MvcFacesStateHolderComponent.attach(facesContext, view);
 			}
 		}
 

@@ -15,9 +15,6 @@
  */
 package org.springframework.faces.mvc.support;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.component.UIViewRoot;
@@ -25,17 +22,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.render.Renderer;
 
 import org.springframework.util.Assert;
+import org.springframework.webflow.core.collection.LocalAttributeMap;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
- * A JSF component that can be used to hold page scope data. This allows for data to be stored within the JSF view and
+ * A JSF component that can be used to hold MVC Faces data. This allows for data to be stored within the JSF view and
  * restored during the faces lifecyle.
  * 
  * @author Keith Donald
  * @author Phillip Webb
  */
-public class PageScopeHolderComponent extends UIComponentBase {
-
-	// FIXME rename this to MvcComponent ? or ViewScopeHolder
+public class MvcFacesStateHolderComponent extends UIComponentBase {
 
 	private static final String COMPONENT_FAMILY = "javax.faces.Parameter";
 
@@ -46,7 +43,7 @@ public class PageScopeHolderComponent extends UIComponentBase {
 
 	private boolean transientValue;
 
-	private Map pageScope;
+	private MutableAttributeMap pageScope;
 
 	public String getId() {
 		return COMPONENT_ID;
@@ -80,7 +77,7 @@ public class PageScopeHolderComponent extends UIComponentBase {
 
 	public void restoreState(FacesContext context, Object state) {
 		Object values[] = (Object[]) state;
-		pageScope = (Map) values[0];
+		pageScope = (MutableAttributeMap) values[0];
 	}
 
 	public Object saveState(FacesContext context) {
@@ -89,39 +86,39 @@ public class PageScopeHolderComponent extends UIComponentBase {
 		return values;
 	}
 
-	public Map getPageScope() {
+	public MutableAttributeMap getPageScope() {
 		if (pageScope == null) {
-			pageScope = new HashMap();
+			pageScope = new LocalAttributeMap();
 		}
 		return pageScope;
 	}
 
 	public static void attach(FacesContext facesContext, UIViewRoot viewRoot) {
-		viewRoot.getChildren().add(new PageScopeHolderComponent());
+		viewRoot.getChildren().add(new MvcFacesStateHolderComponent());
 	}
 
 	/**
-	 * Locate the {@link PageScopeHolderComponent} from the specified faces context.
+	 * Locate the {@link MvcFacesStateHolderComponent} from the specified faces context.
 	 * @param facesContext The faces context
 	 * @param viewRoot An optional view root, if not specified <tt>facesContext.getViewRoot()</tt> is used
 	 * @param required <tt>true</tt> if the component is required and <tt>null</tt> is not a valid return,
 	 * <tt>false</tt> if the <tt>null</tt> should be returned if the component cannot be found
-	 * @return The {@link PageScopeHolderComponent} or <tt>null</tt> (only when <tt>required</tt> is <tt>false</tt>)
+	 * @return The {@link MvcFacesStateHolderComponent} or <tt>null</tt> (only when <tt>required</tt> is <tt>false</tt>)
 	 */
-	public static PageScopeHolderComponent locate(FacesContext facesContext, UIViewRoot viewRoot, boolean required) {
+	public static MvcFacesStateHolderComponent locate(FacesContext facesContext, UIViewRoot viewRoot, boolean required) {
 		viewRoot = viewRoot == null ? facesContext.getViewRoot() : viewRoot;
 		UIComponent component = viewRoot.findComponent(COMPONENT_ID);
 		if (required) {
 			Assert.notNull(component, "The MVC State Holder component cannot be found in the specified viewRoot, "
 					+ "perhaps you are not rendering this view using Spring MVC");
 		}
-		return (PageScopeHolderComponent) component;
+		return (MvcFacesStateHolderComponent) component;
 	}
 
 	/**
 	 * See {@link #locate(FacesContext, UIViewRoot, boolean)}
 	 */
-	public static PageScopeHolderComponent locate(FacesContext context, boolean required) {
+	public static MvcFacesStateHolderComponent locate(FacesContext context, boolean required) {
 		return locate(context, null, required);
 	}
 }

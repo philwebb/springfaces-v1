@@ -25,7 +25,7 @@ import org.springframework.faces.mvc.PageScope;
  * JSF {@link VariableResolver} that will resolve elements in page scope.
  * 
  * @see PageScope
- * @see PageScopeHolderComponent
+ * @see MvcFacesStateHolderComponent
  * @see PageScopeELResolver
  * 
  * @author Phillip Webb
