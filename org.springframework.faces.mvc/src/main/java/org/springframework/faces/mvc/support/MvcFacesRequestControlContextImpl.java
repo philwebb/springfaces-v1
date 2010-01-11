@@ -7,11 +7,11 @@ import org.springframework.webflow.core.collection.LocalAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
- * Default implementation of {@link MvcFacesRequestContextControl}.
+ * Default implementation of {@link MvcFacesRequestControlContext}.
  * 
  * @author Phillip Webb
  */
-public class MvcFacesRequestContextControlImpl implements MvcFacesRequestContextControl {
+public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControlContext {
 
 	private boolean released;
 	private MvcFacesContext mvcFacesContext;
@@ -30,7 +30,7 @@ public class MvcFacesRequestContextControlImpl implements MvcFacesRequestContext
 	 * 
 	 * @see #release()
 	 */
-	public MvcFacesRequestContextControlImpl(MvcFacesContext mvcFacesContext, FacesHandler facesHandler) {
+	public MvcFacesRequestControlContextImpl(MvcFacesContext mvcFacesContext, FacesHandler facesHandler) {
 		Assert.notNull(mvcFacesContext);
 		Assert.notNull(facesHandler);
 		this.mvcFacesContext = mvcFacesContext;

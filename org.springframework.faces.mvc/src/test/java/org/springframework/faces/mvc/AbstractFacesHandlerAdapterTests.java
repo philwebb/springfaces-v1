@@ -37,7 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextControl;
+import org.springframework.faces.mvc.support.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
@@ -230,7 +230,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				((MvcFacesRequestContextControl) mvcFacesRequestContext).setException(exception);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).setException(exception);
 				PhaseEvent event = new PhaseEvent(facesContext, phaseId, lifecycle);
 				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
 			}

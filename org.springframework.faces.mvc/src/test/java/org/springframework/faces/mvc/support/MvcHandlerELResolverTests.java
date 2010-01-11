@@ -31,7 +31,7 @@ public class MvcHandlerELResolverTests extends TestCase {
 
 	private MvcHandlerELResolver resolver;
 	private ELContext elContext;
-	private MvcFacesRequestContextControlImpl requestContext;
+	private MvcFacesRequestControlContextImpl requestContext;
 	private FacesHandler facesHandler;
 
 	protected void setUp() throws Exception {
@@ -40,7 +40,7 @@ public class MvcHandlerELResolverTests extends TestCase {
 		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		this.facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		this.requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
+		this.requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, facesHandler);
 	}
 
 	protected void tearDown() throws Exception {

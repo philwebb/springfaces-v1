@@ -40,8 +40,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextControl;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
+import org.springframework.faces.mvc.support.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestControlContextImpl;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
@@ -75,7 +75,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		FacesHandler facesHandler = (FacesHandler) handler;
-		MvcFacesRequestContextControlImpl mvcFacesRequestContext = new MvcFacesRequestContextControlImpl(
+		MvcFacesRequestControlContextImpl mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(
 				newFacesHandlerAdapterContext(), facesHandler);
 		try {
 			try {
@@ -116,7 +116,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 */
 	protected void handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 			HttpServletResponse response, Exception exception) throws Exception {
-		((MvcFacesRequestContextControl) mvcFacesRequestContext).setException(exception);
+		((MvcFacesRequestControlContext) mvcFacesRequestContext).setException(exception);
 		MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome = new MvcFacesExceptionOutcomeImpl();
 		// Try the handler specified exception handlers
 		boolean handled = handleException(mvcFacesRequestContext, request, response, exception,

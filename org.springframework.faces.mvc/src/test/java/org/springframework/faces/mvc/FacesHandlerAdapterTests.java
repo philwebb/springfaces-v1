@@ -35,7 +35,7 @@ import org.apache.shale.test.mock.MockServlet;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.support.MvcFacesContext;
 import org.springframework.faces.mvc.support.MvcFacesRequestContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
+import org.springframework.faces.mvc.support.MvcFacesRequestControlContextImpl;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
@@ -107,7 +107,7 @@ public class FacesHandlerAdapterTests extends TestCase {
 		HttpServletResponse response = (HttpServletResponse) EasyMock.createMock(HttpServletResponse.class);
 		FacesHandler handler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
-		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, handler);
+		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, handler);
 		adapter.doHandle(mvcFacesRequestContext, request, response);
 		((TrackingMockServlet) adapter.getFacesServlet()).assertSame(request, response);
 	}

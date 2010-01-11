@@ -23,7 +23,7 @@ public class MvcFacesRequestContextHolder {
 	 * @param requestContext the current MvcFacesRequestContextControl, or <code>null</code> to reset the thread-bound
 	 * context
 	 */
-	public static void setRequestContext(MvcFacesRequestContextControl requestContext) {
+	public static void setRequestContext(MvcFacesRequestControlContext requestContext) {
 		if (requestContext == null) {
 			requestContextHolder.remove();
 		} else {

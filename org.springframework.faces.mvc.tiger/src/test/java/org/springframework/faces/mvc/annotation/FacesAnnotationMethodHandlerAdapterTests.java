@@ -58,7 +58,7 @@ import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.bind.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.faces.mvc.support.MvcFacesContext;
-import org.springframework.faces.mvc.support.MvcFacesRequestContextControlImpl;
+import org.springframework.faces.mvc.support.MvcFacesRequestControlContextImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.WebDataBinder;
@@ -381,7 +381,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
 		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
 		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
-		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, underlyingAdapter
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, underlyingAdapter
 				.getHandler()) {
 			public NavigationRequestEvent getLastNavigationRequestEvent() {
 				return event;

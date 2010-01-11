@@ -33,7 +33,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 		public void run() {
 			MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 			FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-			final MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext,
+			final MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext,
 					facesHandler);
 			try {
 				while (wait) {
@@ -69,7 +69,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 	public void testDoubleRelease() throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, facesHandler);
 		requestContext.release();
 		try {
 			requestContext.release();
@@ -82,7 +82,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 	public void testSetGetException() throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, facesHandler);
 		Exception exception = new Exception();
 		requestContext.setException(exception);
 		assertSame(exception, requestContext.getException());
@@ -91,7 +91,7 @@ public class MvcFacesRequestContextTests extends TestCase {
 	public void testSetGetLastNavigationRequestEvent() throws Exception {
 		MvcFacesContext mvcFacesContext = (MvcFacesContext) EasyMock.createMock(MvcFacesContext.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestContextControlImpl requestContext = new MvcFacesRequestContextControlImpl(mvcFacesContext, facesHandler);
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext, facesHandler);
 		NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
 		requestContext.setLastNavigationRequestEvent(event);
 		assertSame(event, requestContext.getLastNavigationRequestEvent());

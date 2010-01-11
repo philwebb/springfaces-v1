@@ -9,9 +9,7 @@ import org.springframework.faces.mvc.NavigationRequestEvent;
  * 
  * @author Phillip Webb
  */
-public interface MvcFacesRequestContextControl extends MvcFacesRequestContext {
-
-	// FIXME rename to MvcFacesRequestControlContext
+public interface MvcFacesRequestControlContext extends MvcFacesRequestContext {
 
 	/**
 	 * Method called during exception handling to store the current exception. This is a framework method called by
