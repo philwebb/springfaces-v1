@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Interface that can be used to bind Spring MVC Models (from {@link ModelAndView}) to faces.
  * 
- * @see BeanScopeModelBinder
+ * @see DefaultModelBinder
  * 
  * @author Phillip Webb
  */

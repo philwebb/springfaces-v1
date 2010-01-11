@@ -21,7 +21,7 @@ public class ImplicitModelScopeProviderTests extends TestCase {
 
 	private static final Object MODEL_VALUE = new Object();
 
-	private ModelScopeProvider provider = new ImplicitModelScopeProvider(SpecificModelScopeProvider.PAGE);
+	private ModelScopeProvider provider = new ImplicitModelScopeProvider(ScopeType.VIEW);
 
 	public void testDefinedScope() throws Exception {
 		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, "sessionScope.name"),
@@ -32,13 +32,13 @@ public class ImplicitModelScopeProviderTests extends TestCase {
 
 	public void testNoDefinedScope() throws Exception {
 		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, "name"), MODEL_VALUE);
-		assertEquals("page", result.getScope());
+		assertEquals("view", result.getScope());
 		assertEquals("name", result.getModelAttribute());
 	}
 
 	public void testDotAtStart() throws Exception {
 		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, ".name"), MODEL_VALUE);
-		assertEquals("page", result.getScope());
+		assertEquals("view", result.getScope());
 		assertEquals(".name", result.getModelAttribute());
 	}
 
@@ -51,7 +51,7 @@ public class ImplicitModelScopeProviderTests extends TestCase {
 
 	private void doTestDoesNotMatch(String attribute) throws Exception {
 		ScopedModelAttribute result = provider.getModelScope(new ScopedModelAttribute(null, attribute), MODEL_VALUE);
-		assertEquals("page", result.getScope());
+		assertEquals("view", result.getScope());
 		assertEquals(attribute, result.getModelAttribute());
 	}
 

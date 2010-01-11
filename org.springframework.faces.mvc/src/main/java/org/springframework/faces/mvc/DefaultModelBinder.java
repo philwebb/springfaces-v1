@@ -25,33 +25,48 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.faces.mvc.support.MvcFacesRequestContext;
+import org.springframework.faces.mvc.support.MvcFacesRequestContextHolder;
 import org.springframework.util.Assert;
 
 /**
- * Implementation of {@link ModelBinder} that exposes MVC Model elements to JSF by delegating to one of the registered
- * spring {@link Scope} implementations. By default this binder is configured to use a
- * {@link SpecificModelScopeProvider} set to <tt>request</tt> scope with {@link ImplicitModelScopeProvider} support.
+ * Default implementation of {@link ModelBinder} that exposes MVC Model elements to JSF using MVC {@link ScopeType}s or
+ * registered spring {@link Scope}s. By default this binder is configured with {@link ImplicitModelScopeProvider}
+ * support, falling back to <tt>request</tt> scope when an implicit scope name is not found.
  * 
  * @author Phillip Webb
  */
-public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, InitializingBean {
+public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, InitializingBean {
 	// FIXME exclude org.springframework.validation.BindingResult. ?
 
 	private ConfigurableBeanFactory beanFactory;
 	private ModelScopeProvider modelScopeProvider;
 
-	public BeanScopeModelBinder() {
-		this.modelScopeProvider = new ImplicitModelScopeProvider(SpecificModelScopeProvider.REQUSET);
+	public DefaultModelBinder() {
+		this.modelScopeProvider = new ImplicitModelScopeProvider(ScopeType.REQUEST);
 	}
 
 	public void bindModel(Map model) {
+		MvcFacesRequestContext context = MvcFacesRequestContextHolder.getRequestContext();
+		Assert.notNull(context, "MvcFacesRequestContext not found");
 		for (Iterator iterator = model.entrySet().iterator(); iterator.hasNext();) {
 			final Map.Entry modelEntry = (Map.Entry) iterator.next();
 			final Object modelValue = modelEntry.getValue();
 			ScopedModelAttribute scopedModelAttribute = new ScopedModelAttribute((String) modelEntry.getKey());
 			scopedModelAttribute = modelScopeProvider.getModelScope(scopedModelAttribute, modelValue);
 			Assert.notNull(scopedModelAttribute.getScope());
-			// FIXME use MVC implicit scopes first, then fallback to spring scopes
+			bindModelAttribute(context, scopedModelAttribute, modelValue);
+		}
+	}
+
+	private void bindModelAttribute(MvcFacesRequestContext context, ScopedModelAttribute scopedModelAttribute,
+			final Object modelValue) {
+		// Attempt to use the internal Faces MVC scopes
+		ScopeType mvcScope = ScopeType.find(scopedModelAttribute.getScope());
+		if (mvcScope != null) {
+			mvcScope.getScope(context).put(scopedModelAttribute.getModelAttribute(), modelValue);
+		} else {
+			// Fall back to the spring registered scopes
 			Scope scope = beanFactory.getRegisteredScope(scopedModelAttribute.getScope());
 			Assert.notNull(scope, "Unable to locate " + scopedModelAttribute.getScope() + " from beanFactory");
 			scope.get(scopedModelAttribute.getModelAttribute(), new ObjectFactory() {
@@ -60,6 +75,7 @@ public class BeanScopeModelBinder implements ModelBinder, BeanFactoryAware, Init
 				}
 			});
 		}
+
 	}
 
 	public void afterPropertiesSet() throws Exception {

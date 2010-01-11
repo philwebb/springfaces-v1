@@ -17,6 +17,11 @@ package org.springframework.faces.mvc;
 
 import org.springframework.util.Assert;
 
+/**
+ * Implementation of {@link ModelScopeProvider} that uses a specific scope name.
+ * 
+ * @author Phillip Webb
+ */
 public class SpecificModelScopeProvider implements ModelScopeProvider {
 
 	private String scope;
@@ -29,8 +34,4 @@ public class SpecificModelScopeProvider implements ModelScopeProvider {
 	public ScopedModelAttribute getModelScope(ScopedModelAttribute modelAttribute, Object modelValue) {
 		return modelAttribute.newScope(scope);
 	}
-
-	public static final ModelScopeProvider REQUSET = new SpecificModelScopeProvider("request");
-	public static final ModelScopeProvider PAGE = new SpecificModelScopeProvider("page");
-	public static final ModelScopeProvider SESSION = new SpecificModelScopeProvider("session");
 }

@@ -98,7 +98,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 			initializeInternalBean(redirectHandler);
 		}
 		if (modelBindingExecutor.getModelBinder() == null) {
-			BeanScopeModelBinder modelBinder = new BeanScopeModelBinder();
+			DefaultModelBinder modelBinder = new DefaultModelBinder();
 			initializeInternalBean(modelBinder);
 			modelBindingExecutor.setModelBinder(modelBinder);
 		}
@@ -227,10 +227,10 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 	/**
 	 * Set the model binder that will be used to expose model elements to JSF. If the binder is not specified the
-	 * {@link BeanScopeModelBinder} will be used.
+	 * {@link DefaultModelBinder} will be used.
 	 * 
 	 * @param modelBinder
-	 * @see BeanScopeModelBinder
+	 * @see DefaultModelBinder
 	 */
 	public void setModelBinder(ModelBinder modelBinder) {
 		Assert.notNull(modelBinder, "The modelBinder is required");

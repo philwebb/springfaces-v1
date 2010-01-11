@@ -27,10 +27,11 @@ public interface ModelScopeProvider {
 	 * 
 	 * @return The a {@link ScopedModelAttribute} that contains the scope and variable name that should be used to
 	 * expose the <tt>model</tt> to JSF. The scope should be one of the extended spring scopes. The values
-	 * <tt>request</tt>, <tt>page</tt> or </tt>session</tt> are recommended. The <tt>singleton</tt> and
-	 * <tt>prototype</tt> scopes are not supported
+	 * <tt>request</tt>, <tt>page</tt> or </tt>flash</tt> are recommended. The <tt>singleton</tt> and <tt>prototype</tt>
+	 * scopes are not supported
 	 * 
-	 * @param scopedModelAttribute The name of the attribute and the existing scope (if any).
+	 * @param scopedModelAttribute The name of the attribute and the existing scope (if any scope has been defined).
+	 * This paramter is never null.
 	 */
 	ScopedModelAttribute getModelScope(ScopedModelAttribute scopedModelAttribute, Object modelValue);
 }

@@ -23,13 +23,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * Implementation of {@link ModelBindingExecutor} that store the model in request scope until it can be bound.
+ * Implementation of {@link ModelBindingExecutor} that stores the model in request scope until it can be bound.
  * 
  * @author Phillip Webb
  */
 public class RequestMappedModelBindingExecutor implements ModelBindingExecutor, InitializingBean {
 
-	private static final String MODEL_ATTRIBUTE = BeanScopeModelBinder.class.getName() + ".MODEL";
+	private static final String MODEL_ATTRIBUTE = RequestMappedModelBindingExecutor.class.getName() + ".MODEL";
 
 	private ModelBinder modelBinder;
 

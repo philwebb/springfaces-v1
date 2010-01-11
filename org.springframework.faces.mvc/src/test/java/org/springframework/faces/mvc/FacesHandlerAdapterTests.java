@@ -132,10 +132,10 @@ public class FacesHandlerAdapterTests extends TestCase {
 
 	public void testDefaultModelBinder() throws Exception {
 		adapter.afterPropertiesSet();
-		assertEquals(BeanScopeModelBinder.class,
+		assertEquals(DefaultModelBinder.class,
 				((RequestMappedModelBindingExecutor) adapter.getModelBindingExecutor()).getModelBinder().getClass());
 		// Quick test that the beanFactory has been injected
-		((BeanScopeModelBinder) ((RequestMappedModelBindingExecutor) adapter.getModelBindingExecutor())
+		((DefaultModelBinder) ((RequestMappedModelBindingExecutor) adapter.getModelBindingExecutor())
 				.getModelBinder()).afterPropertiesSet();
 	}
 
