@@ -27,7 +27,7 @@ public class MainController {
 
     @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
     @RequestMapping("/main2")
-    public String main(@ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria) {
+    public String main(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
 	searchCriteria.resetPage();
 	return "enterSearchCriteria";
     }
@@ -36,8 +36,8 @@ public class MainController {
     @NavigationRules( {
 	    @NavigationCase(on = "select", to = "reviewHotel?id=#{hotels.selectedRow.id}"),
 	    @NavigationCase(on = "changeSearch", to = "/main2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true, fragments = "hotelSearchFragment") })
-    public String search(@ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria, Model model) {
-	model.addAttribute("pageScope.hotels", doSearch(searchCriteria));
+    public String search(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria, Model model) {
+	model.addAttribute("viewScope.hotels", doSearch(searchCriteria));
 	return "reviewHotels";
     }
 
@@ -49,7 +49,7 @@ public class MainController {
     // FIXME navigation reqest mapping? perhaps on navigation rules
     @NavigationCase(on = { "next", "previous" }, to = "/search2?#{searchCriteria}")
     public void navigate(FacesContext facesContext, NavigationRequestEvent event,
-	    @ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria) {
+	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
 	if ("next".equals(event.getOutcome())) {
 	    searchCriteria.nextPage();
 	}
@@ -61,7 +61,7 @@ public class MainController {
     @NavigationCase(on = "sort", fragments = "hotels:searchResultsFragment")
     // to = "/search2?#{searchCriteria}
     public void sort(FacesContext facesContext, NavigationRequestEvent event,
-	    @ModelAttribute("pageScope.searchCriteria") SearchCriteria searchCriteria,
+	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria,
 	    @RequestParam("sortBy") String sortBy2) {
 	System.out.println("sort");
 	// FIXME should be command line param
@@ -70,7 +70,7 @@ public class MainController {
 	MvcFacesStateHolderComponent pshc = MvcFacesStateHolderComponent.locate(facesContext, true);
 	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
 	DataModel hotelsDataModel = (DataModel) conversionService.executeConversion(hotels, DataModel.class);
-	pshc.getPageScope().put("hotels", hotelsDataModel);
+	pshc.getViewScope().put("hotels", hotelsDataModel);
     }
 
     @RequestMapping("/reviewHotel")
