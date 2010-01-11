@@ -142,28 +142,6 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		EasyMock.verify(new Object[] { facesViewIdResolver, actionUrlMapper });
 	}
 
-	private void doTestViewCreated(final boolean pageScopeAttached) throws Exception {
-		final UIViewRoot viewRoot = new UIViewRoot();
-		facesContext.setViewRoot(viewRoot);
-		final Map model = new HashMap();
-		modelBindingExecutor.storeModelToBind(facesContext, model);
-		EasyMock.expectLastCall();
-		EasyMock.replay(new Object[] { modelBindingExecutor });
-		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
-					HttpServletResponse response) throws Exception {
-				mvcFacesRequestContext.getMvcFacesContext().viewCreated(facesContext, mvcFacesRequestContext, viewRoot,
-						model);
-			}
-
-			protected boolean isPageScopeSupported() {
-				return pageScopeAttached;
-			}
-		};
-		facesHandlerAdapter.handle(request, response, facesHandler);
-		EasyMock.verify(new Object[] { modelBindingExecutor });
-	}
-
 	public void testPageScopeGetsRegistered() throws Exception {
 		facesHandlerAdapter = new MockFacesHandlerAdapter();
 		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) EasyMock
@@ -176,17 +154,22 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 	}
 
 	public void testViewCreatedWithPageScope() throws Exception {
-		doTestViewCreated(true);
+		final UIViewRoot viewRoot = new UIViewRoot();
+		facesContext.setViewRoot(viewRoot);
+		final Map model = new HashMap();
+		modelBindingExecutor.storeModelToBind(facesContext, model);
+		EasyMock.expectLastCall();
+		EasyMock.replay(new Object[] { modelBindingExecutor });
+		facesHandlerAdapter = new MockFacesHandlerAdapter() {
+			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
+				mvcFacesRequestContext.getMvcFacesContext().viewCreated(facesContext, mvcFacesRequestContext, viewRoot,
+						model);
+			}
+		};
+		facesHandlerAdapter.handle(request, response, facesHandler);
+		EasyMock.verify(new Object[] { modelBindingExecutor });
 		assertNotNull(MvcFacesStateHolderComponent.locate(facesContext, false));
-	}
-
-	public void testViewCreatedWithoutPageScope() throws Exception {
-		doTestViewCreated(false);
-		try {
-			MvcFacesStateHolderComponent.locate(facesContext, true);
-			fail();
-		} catch (IllegalArgumentException e) {
-		}
 	}
 
 	public void testWriteState() throws Exception {

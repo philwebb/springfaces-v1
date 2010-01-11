@@ -148,13 +148,6 @@ public class FacesHandlerAdapterTests extends TestCase {
 		assertEquals("client", servlet.getConfig().getInitParameter("javax.faces.STATE_SAVING_METHOD"));
 	}
 
-	public void testIsPageScopeSupported() throws Exception {
-		adapter.afterPropertiesSet();
-		assertTrue(adapter.isPageScopeSupported());
-		adapter.setPageScopeSupported(false);
-		assertFalse(adapter.isPageScopeSupported());
-	}
-
 	public void testCustomActionUrlMapper() throws Exception {
 		ActionUrlMapper actionUrlMapper = (ActionUrlMapper) EasyMock.createMock(ActionUrlMapper.class);
 		adapter.setActionUrlMapper(actionUrlMapper);

@@ -149,9 +149,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		// FIXME don't auto-register scopes create a new registrar
-		if (isPageScopeSupported()) {
-			beanFactory.registerScope("page", new PageScope());
-		}
+		beanFactory.registerScope("page", new PageScope());
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -202,18 +200,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 */
 	protected MvcFacesContext newFacesHandlerAdapterContext() {
 		return new FacesHandlerAdapterContext();
-	}
-
-	/**
-	 * Method called to determine if a page scope is supported. When page scope is supported it will be registered with
-	 * the bean factory and a {@link MvcFacesStateHolderComponent} will be attached when views are created. By default this
-	 * method will return <tt>true</tt> so that {@link PageScope} can be supported.
-	 * 
-	 * @return <tt>true</tt> if page scope is supported
-	 */
-	protected boolean isPageScopeSupported() {
-		// FIXME disable this and always include the PageScope component
-		return true;
 	}
 
 	/**
@@ -296,9 +282,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		public void viewCreated(FacesContext facesContext, MvcFacesRequestContext mvcFacesRequestContext,
 				UIViewRoot view, Map model) {
 			AbstractFacesHandlerAdapter.this.getModelBindingExecutor().storeModelToBind(facesContext, model);
-			if (AbstractFacesHandlerAdapter.this.isPageScopeSupported()) {
-				MvcFacesStateHolderComponent.attach(facesContext, view);
-			}
+			MvcFacesStateHolderComponent.attach(facesContext, view);
 		}
 
 		public void writeState(FacesContext facesContext) throws IOException {

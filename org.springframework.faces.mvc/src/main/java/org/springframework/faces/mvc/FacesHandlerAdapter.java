@@ -53,7 +53,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	private String beanName;
 	private Class facesServletClass = FacesServlet.class;
 	private Properties initParameters = new Properties();
-	private boolean pageScopeSupported = true;
 	private FacesViewIdResolver facesViewIdResolver;
 	private ActionUrlMapper actionUrlMapper;
 	private RedirectHandler redirectHandler;
@@ -107,10 +106,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 		facesServlet = newFacesServlet();
 		facesServlet.init(new DelegatingServletConfig());
-	}
-
-	protected boolean isPageScopeSupported() {
-		return pageScopeSupported;
 	}
 
 	protected FacesViewIdResolver getFacesViewIdResolver() {
@@ -204,16 +199,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	public void setInitParameters(Properties initParameters) {
 		Assert.notNull(initParameters, "The initParameters are required");
 		this.initParameters = initParameters;
-	}
-
-	/**
-	 * Set if the adapter should support "pageScope".
-	 * 
-	 * @param pageScopeSupported
-	 * @see PageScope
-	 */
-	public void setPageScopeSupported(boolean pageScopeSupported) {
-		this.pageScopeSupported = pageScopeSupported;
 	}
 
 	/**
