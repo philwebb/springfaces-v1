@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -46,6 +46,8 @@ import org.apache.shale.test.mock.MockServletOutputStream;
 import org.easymock.EasyMock;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.util.PathMatcher;

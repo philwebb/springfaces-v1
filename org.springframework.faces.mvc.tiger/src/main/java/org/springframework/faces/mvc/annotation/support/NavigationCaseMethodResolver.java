@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.faces.mvc.bind.annotation.NavigationCase;
-import org.springframework.faces.mvc.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
+import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;

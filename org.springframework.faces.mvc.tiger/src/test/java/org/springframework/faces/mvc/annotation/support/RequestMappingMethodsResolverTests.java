@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,9 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.TestCase;
 
-import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotation;
-import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotationMatch;
-import org.springframework.faces.mvc.annotation.RequestMappingMethodResolver.RequestMappingAnnotationMatchComparator;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver.RequestMappingAnnotation;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver.RequestMappingAnnotationMatch;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver.RequestMappingAnnotationMatchComparator;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.AntPathMatcher;

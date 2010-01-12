@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.reflect.Method;
 
@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
+import org.springframework.faces.mvc.annotation.support.NavigationCaseAnnotationLocator;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 public class NavigationCaseAnnotationLocatorTests extends TestCase {

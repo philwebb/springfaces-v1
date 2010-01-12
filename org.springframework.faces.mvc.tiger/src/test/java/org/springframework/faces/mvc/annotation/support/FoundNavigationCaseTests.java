@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
@@ -23,11 +23,16 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.faces.mvc.annotation.FoundNavigationCase.FoundNavigationCaseType;
+import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
-import org.springframework.faces.mvc.bind.annotation.NavigationCase;
+import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
+import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvokerFactory;
+import org.springframework.faces.mvc.annotation.support.FoundNavigationCase;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
+import org.springframework.faces.mvc.annotation.support.FoundNavigationCase.FoundNavigationCaseType;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;

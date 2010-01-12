@@ -1,7 +1,7 @@
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import org.springframework.web.bind.support.WebArgumentResolver;
 
-interface FacesControllerAnnotatedMethodInvokerFactory {
+public interface FacesControllerAnnotatedMethodInvokerFactory {
 	public FacesControllerAnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers);
 }

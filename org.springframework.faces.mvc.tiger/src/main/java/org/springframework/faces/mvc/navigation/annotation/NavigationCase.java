@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.bind.annotation;
+package org.springframework.faces.mvc.navigation.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,8 +23,8 @@ import java.lang.reflect.Method;
 
 import javax.faces.application.NavigationHandler;
 
-import org.springframework.faces.mvc.annotation.FacesWebArgumentResolver;
-import org.springframework.faces.mvc.annotation.NavigationOutcomeExpressionElResolver;
+import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
+import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;

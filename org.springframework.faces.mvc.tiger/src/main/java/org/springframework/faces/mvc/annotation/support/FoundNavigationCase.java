@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.reflect.Method;
 
@@ -21,9 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.faces.mvc.bind.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +35,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  * 
  * @author Phillip Webb
  */
-final class FoundNavigationCase {
+public final class FoundNavigationCase {
 
 	private static final Log logger = LogFactory.getLog(FoundNavigationCase.class);
 

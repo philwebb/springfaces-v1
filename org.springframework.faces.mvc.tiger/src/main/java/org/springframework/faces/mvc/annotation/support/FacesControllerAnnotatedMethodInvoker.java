@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -70,7 +70,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
  * @author Juergen Hoeller
  * @author Phillip Webb
  */
-abstract class FacesControllerAnnotatedMethodInvoker {
+public abstract class FacesControllerAnnotatedMethodInvoker {
 
 	// FIXME tidy up, dc, tests
 

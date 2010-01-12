@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.reflect.Method;
 
@@ -24,6 +24,7 @@ import javax.faces.event.FacesEvent;
 
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.springframework.core.MethodParameter;
+import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
 import org.springframework.web.bind.support.WebArgumentResolver;
 
 public class FacesWebArgumentResolverTests extends AbstractJsfTestCase {

@@ -36,14 +36,24 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
-import org.springframework.faces.mvc.bind.annotation.NavigationCase;
-import org.springframework.faces.mvc.bind.annotation.NavigationRules;
+import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
+import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvokerFactory;
+import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
+import org.springframework.faces.mvc.annotation.support.FoundNavigationCase;
+import org.springframework.faces.mvc.annotation.support.NavigationCaseAnnotationLocator;
+import org.springframework.faces.mvc.annotation.support.NavigationCaseMethodResolver;
+import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionContext;
+import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
+import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionResolver;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
+import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
+import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -83,7 +93,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter implements InitializingBean,
 		BeanNameAware, BeanFactoryPostProcessor, Ordered {
 
-	static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
+	public static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
 
 	private static final String DEFAULT_CONTROLLER_NAME = "controller";
 
@@ -355,7 +365,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
-	static WebArgumentResolver[] mergeResolvers(WebArgumentResolver[] r1, WebArgumentResolver[] r2) {
+	// FIXME move this out along with the static final
+	public static WebArgumentResolver[] mergeResolvers(WebArgumentResolver[] r1, WebArgumentResolver[] r2) {
 		r1 = (r1 == null ? new WebArgumentResolver[] {} : r1);
 		r2 = (r2 == null ? new WebArgumentResolver[] {} : r2);
 		WebArgumentResolver[] rtn = new WebArgumentResolver[r1.length + r2.length];
