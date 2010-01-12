@@ -13,7 +13,7 @@ public class ScopeSearchingElResolver extends AbstractELResolver {
 		return getRequestContext() != null;
 	}
 
-	protected boolean contains(String property) {
+	protected boolean handles(String property) {
 		for (int i = 0; i < ORDERED_SCOPES.length; i++) {
 			if (ORDERED_SCOPES[i].getScope(getRequestContext()).contains(property)) {
 				return true;

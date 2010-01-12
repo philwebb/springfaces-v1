@@ -99,6 +99,8 @@ public class ReverseDataBinder {
 	}
 
 	/**
+	 * Default constructor.
+	 * 
 	 * @param dataBinder A non null dataBinder
 	 */
 	public ReverseDataBinder(DataBinder dataBinder) {
@@ -197,6 +199,11 @@ public class ReverseDataBinder {
 
 	}
 
+	/**
+	 * Gets the {@link SimpleTypeConverter} that should be used for conversion.
+	 * 
+	 * @return The simple type converter
+	 */
 	protected SimpleTypeConverter getSimpleTypeConverter() {
 		if (simpleTypeConverter == null) {
 			simpleTypeConverter = new SimpleTypeConverter();
@@ -206,11 +213,11 @@ public class ReverseDataBinder {
 
 	/**
 	 * Perform the reverse bind on the <tt>dataBinder</tt> provided in the constructor. Note: Calling with method will
-	 * also trigger a <tt>bind</tt> operation on the <tt>dataBinder</tt>.
+	 * also trigger a <tt>bind</tt> operation on the <tt>dataBinder</tt>. This method returns {@link PropertyValues}
+	 * containing a name/value pairs for each property that can be bound. Property values are encoded as Strings using
+	 * the property editors bound to the original dataBinder.
 	 * 
-	 * @return {@link PropertyValues} containing a name/value pairs for each property that can be bound.Property values
-	 * are encoded as Strings using the property editors bound to the original dataBinder
-	 * 
+	 * @return property values that could be re-bound using the data binder
 	 * @throws IllegalStateException if the target object values cannot be bound
 	 */
 	public PropertyValues reverseBind() {

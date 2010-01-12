@@ -76,7 +76,6 @@ public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, Initia
 				}
 			});
 		}
-
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -93,9 +92,7 @@ public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, Initia
 
 	/**
 	 * Set the {@link ModelScopeProvider} that will be used to resolve the scope of each model element. For convenience
-	 * the {@link #setScope(String)} can also be used to always use the same scope for each model element. If not
-	 * specified the {@link SpecificModelScopeProvider} (set to <tt>request</tt> scope) with
-	 * {@link ImplicitModelScopeProvider} support will be used.
+	 * the {@link #setScope(String)} can also be used when the same scope should be used for each model element.
 	 * 
 	 * @param modelScopeProvider The model scope provider used to determine the scope of each model entry
 	 */

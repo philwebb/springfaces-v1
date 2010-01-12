@@ -8,6 +8,8 @@ import javax.el.ELContext;
 
 import org.springframework.binding.expression.el.DefaultELContext;
 
+//FIXME check all DCs here down
+
 public abstract class BeanBackedElResolver extends AbstractELResolver {
 
 	private static final BeanELResolver elPropertyResolver = new BeanELResolver();
@@ -24,7 +26,7 @@ public abstract class BeanBackedElResolver extends AbstractELResolver {
 		return getBean() != null;
 	}
 
-	protected boolean contains(String property) {
+	protected boolean handles(String property) {
 		return properties.containsKey(property);
 	}
 

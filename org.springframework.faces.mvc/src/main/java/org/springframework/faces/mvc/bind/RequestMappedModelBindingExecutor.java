@@ -49,14 +49,18 @@ public class RequestMappedModelBindingExecutor implements ModelBindingExecutor, 
 	}
 
 	/**
-	 * @param modelBinder The {@link ModelBinder} that will be used to bind the model.
+	 * Set the {@link ModelBinder} that will be used to bind the model.
+	 * 
+	 * @param modelBinder The model binder
 	 */
 	public void setModelBinder(ModelBinder modelBinder) {
 		this.modelBinder = modelBinder;
 	}
 
 	/**
-	 * @return The {@link ModelBinder} that will be used to bind the model.
+	 * Returns the {@link ModelBinder} that will be used to bind the model.
+	 * 
+	 * @return The model binder
 	 */
 	public ModelBinder getModelBinder() {
 		return modelBinder;

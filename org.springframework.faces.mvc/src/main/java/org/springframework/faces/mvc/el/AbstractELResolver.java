@@ -7,23 +7,76 @@ import javax.el.ELResolver;
 import javax.el.PropertyNotWritableException;
 
 /**
- * Abstract base class for an {@link ELResolver} that will resolve elements from a map.
+ * Abstract convenience base class for {@link ELResolver}s. This class provides an easier to use base for simple EL
+ * resolver implementations. The {@link #isAvailable()} method will be called to determine if the EL resolver can be
+ * used with the {@link #get(String)} method used to perform the actual value resolve. By default this resolver will be
+ * read-only, if the resolver should support mutable values the {@link #set(String, Object)} and
+ * {@link #isReadOnly(String)} methods should be overridden.
+ * 
+ * @see #isAvailable()
+ * @see #handles(String)
+ * @see #get(String)
+ * @see #isReadOnly(String)
+ * @see #set(String, Object)
  * 
  * @author Phillip Webb
  */
 public abstract class AbstractELResolver extends ELResolver {
 
+	/**
+	 * Determine if the resolver is available for use.
+	 * 
+	 * @return <tt>true</tt> if the resolver is available or <tt>false</tt> if the resolver should not be used. Defaults
+	 * to <tt>true</tt>
+	 */
 	protected boolean isAvailable() {
 		return true;
 	}
 
-	protected boolean contains(String property) {
+	/**
+	 * Determine if the resolve handles the specified property. This method will only be called is
+	 * {@link #isAvailable()} returns <tt>true</tt>. By default this method will return <tt>true</tt> if
+	 * {@link #get(String)} returns a non <tt>null</tt> value.
+	 * 
+	 * @param property The property
+	 * @return <tt>true</tt> if resolver handles the specified property, otherwise <tt>false</tt>.
+	 */
+	protected boolean handles(String property) {
 		return get(property) != null;
 	}
 
+	/**
+	 * Called to gets the value of the specified property. This method will only be called is {@link #isAvailable()}
+	 * returns <tt>true</tt>.
+	 * 
+	 * @param property The property
+	 * @return The value of the property or <tt>null</tt>.
+	 */
 	protected abstract Object get(String property);
 
-	protected void set(String property, Object value) {
+	/**
+	 * Called to determine if the property is read only. This method will only be called is {@link #isAvailable()}
+	 * returns <tt>true</tt>. By default this method returns <tt>true</tt>
+	 * 
+	 * @param property The property
+	 * @return <tt>true</tt> if the property is read-only or <tt>false</tt> if the property is mutable.
+	 * @see #set(String, Object)
+	 */
+	protected boolean isReadOnly(String property) {
+		return true;
+	}
+
+	/**
+	 * Called to set the property value. This method will only be called is {@link #isAvailable()} and
+	 * {@link #isReadOnly(String)} return <tt>true</tt>. By default his method will throw a
+	 * {@link PropertyNotWritableException}.
+	 * 
+	 * @param property The property
+	 * @param value The value to set
+	 * @throws PropertyNotWritableException if the property is not writable.
+	 * @se {@link #isReadOnly(String)}
+	 */
+	protected void set(String property, Object value) throws PropertyNotWritableException {
 		throw new PropertyNotWritableException("The property " + property + " is not writable.");
 	}
 
@@ -42,7 +95,7 @@ public abstract class AbstractELResolver extends ELResolver {
 			return null;
 		}
 		String propertyString = property.toString();
-		if (contains(propertyString)) {
+		if (handles(propertyString)) {
 			elContext.setPropertyResolved(true);
 			return operation.execute(propertyString);
 		}
@@ -77,12 +130,12 @@ public abstract class AbstractELResolver extends ELResolver {
 	}
 
 	public boolean isReadOnly(ELContext elContext, Object base, Object property) {
-		handle(elContext, base, property, new ElOperation() {
+		Boolean readOnly = (Boolean) handle(elContext, base, property, new ElOperation() {
 			public Object execute(String property) {
-				return null;
+				return new Boolean(isReadOnly(property));
 			}
 		});
-		return false;
+		return (readOnly != null ? readOnly.booleanValue() : false);
 	}
 
 	public void setValue(ELContext elContext, Object base, Object property, final Object value) {

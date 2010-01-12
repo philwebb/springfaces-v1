@@ -37,7 +37,7 @@ public class MvcFacesRequestContextELResolver extends AbstractELResolver {
 		return getRequestContext() != null;
 	}
 
-	protected boolean contains(String attribute) {
+	protected boolean handles(String attribute) {
 		return REQUEST_CONTEXT_VARIABLE_NAME.equals(attribute);
 	}
 

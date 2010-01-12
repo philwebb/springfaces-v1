@@ -153,10 +153,10 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Obtain a {@link ServletContext} instance with the {@link ServletContext#getInitParameter(String)} intercepted in
-	 * order to provide a config that will work with the {@link FacesServlet} used by this class regardless of whether
-	 * the user has set the required parameters in their web.xml. Note: This behaviour can be disabled using
-	 * {@link #setOverrideInitParameters(boolean)}.
+	 * Obtain a {@link ServletContext} instance that will be used to configure the faces servlet. By default the
+	 * {@link ServletContext#getInitParameter(String)} method will be intercepted in order to provide a config that will
+	 * work with all {@link FacesServlet}s, regardless of whether the user has set the required parameters in their
+	 * web.xml. Note: This behaviour can be disabled using {@link #setOverrideInitParameters(boolean)}.
 	 * 
 	 * @return {@link ServletConfig} instance
 	 * 
@@ -179,11 +179,12 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Determine if override init parameters should be used. In order for the FacesServlet instance to process MVC
-	 * requests correctly exceptions must not be handled internally by the servlet. Some JSF implementations (MyFaces
-	 * for example) require additional configuration in order to propagate exceptions correctly and allow MVC to handle
-	 * them. By default this class will use AOP to ensure that this configuration occurs automatically. If this
-	 * behaviour is not desired then this set <tt>overrideInitParameters</tt> to <tt>false</tt>
+	 * Determine if override <tt>init</tt> parameters should be used with the FacesServlet. In order for the
+	 * FacesServlet instance to process MVC requests correctly exceptions must not be handled internally by the servlet.
+	 * Some JSF implementations (MyFaces for example) require additional configuration in order to propagate exceptions
+	 * correctly and allow MVC to handle them. By default this class will use AOP to ensure that this configuration
+	 * occurs automatically. If this behaviour is not desired then this set <tt>overrideInitParameters</tt> to
+	 * <tt>false</tt>
 	 * 
 	 * @param overrideInitParameters <tt>true</tt> if init parameters are automatically set for correct MVC operation or
 	 * <tt>false</tt> if parameters should be set manually in web.xml. Defaults to <tt>true</tt> when not explicitly set
@@ -204,7 +205,9 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	}
 
 	/**
-	 * Set the init parameters that will be used to initialise the faces servlet.
+	 * Set the init parameters that will be used to initialise the FacesServlet.
+	 * 
+	 * @param initParameters init parameters to use with the FacesServlet
 	 */
 	public void setInitParameters(Properties initParameters) {
 		Assert.notNull(initParameters, "The initParameters are required");

@@ -30,6 +30,8 @@ public final class ScopedModelAttribute {
 	private String modelAttribute;
 
 	/**
+	 * Constructor.
+	 * 
 	 * @param scope An optional scope
 	 * @param modelAttribute The attribute name
 	 */
@@ -40,14 +42,30 @@ public final class ScopedModelAttribute {
 		this.modelAttribute = modelAttribute;
 	}
 
+	/**
+	 * Constructor. When this constructor is used the scope will default to <tt>null</tt>
+	 * 
+	 * @param modelAttribute
+	 */
 	public ScopedModelAttribute(String modelAttribute) {
 		this(null, modelAttribute);
 	}
 
+	/**
+	 * Returns the scope that should be used to expose the model attribute. This value can be <tt>null</tt> to use the
+	 * default scope.
+	 * 
+	 * @return The scope
+	 */
 	public String getScope() {
 		return scope;
 	}
 
+	/**
+	 * Returns the model attribute name.
+	 * 
+	 * @return the model attribute name
+	 */
 	public String getModelAttribute() {
 		return modelAttribute;
 	}
@@ -81,5 +99,4 @@ public final class ScopedModelAttribute {
 	public String toString() {
 		return new ToStringCreator(this).append("scope", scope).append("modelAttribute", modelAttribute).toString();
 	}
-
 }

@@ -33,24 +33,27 @@ import org.springframework.web.servlet.ModelAndView;
 public interface FacesHandler {
 
 	/**
-	 * Called to create the JSF view for the first time. A {@link ModelAndView} that contains the View ID and any model
-	 * data. The view ID must be a view reference that can be resolved by the
-	 * {@link FacesHandlerAdapter#getFacesViewIdResolver()} to an actual page resource. A <tt>null</tt> view ID can be
-	 * used to indicate that rendering has been completed by the handler directly
+	 * Called to create the JSF view for the first time. This method should return a {@link ModelAndView} that contains
+	 * the View ID and any model data that should be bound to JSF. The view ID must be a view reference that can be
+	 * resolved by the {@link FacesHandlerAdapter#getFacesViewIdResolver()} to an actual page resource. A <tt>null</tt>
+	 * view ID can be used to indicate that rendering has been completed by the handler directly.
 	 * 
-	 * @return The model and view data.
+	 * @param facesContext The faces context
+	 * @return The model and view data
+	 * @throws Exception in the case of an error
 	 */
 	ModelAndView createView(FacesContext facesContext) throws Exception;
 
 	/**
-	 * Called to determine the outcome of a navigation. This method should return a location that can the client can be
-	 * redirected to by the {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> response can be used if
-	 * the navigation could not be handled, in such cases the standard JSF navigation handlers are called (if no
+	 * Called to determine the outcome of a navigation event. This method should return the location that the client
+	 * will be redirected to by the {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> response can be
+	 * used if the navigation could not be handled, in such cases the standard JSF navigation handlers are called (if no
 	 * navigation handler manages the outcome the existing page is re-rendered)
 	 * 
 	 * @param facesContext The faces context that requested the navigation
 	 * @param event The navigation request event
 	 * @return The navigation outcome
+	 * @throws Exception in the case of an error
 	 */
 	NavigationLocation getNavigationOutcomeLocation(FacesContext facesContext, NavigationRequestEvent event)
 			throws Exception;
@@ -65,9 +68,11 @@ public interface FacesHandler {
 	Object resolveVariable(String variableName);
 
 	/**
-	 * @return Any handler specific {@link MvcFacesExceptionHandler}s that should be used to deal with exceptions.
-	 * Return <tt>null</tt> if no handler specific handlers are required. Handlers registered with
-	 * {@link AbstractFacesHandlerAdapter} will still be called
+	 * Called to obtain any specific {@link MvcFacesExceptionHandler}s that should be used to deal with exceptions.
+	 * Return <tt>null</tt> if no specific handlers are required. Handlers registered with
+	 * {@link AbstractFacesHandlerAdapter} will still be called.
+	 * 
+	 * @return specific exception handlers
 	 */
 	MvcFacesExceptionHandler[] getExceptionHandlers();
 }

@@ -26,6 +26,11 @@ public class SpecificModelScopeProvider implements ModelScopeProvider {
 
 	private String scope;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param scope The scope name
+	 */
 	public SpecificModelScopeProvider(String scope) {
 		Assert.notNull(scope);
 		this.scope = scope;
