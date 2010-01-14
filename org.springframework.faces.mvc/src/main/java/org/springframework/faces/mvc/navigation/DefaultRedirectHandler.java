@@ -85,12 +85,13 @@ public class DefaultRedirectHandler implements RedirectHandler {
 
 	/**
 	 * Sends a redirect to the requested url.
-	 * @param ajaxHandler The ajax handler
-	 * @param url the url to redirect to
+	 * 
+	 * @param ajaxHandler The active ajax handler
+	 * @param url the redirect URL
 	 * @param request The request
 	 * @param response The response
 	 * @param popup whether the redirect should be sent from a new popup dialog window
-	 * @throws IOException an exception occurred
+	 * @throws IOException
 	 */
 	protected void sendRedirect(AjaxHandler ajaxHandler, String url, HttpServletRequest request,
 			HttpServletResponse response, boolean popup) throws IOException {
@@ -112,15 +113,15 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	 * Get the actual URL that should be used for the specified location. This method will expand servletRelative,
 	 * contextRelative and serverRelative prefixes.
 	 * 
-	 * @param httpServletRequest
-	 * @param location
-	 * @return The URL
+	 * @param request The request
+	 * @param location The location string
+	 * @return The URL The final URL with all prefixes expanded
 	 */
-	protected String getLocationUrl(HttpServletRequest httpServletRequest, String location) {
+	protected String getLocationUrl(HttpServletRequest request, String location) {
 		for (Iterator iterator = URL_BUILDERS.iterator(); iterator.hasNext();) {
 			UrlBuilder urlBuilder = (UrlBuilder) iterator.next();
 			if (urlBuilder.isSuitable(location)) {
-				return urlBuilder.buildUrl(httpServletRequest, location);
+				return urlBuilder.buildUrl(request, location);
 			}
 		}
 		return location;
@@ -139,7 +140,7 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	 * HTTP 302 header, otherwise a HTTP 303 header is used. If not set the default value of <tt>false</tt> will be
 	 * used.
 	 * 
-	 * @param redirectHttp10Compatible
+	 * @param redirectHttp10Compatible If redirects are HTTP 1.0 compatible.
 	 */
 	public void setRedirectHttp10Compatible(boolean redirectHttp10Compatible) {
 		this.redirectHttp10Compatible = redirectHttp10Compatible;

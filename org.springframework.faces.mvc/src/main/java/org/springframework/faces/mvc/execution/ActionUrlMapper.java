@@ -35,19 +35,22 @@ public interface ActionUrlMapper {
 	 * 
 	 * @param facesContext The faces context
 	 * @param viewName The MVC view name that is being rendered
-	 * 
 	 * @return The action URL
+	 * 
+	 * @see #getViewNameForRestore(FacesContext)
 	 */
 	String getActionUlr(FacesContext facesContext, String viewName);
 
 	/**
-	 * Method that can be used to write additional state information inside the rendered view. This method will be
-	 * called with the ResponseWriter at the correct position for the saved state to be written. Often this method is
-	 * used to write hidden form inputs that can be retrieved during {@link #getViewNameForRestore(FacesContext)}.
+	 * Used to write additional state information inside the rendered view. This method will be called with the
+	 * ResponseWriter at the correct position for the saved state to be written. Often this method is used to write
+	 * hidden form inputs that can be retrieved during {@link #getViewNameForRestore(FacesContext)}.
 	 * 
 	 * @param facesContext
 	 * @param viewName
 	 * @throws IOException
+	 * 
+	 * @see {@link #getViewNameForRestore(FacesContext)}
 	 */
 	void writeState(FacesContext facesContext, String viewName) throws IOException;
 
@@ -57,8 +60,11 @@ public interface ActionUrlMapper {
 	 * that is being rendered is determined by the controller and so there may not be a direct correlation to the
 	 * request URL. The {@link #writeState(FacesContext, String)} method is often used in combination with this method.
 	 * 
-	 * @param facesContext The faces context. This can be used to obtain the request URL if required
+	 * @param facesContext The faces context, this can be used to obtain the request URL if required
 	 * @return The actual view name to restore
+	 * 
+	 * @see #getActionUlr(FacesContext, String)
+	 * @see #writeState(FacesContext, String)
 	 */
 	String getViewNameForRestore(FacesContext facesContext);
 

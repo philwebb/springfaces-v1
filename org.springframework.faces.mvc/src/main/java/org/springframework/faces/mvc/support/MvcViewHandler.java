@@ -48,6 +48,15 @@ public class MvcViewHandler extends ViewHandler {
 		this.delegate = delegate;
 	}
 
+	private boolean isSpringJavascriptAjaxRequest(ExternalContext context) {
+		if (context.getRequest() instanceof HttpServletRequest) {
+			return springJsAjaxHandler.isAjaxRequest((HttpServletRequest) context.getRequest(),
+					(HttpServletResponse) context.getResponse());
+		} else {
+			return false;
+		}
+	}
+
 	public UIViewRoot createView(FacesContext context, String viewId) {
 		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
 			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
@@ -69,23 +78,12 @@ public class MvcViewHandler extends ViewHandler {
 			UIViewRoot view = delegate.createView(context, viewId);
 			requestContext.getMvcFacesContext().viewCreated(context, requestContext, view, modelAndView.getModel());
 
-			// FIXME Need to detect this and create, possibly move elsewhere
 			if (isSpringJavascriptAjaxRequest(context.getExternalContext())) {
 				view = new AjaxViewRoot(view);
 			}
 			return view;
 		}
 		return delegate.createView(context, viewId);
-	}
-
-	private boolean isSpringJavascriptAjaxRequest(ExternalContext context) {
-		// consider factoring out into external context
-		if (context.getRequest() instanceof HttpServletRequest) {
-			return springJsAjaxHandler.isAjaxRequest((HttpServletRequest) context.getRequest(),
-					(HttpServletResponse) context.getResponse());
-		} else {
-			return false;
-		}
 	}
 
 	public UIViewRoot restoreView(FacesContext context, String viewId) {

@@ -23,7 +23,6 @@ import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
  * {@link #REQUEST_CONTEXT_VARIABLE_NAME} . Allows for accessing any property of the RequestContext instance. For
  * example: "#{flowRequestContext.requestScope.myProperty}".
  * 
- * @author Jeremy Grelle
  * @author Phillip Webb
  */
 public class MvcFacesRequestContextELResolver extends AbstractELResolver {

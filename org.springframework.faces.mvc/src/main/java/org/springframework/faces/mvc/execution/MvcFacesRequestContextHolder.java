@@ -5,10 +5,10 @@ import org.springframework.faces.mvc.context.MvcFacesContext;
 
 /**
  * Simple holder class that associates a {@link MvcFacesRequestContext} instance with the current thread. The
- * MvcFacesRequestContext will not be inherited by any child threads spawned by the current thread.
+ * {@link MvcFacesRequestContext} will not be inherited by any child threads spawned by the current thread.
  * <p>
- * Used as a central holder for the current MvcFacesRequestContext in Spring Faces, wherever necessary. Often used by
- * integration artifacts needing access to the current execution.
+ * Used as a central holder for the current {@link MvcFacesRequestContext} in Spring Faces MVC, wherever necessary.
+ * Often used by integration artifacts needing access to the current execution.
  * 
  * @see MvcFacesRequestContext
  * 
@@ -21,6 +21,7 @@ public class MvcFacesRequestContextHolder {
 
 	/**
 	 * Associate the given RequestContext with the current thread.
+	 * 
 	 * @param requestContext the current MvcFacesRequestContextControl, or <code>null</code> to reset the thread-bound
 	 * context
 	 */

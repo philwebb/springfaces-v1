@@ -15,7 +15,6 @@
  */
 package org.springframework.faces.mvc.view;
 
-
 /**
  * Implementation of {@link FacesViewIdResolver} that expects MVC controllers to define views using a fully qualified
  * view IDs.

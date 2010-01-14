@@ -15,9 +15,6 @@
  */
 package org.springframework.faces.mvc.el;
 
-import java.util.Iterator;
-
-import javax.el.ELContext;
 import javax.el.ELResolver;
 
 import org.springframework.faces.mvc.FacesHandler;
@@ -25,46 +22,19 @@ import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 
 /**
- * {@link ELResolver} that delegates to a {@link FacesHandler#resolveVariable(String)} when processing a MVC request.
+ * A read-only {@link ELResolver} that delegates to a {@link FacesHandler#resolveVariable(String)} when processing a MVC
+ * request.
  * 
  * @author Phillip Webb
  */
-public class MvcHandlerELResolver extends ELResolver {
+public class MvcHandlerELResolver extends AbstractELResolver {
 
-	public Class getCommonPropertyType(ELContext elContext, Object base) {
-		if (base == null) {
-			return Object.class;
-		}
-		return null;
+	protected boolean isAvailable() {
+		return MvcFacesRequestContextHolder.getRequestContext() != null;
 	}
 
-	public Iterator getFeatureDescriptors(ELContext elContext, Object base) {
-		return null;
-	}
-
-	public Class getType(ELContext elContext, Object base, Object property) {
-		Object value = getValue(elContext, base, property);
-		return (value == null ? null : value.getClass());
-	}
-
-	public Object getValue(ELContext elContext, Object base, Object property) {
-		if (base != null || MvcFacesRequestContextHolder.getRequestContext() == null) {
-			return null;
-		}
-		String propertyName = property.toString();
+	protected Object get(String property) {
 		MvcFacesRequestContext mvcFacesRequestContext = MvcFacesRequestContextHolder.getRequestContext();
-		Object value = mvcFacesRequestContext.getFacesHandler().resolveVariable(propertyName);
-		if (value != null) {
-			elContext.setPropertyResolved(true);
-			return value;
-		}
-		return null;
-	}
-
-	public boolean isReadOnly(ELContext elContext, Object base, Object property) {
-		return true;
-	}
-
-	public void setValue(ELContext elContext, Object base, Object property, final Object value) {
+		return mvcFacesRequestContext.getFacesHandler().resolveVariable(property);
 	}
 }

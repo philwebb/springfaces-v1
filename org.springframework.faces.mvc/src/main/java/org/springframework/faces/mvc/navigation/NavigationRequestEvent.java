@@ -39,9 +39,9 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 	/**
 	 * Constructor for a regular navigation event.
 	 * 
-	 * @param owner The owner.
-	 * @param fromAction The from action.
-	 * @param outcome The outcome.
+	 * @param owner The owner
+	 * @param fromAction The from action
+	 * @param outcome The outcome
 	 */
 	public NavigationRequestEvent(Object owner, String fromAction, String outcome) {
 		super(owner);
@@ -51,9 +51,10 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 
 	/**
 	 * Constructor for a navigation event that includes an exception.
+	 * 
 	 * @param owner The owner
 	 * @param sourceEvent The {@link NavigationRequestEvent} that was being processed when the exception was raised or
-	 * <tt>null</tt>.
+	 * <tt>null</tt>
 	 * @param exception The exception.
 	 */
 	public NavigationRequestEvent(Object owner, NavigationRequestEvent sourceEvent, Exception exception) {
@@ -66,22 +67,28 @@ public final class NavigationRequestEvent extends EventObject implements Seriali
 	}
 
 	/**
-	 * @return The action binding expression that was evaluated to retrieve the specified outcome, or <tt>null</tt> if
-	 * the outcome was acquired by some other means
+	 * Returns the action binding expression that was evaluated to retrieve the specified outcome, or <tt>null</tt> if
+	 * the outcome was acquired by some other means.
+	 * 
+	 * @return The action binding expression or <tt>null</tt>
 	 */
 	public String getFromAction() {
 		return fromAction;
 	}
 
 	/**
-	 * @return The logical outcome returned by a previous invoked application action (which may be <tt>null</tt>)
+	 * Returns the logical outcome returned by a previous invoked application action (which may be <tt>null</tt>)
+	 * 
+	 * @return The outcome or <tt>null</tt>
 	 */
 	public String getOutcome() {
 		return outcome;
 	}
 
 	/**
-	 * @return Any exception tied to the event.
+	 * Returns any exception tied to the event.
+	 * 
+	 * @return The exception or <tt>null</tt>
 	 */
 	public Exception getException() {
 		return exception;

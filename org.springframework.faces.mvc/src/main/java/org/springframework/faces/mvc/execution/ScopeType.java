@@ -110,6 +110,7 @@ public abstract class ScopeType extends StaticLabeledEnum implements ModelScopeP
 
 	/**
 	 * Locate the {@link ScopeType} with the specified name or return <tt>null</tt> if the scope type is not known.
+	 * 
 	 * @param scope The scope to find
 	 * @return The scope type or <tt>null</tt>
 	 */

@@ -41,6 +41,11 @@ public class SimpleFacesViewIdResolver implements FacesViewIdResolver, Applicati
 	private String prefix = DEFAULT_PREFIX;
 	private String suffix = null;
 
+	/**
+	 * Obtain the default suffix to use is {@link #setSuffix(String)} is not called.
+	 * 
+	 * @return The default suffix
+	 */
 	protected String getDefaultSuffix() {
 		String rtn = (servletContext == null ? null : servletContext.getInitParameter(DEFAULT_SUFFIX_PARAM));
 		rtn = (rtn == null ? DEFAULT_SUFFIX : rtn);
@@ -81,10 +86,23 @@ public class SimpleFacesViewIdResolver implements FacesViewIdResolver, Applicati
 		}
 	}
 
+	/**
+	 * Set the prefix for resolved view IDs. The prefix should usually end with '/', for example '/WEB-INF/jsf/'. If not
+	 * specified the default of '/WEB-INF/pages/' will be used.
+	 * 
+	 * @param prefix The prefix
+	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
+	/**
+	 * Set the suffix for resolved view IDs. The prefix should usually start with '.', for example '.JSPX'. If not
+	 * specified the default value defined by the web.xml parameter 'javax.faces.DEFAULT_SUFFIX' will be used (falling
+	 * back to '.xhtml').
+	 * 
+	 * @param suffix The suffix
+	 */
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}

@@ -32,7 +32,7 @@ import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
  * @author Phillip Webb
  */
 public class PageScopeVariableResolver extends ELDelegatingVariableResolver {
-
+	// FIXME delete
 	// FIXME rename this to ViewScope
 
 	private static final CompositeELResolver composite = new CompositeELResolver();
