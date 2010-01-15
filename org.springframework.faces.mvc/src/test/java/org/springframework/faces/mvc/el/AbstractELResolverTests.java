@@ -4,20 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.el.ELContext;
+import javax.el.PropertyNotWritableException;
 
 import junit.framework.TestCase;
 
-import org.springframework.faces.mvc.el.MapBackedELResolver;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
 
-public class MapBackedELResolverTests extends TestCase {
-
-	private class MockMapBackedELResolver extends MapBackedELResolver {
-		protected Map getMap() {
-			return map;
-		}
-	}
+public class AbstractELResolverTests extends TestCase {
 
 	private static final String BASE_OBJECT = "baseObject";
 	private static final Object PROPERTY_NAME = "myObject";
@@ -25,13 +19,13 @@ public class MapBackedELResolverTests extends TestCase {
 	private static final Long PROPERTY_VALUE = new Long(123);
 	private static final Long REPLACED_PROPERTY_VALUE = new Long(321);
 
-	private MapBackedELResolver resolver;
+	private AbstractELResolver resolver;
 	private ELContext elContext;
 	private Map map = new HashMap();
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.resolver = new MockMapBackedELResolver();
+		this.resolver = new MockELResolver();
 		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
 		this.map.put(PROPERTY_NAME, PROPERTY_VALUE);
 	}
@@ -78,8 +72,8 @@ public class MapBackedELResolverTests extends TestCase {
 		assertFalse(resolver.isReadOnly(elContext, BASE_OBJECT, PROPERTY_NAME));
 	}
 
-	public void testIsReadOnlyFound() throws Exception {
-		assertFalse(resolver.isReadOnly(elContext, null, PROPERTY_NAME));
+	public void testIsReadOnly() throws Exception {
+		assertTrue(resolver.isReadOnly(elContext, null, PROPERTY_NAME));
 		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
 	}
 
@@ -95,14 +89,29 @@ public class MapBackedELResolverTests extends TestCase {
 	}
 
 	public void testSetValueFound() throws Exception {
-		resolver.setValue(elContext, null, PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
-		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
-		assertEquals(REPLACED_PROPERTY_VALUE, map.get(PROPERTY_NAME));
+		try {
+			resolver.setValue(elContext, null, PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
+			fail();
+		} catch (PropertyNotWritableException e) {
+			assertEquals("The property myObject is not writable.", e.getMessage());
+		}
 	}
 
 	public void testSetValueNotFound() throws Exception {
 		resolver.setValue(elContext, null, MISSING_PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 		assertFalse(map.containsKey(MISSING_PROPERTY_NAME));
+	}
+
+	// FIXME test set
+
+	// FIXME test null return support
+
+	// FIXME test custom isAvailable
+
+	private class MockELResolver extends AbstractELResolver {
+		protected Object get(String property) {
+			return map.get(property);
+		}
 	}
 }

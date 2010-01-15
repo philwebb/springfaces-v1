@@ -26,7 +26,7 @@ import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
  * @author Phillip Webb
  */
 public class MvcFacesRequestContextELResolver extends AbstractELResolver {
-
+	// FIXME test
 	/**
 	 * Name of the request context variable.
 	 */

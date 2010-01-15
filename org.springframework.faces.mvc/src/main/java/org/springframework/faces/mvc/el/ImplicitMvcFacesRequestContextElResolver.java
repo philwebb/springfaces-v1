@@ -31,7 +31,7 @@ import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
  * @author Phillip Webb
  */
 public class ImplicitMvcFacesRequestContextElResolver extends BeanBackedElResolver {
-
+	// FIXME test
 	public ImplicitMvcFacesRequestContextElResolver() {
 		map("requestScope");
 		map("flashScope");

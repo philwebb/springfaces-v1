@@ -31,7 +31,7 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  * @author Phillip Webb
  */
 public class ScopeSearchingElResolver extends AbstractELResolver {
-
+	// FIXME test
 	/**
 	 * Scopes that we support, in the order that we support them.
 	 */
