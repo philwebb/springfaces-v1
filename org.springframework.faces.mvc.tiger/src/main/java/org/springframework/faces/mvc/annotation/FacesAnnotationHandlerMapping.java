@@ -57,9 +57,11 @@ public class FacesAnnotationHandlerMapping extends DefaultAnnotationHandlerMappi
 	 * Find a {@link Annotation} of <code>annotationType</code> on the specified bean, traversing its interfaces and
 	 * super classes if no annotation can be found on the given class itself, as well as checking its raw bean class if
 	 * not found on the exposed bean reference (e.g. in case of a proxy).
+	 * 
 	 * @param beanName the name of the bean to look for annotations on
 	 * @param annotationType the annotation class to look for
 	 * @return the annotation of the given type found, or <code>null</code>
+	 * 
 	 * @see org.springframework.core.annotation.AnnotationUtils#findAnnotation(Class, Class)
 	 * 
 	 * @author Rob Harrop
@@ -85,7 +87,6 @@ public class FacesAnnotationHandlerMapping extends DefaultAnnotationHandlerMappi
 	}
 
 	protected String[] determineUrlsForHandler(String beanName) {
-
 		ApplicationContext context = getApplicationContext();
 		Class<?> handlerType = context.getType(beanName);
 		ListableBeanFactory bf = (context instanceof ConfigurableApplicationContext ? ((ConfigurableApplicationContext) context)
@@ -109,6 +110,7 @@ public class FacesAnnotationHandlerMapping extends DefaultAnnotationHandlerMappi
 				return StringUtils.toStringArray(urls);
 			}
 		}
+
 		// actual paths specified by @RequestMapping at method level
 		return determineUrlsForHandlerMethods(handlerType);
 	}

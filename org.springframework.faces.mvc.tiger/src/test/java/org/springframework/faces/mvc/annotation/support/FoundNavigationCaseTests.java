@@ -23,12 +23,7 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
-import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
-import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvokerFactory;
-import org.springframework.faces.mvc.annotation.support.FoundNavigationCase;
-import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
 import org.springframework.faces.mvc.annotation.support.FoundNavigationCase.FoundNavigationCaseType;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
@@ -170,8 +165,8 @@ public class FoundNavigationCaseTests extends TestCase {
 		public MockFacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
 				WebBindingInitializer bindingInitializer, ParameterNameDiscoverer parameterNameDiscoverer,
 				WebArgumentResolver[] customArgumentResolvers) {
-			super(resolver, bindingInitializer, parameterNameDiscoverer, FacesAnnotationMethodHandlerAdapter
-					.mergeResolvers(customArgumentResolvers, FacesAnnotationMethodHandlerAdapter.ARGUMENT_RESOLVERS));
+			super(resolver, bindingInitializer, parameterNameDiscoverer, FacesWebArgumentResolvers
+					.mergeWithFacesResolvers(customArgumentResolvers));
 		}
 
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)

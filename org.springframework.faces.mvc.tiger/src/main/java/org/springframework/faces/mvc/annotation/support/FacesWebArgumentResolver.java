@@ -35,6 +35,8 @@ import org.springframework.web.context.request.NativeWebRequest;
  * <li>{@link ExternalContext}</li>
  * </ul>
  * 
+ * @see FacesWebArgumentResolvers
+ * 
  * @author Phillip Webb
  */
 public class FacesWebArgumentResolver implements WebArgumentResolver {

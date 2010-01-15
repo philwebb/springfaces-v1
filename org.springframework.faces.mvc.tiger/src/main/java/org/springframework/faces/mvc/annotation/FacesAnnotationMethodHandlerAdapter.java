@@ -38,7 +38,7 @@ import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
 import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvokerFactory;
-import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
+import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolvers;
 import org.springframework.faces.mvc.annotation.support.FoundNavigationCase;
 import org.springframework.faces.mvc.annotation.support.NavigationCaseAnnotationLocator;
 import org.springframework.faces.mvc.annotation.support.NavigationCaseMethodResolver;
@@ -93,8 +93,6 @@ import org.springframework.web.util.UrlPathHelper;
 public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter implements InitializingBean,
 		BeanNameAware, BeanFactoryPostProcessor, Ordered {
 
-	public static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
-
 	private static final String DEFAULT_CONTROLLER_NAME = "controller";
 
 	// FIXME @SessionAttributes support
@@ -107,7 +105,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private HandlerAdapter facesHandlerAdapter;
 
-	// FIXME setter
 	private NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver = new NavigationOutcomeExpressionElResolver();
 
 	private String exposedControllerName = DEFAULT_CONTROLLER_NAME;
@@ -120,8 +117,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private Set<BeanFactoryPostProcessor> postProcessors = new HashSet<BeanFactoryPostProcessor>();
 
-	// Always order above other AnnotationMethodHandlerAdapter adapters so that they do not type and process faces
-	// requests
+	// order above other AnnotationMethodHandlerAdapter adapters so that they do not try and process faces requests
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	private String beanName;
@@ -139,6 +135,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	/**
 	 * Trigger all post-processors and spring callbacks for internally managed beans.
+	 * 
 	 * @param bean The internal bean
 	 * @throws Exception
 	 */
@@ -150,15 +147,31 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
-	public boolean supports(Object handler) {
-		return supportsFaces(handler) && super.supports(handler);
-	}
-
+	/**
+	 * Returns the {@link FacesController} annotation from the specified handler or <tt>null</tt> if no annotation can
+	 * be found.
+	 * 
+	 * @param handler The handler
+	 * @return The {@link FacesController} annotation or <tt>null</tt>
+	 */
 	protected FacesController getHandlerAnnotation(Object handler) {
 		Class<?> handlerClass = ClassUtils.getUserClass(handler);
 		return AnnotationUtils.findAnnotation(handlerClass, FacesController.class);
 	}
 
+	public boolean supports(Object handler) {
+		return supportsFaces(handler) && super.supports(handler);
+	}
+
+	/**
+	 * Determine if the handler can be used with this adapter. By default this method accepts all handlers that contain
+	 * the {@link FacesController} annotation.
+	 * 
+	 * @param handler The handler
+	 * @return <tt>true</tt> if the handler is supported by this adapter.
+	 * 
+	 * @see #getHandlerAnnotation(Object)
+	 */
 	protected boolean supportsFaces(Object handler) {
 		return getHandlerAnnotation(handler) != null;
 	}
@@ -173,11 +186,35 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return facesHandlerAdapter.handle(request, response, facesHandler);
 	}
 
+	/**
+	 * Delegate method called from {@link FacesHandler#createView(FacesContext)} in order to create the
+	 * {@link ModelAndView} that should be used when rendering the response.
+	 * 
+	 * @param request The request.
+	 * @param response The response
+	 * @param handler The handler
+	 * @return The model and view data for this request
+	 * @throws Exception on error
+	 */
 	protected final ModelAndView createView(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		return super.handle(request, response, handler);
 	}
 
+	/**
+	 * Delegate method called from
+	 * {@link FacesHandler#getNavigationOutcomeLocation(FacesContext, NavigationRequestEvent)} in order to determine the
+	 * outcome of a navigation event. By default this implementation will use the
+	 * {@link NavigationCaseAnnotationLocator} to locate and process {@link NavigationCase} and {@link NavigationRules}
+	 * annotations.
+	 * 
+	 * @param request The request
+	 * @param response The response
+	 * @param event The JSF navigation event
+	 * @param handler The handler
+	 * @return A {@link NavigationLocation} or <tt>null</tt>
+	 * @throws Exception on error
+	 */
 	protected final NavigationLocation getNavigationOutcome(HttpServletRequest request, HttpServletResponse response,
 			NavigationRequestEvent event, Object handler) throws Exception {
 		NavigationCaseMethodResolver methodResolver = getMethodResolver(handler);
@@ -193,10 +230,20 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		return outcome;
 	}
 
+	private NavigationCaseMethodResolver getMethodResolver(Object handler) {
+		Class<?> handlerClass = ClassUtils.getUserClass(handler);
+		NavigationCaseMethodResolver resolver = this.methodResolverCache.get(handlerClass);
+		if (resolver == null) {
+			resolver = new NavigationCaseMethodResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
+			this.methodResolverCache.put(handlerClass, resolver);
+		}
+		return resolver;
+	}
+
 	/**
 	 * Set the {@link HandlerAdapter} that will be used to process the annotated controllers that are handled by this
 	 * class. The {@link FacesHandlerAdapter} may be need to be set if additional configuration is required (for example
-	 * is a specific {@link RedirectHandler} is required.
+	 * is a specific {@link RedirectHandler} is required).
 	 * <p>
 	 * If this property is not injected the {@link ApplicationContext} will be used to locate a single
 	 * {@link FacesHandlerAdapter} bean. If no bean is found a new {@link FacesHandlerAdapter} with default settings
@@ -210,18 +257,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		this.facesHandlerAdapter = facesHandlerAdapter;
 	}
 
+	/**
+	 * @return The {@link HandlerAdapter} that will be used to process the requests.
+	 * 
+	 * @see #setFacesHandlerAdapter(HandlerAdapter)
+	 */
 	protected final HandlerAdapter getFacesHandlerAdapter() {
 		return facesHandlerAdapter;
-	}
-
-	private NavigationCaseMethodResolver getMethodResolver(Object handler) {
-		Class<?> handlerClass = ClassUtils.getUserClass(handler);
-		NavigationCaseMethodResolver resolver = this.methodResolverCache.get(handlerClass);
-		if (resolver == null) {
-			resolver = new NavigationCaseMethodResolver(handlerClass, urlPathHelper, methodNameResolver, pathMatcher);
-			this.methodResolverCache.put(handlerClass, resolver);
-		}
-		return resolver;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -239,6 +281,16 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 				facesHandlerAdapter = new FacesHandlerAdapter();
 				initializeInternalBean(facesHandlerAdapter);
 			}
+		}
+	}
+
+	public void setBeanName(String name) {
+		this.beanName = name;
+	}
+
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
+			postProcessor.postProcessBeanFactory(beanFactory);
 		}
 	}
 
@@ -292,7 +344,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	}
 
 	public void setCustomArgumentResolvers(WebArgumentResolver[] argumentResolvers) {
-		this.completeArgumentResolvers = mergeResolvers(argumentResolvers, ARGUMENT_RESOLVERS);
+		this.completeArgumentResolvers = FacesWebArgumentResolvers.mergeWithFacesResolvers(argumentResolvers);
 		super.setCustomArgumentResolvers(completeArgumentResolvers);
 	}
 
@@ -319,6 +371,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * When not specified the controller will be exposed using the variable name <tt>controller<tt>.
 	 * 
 	 * @param exposedControllerName The name of variable that will be used to expose the {@link FacesController}
+	 * 
 	 * @see FacesController#controllerName()
 	 * @see FacesController#exposeController()
 	 * @see #setExposeController(boolean)
@@ -336,6 +389,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * The default setting is to expose controllers using the variable name <tt>controller</tt>.
 	 * 
 	 * @param exposeController If the controller should be exposed as a JSF variable
+	 * 
 	 * @see FacesController#exposeController()
 	 * @see #setExposedControllerName(String)
 	 */
@@ -345,6 +399,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	/**
 	 * Set the order of the adapter.
+	 * 
 	 * @param order
 	 */
 	public void setOrder(int order) {
@@ -353,26 +408,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	public int getOrder() {
 		return order;
-	}
-
-	public void setBeanName(String name) {
-		this.beanName = name;
-	}
-
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
-			postProcessor.postProcessBeanFactory(beanFactory);
-		}
-	}
-
-	// FIXME move this out along with the static final
-	public static WebArgumentResolver[] mergeResolvers(WebArgumentResolver[] r1, WebArgumentResolver[] r2) {
-		r1 = (r1 == null ? new WebArgumentResolver[] {} : r1);
-		r2 = (r2 == null ? new WebArgumentResolver[] {} : r2);
-		WebArgumentResolver[] rtn = new WebArgumentResolver[r1.length + r2.length];
-		System.arraycopy(r1, 0, rtn, 0, r1.length);
-		System.arraycopy(r2, 0, rtn, r1.length, r2.length);
-		return rtn;
 	}
 
 	/**
@@ -434,12 +469,15 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
+	/**
+	 * Internal {@link FacesControllerAnnotatedMethodInvoker} implementation.
+	 */
 	private class AnnotatedMethodInvoker extends FacesControllerAnnotatedMethodInvoker {
 
 		public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
 				WebArgumentResolver[] additionalArgumentResolvers) {
-			super(resolver, webBindingInitializer, parameterNameDiscoverer, FacesAnnotationMethodHandlerAdapter
-					.mergeResolvers(completeArgumentResolvers, additionalArgumentResolvers));
+			super(resolver, webBindingInitializer, parameterNameDiscoverer, FacesWebArgumentResolvers.mergeResolvers(
+					completeArgumentResolvers, additionalArgumentResolvers));
 		}
 
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
@@ -456,6 +494,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 	}
 
+	/**
+	 * Internal {@link NavigationOutcomeExpressionContext} implementation.
+	 */
 	private class NavigationOutcomeExpressionContextImpl implements NavigationOutcomeExpressionContext,
 			FacesControllerAnnotatedMethodInvokerFactory {
 
