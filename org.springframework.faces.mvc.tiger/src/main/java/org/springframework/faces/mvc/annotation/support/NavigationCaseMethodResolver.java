@@ -50,6 +50,14 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 	private final SortedSet<Method> globalNavigationMethods = new TreeSet<Method>(
 			new NavgationAnnotatedMethodComparator());
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param handlerType The handler type
+	 * @param urlPathHelper The URL path handler
+	 * @param methodNameResolver The method name resolver
+	 * @param pathMatcher The path matcher
+	 */
 	public NavigationCaseMethodResolver(final Class<?> handlerType, UrlPathHelper urlPathHelper,
 			MethodNameResolver methodNameResolver, PathMatcher pathMatcher) {
 		super(handlerType, urlPathHelper, methodNameResolver, pathMatcher);
@@ -63,34 +71,46 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 
 	}
 
+	/**
+	 * Determine if a given method is annotated with {@link NavigationCase} or {@link NavigationRules}.
+	 * 
+	 * @param method The method
+	 * @return <tt>true</tt> if the method has navigation annotations
+	 */
 	private boolean hasNavigationAnnotation(Method method) {
 		return method.isAnnotationPresent(NavigationCase.class) || method.isAnnotationPresent(NavigationRules.class);
 	}
 
 	/**
-	 * @return true if the class has global navigation methods (ie. methods annotated with {@link NavigationCase} or
-	 * {@link NavigationRules} that are do not also contain {@link RequestMapping} restrictions).
+	 * Determine if the handler type has global navigation methods (i.e. methods annotated with {@link NavigationCase}
+	 * or {@link NavigationRules} that do not also contain {@link RequestMapping} restrictions).
+	 * 
+	 * @return <tt>true</tt> if the handler type has global navigation methods.
+	 * @see #getGlobalNavigationMethods()
 	 */
 	public final boolean hasGlobalNavigationMethods() {
 		return !this.globalNavigationMethods.isEmpty();
 	}
 
 	/**
-	 * @return a set of global navigation methods (ie. methods annotated with {@link NavigationCase} or
+	 * Returns a set of global navigation methods (i.e. methods annotated with {@link NavigationCase} or
 	 * {@link NavigationRules} that are do not also contain {@link RequestMapping} restrictions).
+	 * 
+	 * @return A set of global navigation methods
+	 * @see #hasGlobalNavigationMethods()
 	 */
 	public Set<Method> getGlobalNavigationMethods() {
 		return globalNavigationMethods;
 	}
 
 	/**
-	 * Resolve the methods annotated with {@link NavigationCase} or {@link NavigationRules} that can also process the
+	 * Resolve the methods with {@link NavigationCase} or {@link NavigationRules} annotations that can also process the
 	 * specified request.
 	 * 
-	 * @param request
+	 * @param request The request
 	 * @return An ordered array of methods that could be used to process the request. The first item in the array is the
-	 * most suitable method, remaining items are ordered by their suitability.
-	 * @throws ServletException
+	 * most suitable method, remaining items are ordered by suitability
+	 * @throws ServletException on error
 	 */
 	public Method[] resolveNavigationMethods(HttpServletRequest request) throws ServletException {
 		Method[] handlerMethods = super.resolveHandlerMethods(request);

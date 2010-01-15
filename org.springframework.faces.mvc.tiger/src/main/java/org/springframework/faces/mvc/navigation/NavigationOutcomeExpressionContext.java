@@ -29,7 +29,7 @@ public interface NavigationOutcomeExpressionContext {
 	/**
 	 * Provides access to the current native web request that caused the navigation outcome.
 	 * 
-	 * @return The current native web request.
+	 * @return The current native web request
 	 */
 	public NativeWebRequest getWebRequest();
 
@@ -42,7 +42,7 @@ public interface NavigationOutcomeExpressionContext {
 	 * @param objectName The name of the object being bound or <tt>null</tt> to use the default name
 	 * @return A fully initialized {@link WebDataBinder} instance
 	 * 
-	 * @throws Exception
+	 * @throws Exception on error
 	 */
 	public WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception;
 }

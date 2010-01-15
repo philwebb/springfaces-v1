@@ -27,15 +27,16 @@ import javax.faces.context.FacesContext;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.faces.mvc.bind.ReverseDataBinder;
-import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
  * Implementation of {@link NavigationOutcomeExpressionResolver} that can be used to resolve EL expressions. Expressions
  * should be escaped using the standard <tt>#{}</tt> form, for example, <tt>#{hotels.selectedRow.id}</tt>. Expressions
- * can be specified in any part of the URL (e.g. <tt>'/view/#{hotel.id}?bid=#{booking.id}'</tt>). In addition any expression specified in the query part of the
- * URL (without an attribute name) will be fully expanded (e.g. <tt>'/search?#{queryParams}'<tt> would be expanded to <tt>'/search?name=search&pagesize=20'</tt>, assuming that <tt>queryParams</tt> contains
- * <tt>name</tt> and </tt>pagesize</tt> properties).
+ * can be specified in any part of the URL (e.g. <tt>'/view/#{hotel.id}?bid=#{booking.id}'</tt>).
+ * <p>
+ * In addition any expression specified in the query part of the URL (without an attribute name) will be fully expanded
+ * (e.g. <tt>'/search?#{queryParams}'</tt> would be expanded to <tt>'/search?name=search&pagesize=20'</tt> assuming that <tt>queryParams</tt> contains <tt>name</tt> and <tt>pagesize</tt>
+ * properties).
  * 
  * @see ReverseDataBinder
  * 
@@ -46,7 +47,10 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 	private static final String UTF_8 = "UTF-8";
 	private static final Pattern EL_PATTERN = Pattern.compile("(?:([A-Za-z0-9\\.\\-\\*\\_\\%]+)\\=)?+(\\#\\{.+?\\})");
 
-	public enum Position {
+	/**
+	 * Where in the URL the expression appears
+	 */
+	protected enum Position {
 		URL, QUERY
 	}
 
@@ -80,12 +84,34 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 		return new NavigationLocation(resolvedLocation.toString(), outcome.getPopup(), outcome.getFragments());
 	}
 
+	/**
+	 * Resolve, Convert and URL encode the specified expression.
+	 * 
+	 * @param context The navigation outcome expression context
+	 * @param position The position of the expression inside the URL
+	 * @param attribute The attribute from the URL that the expression is linked to or <tt>null</tt> when resolving
+	 * expression from {@link Position#URL}
+	 * @param expression The expression to resolve
+	 * @return The resolved, converted and URL encoded result
+	 * @throws Exception on error
+	 */
 	protected String resolveConvertAndUrlEncode(NavigationOutcomeExpressionContext context, Position position,
 			String attribute, String expression) throws Exception {
 		Object resolved = resolve(context, position, attribute, expression);
 		return convertAndUrlEncode(context, position, attribute, expression, resolved);
 	}
 
+	/**
+	 * Resolve the specified expression.
+	 * 
+	 * @param context The navigation outcome expression context
+	 * @param position The position of the expression inside the URL
+	 * @param attribute The attribute from the URL that the expression is linked to or <tt>null</tt> when resolving
+	 * expression from {@link Position#URL}
+	 * @param expression The expression to resolve
+	 * @return The resolved expression
+	 * @throws Exception on error
+	 */
 	protected Object resolve(NavigationOutcomeExpressionContext context, Position position, String attribute,
 			String expression) throws Exception {
 		ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
@@ -94,12 +120,24 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 		return valueExpression.getValue(elContext);
 	}
 
+	/**
+	 * Convert and URL encode the specified resolved expression. By default this method will use a
+	 * {@link ReverseDataBinder} in order to convert resolved expressions.
+	 * 
+	 * @param context The navigation outcome expression context
+	 * @param position The position of the expression inside the URL
+	 * @param attribute The attribute from the URL that the expression is linked to or <tt>null</tt> when resolving
+	 * expression from {@link Position#URL}
+	 * @param expression The expression that was resolved
+	 * @param resolved The result of the resolved expression
+	 * @return A converted and URL encoded result
+	 * @throws Exception on error
+	 */
 	protected String convertAndUrlEncode(NavigationOutcomeExpressionContext context, Position position,
 			String attribute, String expression, Object resolved) throws Exception {
 		if (resolved == null) {
 			return null;
 		}
-
 		StringBuilder rtn = new StringBuilder();
 		if ((position == Position.QUERY) && attribute == null) {
 			// Expression to expand

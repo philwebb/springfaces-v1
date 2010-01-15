@@ -47,6 +47,12 @@ public final class FoundNavigationCase {
 	private Object owner;
 	private FoundNavigationCaseType type;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param navigationCase The navigation case annotation
+	 * @param owner The owner object (either a {@link Package}, {@link Method} or {@link Class})
+	 */
 	public FoundNavigationCase(NavigationCase navigationCase, Object owner) {
 		Assert.notNull(navigationCase, "navigationCase is required");
 		Assert.notNull(owner, "owner is required");
@@ -67,14 +73,18 @@ public final class FoundNavigationCase {
 	}
 
 	/**
-	 * @return The {@link NavigationCase} annotation that was located.
+	 * Returns the {@link NavigationCase} annotation that was located.
+	 * 
+	 * @return The navigation case annotation
 	 */
 	public NavigationCase getNavigationCase() {
 		return navigationCase;
 	}
 
 	/**
-	 * @return The owner of the item (either a {@link Method}, {@link Class} or {@link Package})
+	 * Returns the owner of the item (either a {@link Method}, {@link Class} or {@link Package}).
+	 * 
+	 * @return The owner
 	 */
 	public Object getOwner() {
 		return owner;
@@ -88,10 +98,13 @@ public final class FoundNavigationCase {
 	}
 
 	/**
-	 * @param event The navigation request event.
+	 * Gets the {@link NavigationLocation} outcome for the found navigation case, executing annotated methods as
+	 * required.
+	 * 
+	 * @param event The navigation request event
 	 * @return The outcome of the {@link NavigationCase}. This will either be the value specified in
-	 * {@link NavigationCase#to()} or if this is not specified the result of the method call.
-	 * @throws Exception
+	 * {@link NavigationCase#to()} or if this is not specified the result of the method call
+	 * @throws Exception on error
 	 */
 	public NavigationLocation getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request,
 			FacesControllerAnnotatedMethodInvokerFactory invokerFactory) throws Exception {
@@ -126,6 +139,10 @@ public final class FoundNavigationCase {
 				owner).toString();
 	}
 
+	/**
+	 * Internal {@link WebArgumentResolver} implementation that supports the {@link NavigationRequestEvent} and
+	 * {@link NavigationCase} types as well as resolving <tt>String</tt>s to JSF outcomes.
+	 */
 	private class NavigationRequestEventWebArgumentResolver implements WebArgumentResolver {
 		private NavigationRequestEvent event;
 

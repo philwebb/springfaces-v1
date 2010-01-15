@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,6 +74,13 @@ public class RequestMappingMethodResolver {
 	private UrlPathHelper urlPathHelper;
 	private PathMatcher pathMatcher;
 
+	/**
+	 * Constructor.
+	 * @param handlerType The handler type
+	 * @param urlPathHelper The URL path helper
+	 * @param methodNameResolver The method name resolver
+	 * @param pathMatcher The path matcher
+	 */
 	public RequestMappingMethodResolver(Class<?> handlerType, UrlPathHelper urlPathHelper,
 			MethodNameResolver methodNameResolver, PathMatcher pathMatcher) {
 		init(handlerType);
@@ -120,38 +128,88 @@ public class RequestMappingMethodResolver {
 		}
 	}
 
+	/**
+	 * Determine if the specified method is a web request handler.
+	 * @param method The method
+	 * @return <tt>true</tt> if the method can be used to handler a web request
+	 */
 	protected boolean isHandlerMethod(Method method) {
 		return method.isAnnotationPresent(RequestMapping.class);
 	}
 
+	/**
+	 * Determine if the handler includes one or more methods that can handle a web request.
+	 * @return <tt>true</tt> if handler methods are available
+	 * @see #getHandlerMethods()
+	 */
 	public final boolean hasHandlerMethods() {
 		return !this.handlerMethods.isEmpty();
 	}
 
+	/**
+	 * Returns all methods from the handler that could be used to handle a web request.
+	 * @return All handler methods
+	 * @see #hasHandlerMethods()
+	 */
 	public final Set<Method> getHandlerMethods() {
 		return this.handlerMethods;
 	}
 
+	/**
+	 * Returns all handler methods that can be used to initialize {@link DataBinder}s.
+	 * @return All init binder methods
+	 */
 	public final Set<Method> getInitBinderMethods() {
 		return this.initBinderMethods;
 	}
 
+	/**
+	 * Returns all handler methods that are used to setup initial model values.
+	 * @return All model attribute methods
+	 */
 	public final Set<Method> getModelAttributeMethods() {
 		return this.modelAttributeMethods;
 	}
 
+	/**
+	 * Determine if the handler has type level mappings (i.e. the class itself is has a {@link RequestMapping}
+	 * annotation)
+	 * @return true if the handler as a type level mapping
+	 * @see #getTypeLevelMapping()
+	 */
 	public boolean hasTypeLevelMapping() {
 		return (this.typeLevelMapping != null);
 	}
 
+	/**
+	 * Returns the type level mappings from the handler, or <tt>null</tt> if the handler class does not include a
+	 * {@link RequestMapping} annotation.
+	 * @return The type level mapping or <tt>null</tt>
+	 * @see #hasTypeLevelMapping()
+	 */
 	public RequestMapping getTypeLevelMapping() {
 		return this.typeLevelMapping;
 	}
 
+	/**
+	 * Determine of the handler includes a {@link SessionAttributes} annotation.
+	 * @return <tt>true</tt> if the handler include session attributes
+	 * @see #isSessionAttribute(String, Class)
+	 */
 	public boolean hasSessionAttributes() {
 		return this.sessionAttributesFound;
 	}
 
+	/**
+	 * Determine if the specified attribute details have been marked as a session attribute. Session attributes can be
+	 * denoted by name or type. Note: this method will also collate session attributes so that they can be return from
+	 * {@link #getActualSessionAttributeNames()}.
+	 * @param attrName The attribute name
+	 * @param attrType The attribute type
+	 * @return <tt>true</tt> if the attribute is a session attribue
+	 * @see #hasSessionAttributes()
+	 * @see #getActualSessionAttributeNames()
+	 */
 	public boolean isSessionAttribute(String attrName, Class<?> attrType) {
 		if (this.sessionAttributeNames.contains(attrName) || this.sessionAttributeTypes.contains(attrType)) {
 			this.actualSessionAttributeNames.add(attrName);
@@ -161,18 +219,23 @@ public class RequestMappingMethodResolver {
 		}
 	}
 
+	/**
+	 * Returns all session attributes that have been collated during calls to {@link #isSessionAttribute(String, Class)}
+	 * @return All actual session attributes
+	 * @see #isSessionAttribute(String, Class)
+	 */
 	public Set<String> getActualSessionAttributeNames() {
 		return this.actualSessionAttributeNames;
 	}
 
 	/**
-	 * Resolve the methods that can be used to process the specified request.
-	 * 
-	 * @param request
-	 * @return An ordered array of methods that could be used to process the request. The first item in the array is the
+	 * Returns an ordered array of methods that could be used to process the request. The first item in the array is the
 	 * method that would be called by the {@link AnnotationMethodHandlerAdapter} class, remaining items are ordered by
-	 * their suitability.
-	 * @throws ServletException
+	 * their suitability..
+	 * 
+	 * @param request the request
+	 * @return All methods that can process the request in order of suitability
+	 * @throws ServletException on error
 	 */
 	public Method[] resolveHandlerMethods(HttpServletRequest request) throws ServletException {
 		return new HandlerMethodsResolver(request).resolve();

@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 
 import javax.faces.application.NavigationHandler;
 
+import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
@@ -71,9 +72,9 @@ public @interface NavigationCase {
 	 * <p>
 	 * The value can also include expressions that will be resolved before navigation occurs. By default, EL expressions
 	 * are supported (see {@link NavigationOutcomeExpressionElResolver} for details). Custom expression resolvers can
-	 * also be used ( {see @link
-	 * FacesAnnotationMethodHandlerAdapter#setNavigationOutcomeExpressionResolver(org.springframework
-	 * .faces.mvc.annotation.NavigationOutcomeExpressionResolver)} ).
+	 * also be used (see
+	 * {@link FacesAnnotationMethodHandlerAdapter#setNavigationOutcomeExpressionResolver(org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionResolver)
+	 * FacesAnnotationMethodHandlerAdapter.setNavigationOutcomeExpressionResolver}).
 	 * <p>
 	 * When applied to a method the method should return an appropriate outcome for the navigation. The method can also
 	 * declare parameters of the following type:

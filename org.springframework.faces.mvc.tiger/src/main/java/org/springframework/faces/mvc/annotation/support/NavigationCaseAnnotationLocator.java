@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Support class that can be used to locate {@link NavigationCase} and {@link NavigationRules} annotations.
- *
+ * 
  * @author Phillip Webb
  */
 public class NavigationCaseAnnotationLocator {
@@ -38,10 +38,10 @@ public class NavigationCaseAnnotationLocator {
 	 * This method will search for {@link NavigationCase} and {@link NavigationRules} annotations on the specified
 	 * methods array. Methods are searched in order starting at index 0. If not suitable method annotation is found the
 	 * declaring class of the method will be searched, followed by the package.
-	 *
-	 * @param methods Array of methods to search.
-	 * @param event The navigation request event.
-	 * @return A {@link FoundNavigationCase} instance or <tt>null</tt> if no suitable annotation is found.
+	 * 
+	 * @param methods Array of methods to search
+	 * @param event The navigation request event
+	 * @return A {@link FoundNavigationCase} instance or <tt>null</tt> if no suitable annotation is found
 	 */
 	public FoundNavigationCase findNavigationCase(Method[] methods, NavigationRequestEvent event) {
 		if (methods == null || methods.length == 0) {
@@ -84,7 +84,7 @@ public class NavigationCaseAnnotationLocator {
 
 	/**
 	 * Find a {@link NavigationCase} by searching annotations on the specified owner.
-	 *
+	 * 
 	 * @param owner The owner (either a Method, Class or Package)
 	 * @param filter The filter used to limit results
 	 * @return A {@link FoundNavigationCase} or <tt>null</tt>
@@ -100,7 +100,7 @@ public class NavigationCaseAnnotationLocator {
 	/**
 	 * Find a {@link NavigationCase} by searching a {@link NavigationRules} annotation that has been located on the
 	 * specified owner.
-	 *
+	 * 
 	 * @param owner The owner (either a Method, Class or Package)
 	 * @param filter The filter used to limit results
 	 * @return A {@link FoundNavigationCase} or <tt>null</tt>
@@ -120,8 +120,9 @@ public class NavigationCaseAnnotationLocator {
 
 	/**
 	 * Attempt to find a given annotation on the specified owner.
-	 * @param <A>
-	 * @param owner The owner of the annotation (either a Method, Class or Package)
+	 * 
+	 * @param <A> The annotation type to locate
+	 * @param owner The owner of the annotation (either a {@link Method}, {@link Class} or {@link Package})
 	 * @param annotationType The type of annotation
 	 * @return The annotation or <tt>null</tt>
 	 */
