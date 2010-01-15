@@ -7,7 +7,6 @@ import javax.faces.model.DataModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.binding.convert.ConversionService;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
@@ -16,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 // FIXME cache control
 
@@ -60,13 +60,10 @@ public class MainController {
 
     @NavigationCase(on = "sort", fragments = "hotels:searchResultsFragment")
     // to = "/search2?#{searchCriteria}
-    public void sort(FacesContext facesContext, NavigationRequestEvent event,
-	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria,
-	    @RequestParam("sortBy") String sortBy) {
+    public void sort(@ModelAttribute("viewScope") MutableAttributeMap viewScope,
+	    @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, @RequestParam("sortBy") String sortBy) {
 	searchCriteria.setSortBy(sortBy);
-	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
-	DataModel hotelsDataModel = (DataModel) conversionService.executeConversion(hotels, DataModel.class);
-	MvcFacesRequestContextHolder.getRequestContext().getViewScope().put("hotels", hotelsDataModel);
+	viewScope.put("hotels", doSearch(searchCriteria));
     }
 
     @RequestMapping("/reviewHotel")
