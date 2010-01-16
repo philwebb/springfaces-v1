@@ -32,7 +32,7 @@ public class MvcFacesVariableResolver extends ELDelegatingVariableResolver {
 	static {
 		composite.add(new MvcHandlerELResolver());
 		composite.add(new MvcFacesRequestContextELResolver());
-		composite.add(new ImplicitMvcFacesRequestContextElResolver());
+		composite.add(new ImplicitMvcFacesElResolver());
 		composite.add(new ScopeSearchingElResolver());
 	}
 
