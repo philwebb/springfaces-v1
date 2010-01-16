@@ -1,7 +1,9 @@
 package org.springframework.webflow.samples.booking;
 
+import java.security.Principal;
 import java.util.List;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 
@@ -15,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 // FIXME cache control
@@ -27,9 +30,11 @@ public class MainController {
 
     @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
     @RequestMapping("/main2")
-    public String main(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
+    public ModelAndView main(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
 	searchCriteria.resetPage();
-	return "enterSearchCriteria";
+	ModelAndView modelAndView = new ModelAndView("enterSearchCriteria");
+	modelAndView.addObject("bookings", getBookings());
+	return modelAndView;
     }
 
     @RequestMapping("/search2")
@@ -46,6 +51,14 @@ public class MainController {
 	return (DataModel) conversionService.executeConversion(hotels, DataModel.class);
     }
 
+    // FIXME @ConvertTo(DataModel.class)
+    private DataModel getBookings() {
+	ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+	Principal user = externalContext.getUserPrincipal();
+	List<Booking> bookings = bookingService.findBookings(user == null ? "" : user.getName());
+	return (DataModel) conversionService.executeConversion(bookings, DataModel.class);
+    }
+
     // FIXME navigation reqest mapping? perhaps on navigation rules
     @NavigationCase(on = { "next", "previous" }, to = "/search2?#{searchCriteria}")
     public void navigate(FacesContext facesContext, NavigationRequestEvent event,
@@ -59,7 +72,6 @@ public class MainController {
     }
 
     @NavigationCase(on = "sort", fragments = "hotels:searchResultsFragment")
-    // to = "/search2?#{searchCriteria}
     public void sort(@ModelAttribute("viewScope") MutableAttributeMap viewScope,
 	    @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, @RequestParam("sortBy") String sortBy) {
 	searchCriteria.setSortBy(sortBy);
