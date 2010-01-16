@@ -48,6 +48,8 @@ public @interface NavigationCase {
 	 */
 	public String[] on() default {};
 
+	// FIXME allow omit to deduce name from method
+
 	/**
 	 * The action expression that the navigation case applies to. This is the expression as defined on the component
 	 * that caused the action. For example "#{controller.continue}".
