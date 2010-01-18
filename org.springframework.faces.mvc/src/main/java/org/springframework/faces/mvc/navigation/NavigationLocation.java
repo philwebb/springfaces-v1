@@ -23,7 +23,6 @@ import org.springframework.util.ObjectUtils;
  * by {@link RedirectHandler} implementations in order to redirect the browser. Location objects can be any type
  * supported by the redirect handler, although most often <tt>String</tt> values.
  * <p>
- * 
  * Each navigation location can also include the following meta-data:
  * <ul>
  * <li><tt>popup</tt></li> - Renders the redirected view in a modal popup dailog. When using Spring Faces MVC with the
@@ -34,7 +33,6 @@ import org.springframework.util.ObjectUtils;
  * part of the response inside the dialog.
  * <p>
  * This functionality will degrade gracefully if JavaScript is not enabled on the clients web browser.
- * 
  * <li><tt>fragments</tt> - Specifies the fragements that will be rendered on the response. Fragments are used when
  * rendering an ajax response to a navigation request. Usually this means that fragments can only be used when
  * <tt>popup</tt> is <tt>true</tt> or when the <tt>location</tt> is null (meaning that the current page is re-rendered).
@@ -53,7 +51,6 @@ public final class NavigationLocation {
 
 	/**
 	 * Constructor.
-	 * 
 	 * @param location The navigation location
 	 * @param popup If the redirect should be rendered as a popup modal dialog
 	 * @param fragments The fragments that will be re-rendered in the response
@@ -66,7 +63,6 @@ public final class NavigationLocation {
 
 	/**
 	 * Convenience constructor that can be used when <tt>popup</tt> and <tt>fragments</tt> are not needed.
-	 * 
 	 * @param location The navigation location
 	 */
 	public NavigationLocation(Object location) {
@@ -117,5 +113,4 @@ public final class NavigationLocation {
 		}
 		return false;
 	}
-
 }

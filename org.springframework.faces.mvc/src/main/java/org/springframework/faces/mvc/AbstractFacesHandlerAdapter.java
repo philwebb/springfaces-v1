@@ -99,12 +99,10 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * Internal method called to perform the actual handling of the request. The {@link MvcFacesRequestContext} will be
 	 * active when this method is called. This method is expected to completely handle the rendering of a response or
 	 * throw an exception.
-	 * 
 	 * @param mvcFacesRequestContext The MVC Faces Request Context
 	 * @param request current HTTP request
 	 * @param response current HTTP response
 	 * @throws Exception in the case of errors
-	 * 
 	 * @see HandlerAdapter#handle(HttpServletRequest, HttpServletResponse, Object)
 	 */
 	protected abstract void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
@@ -112,7 +110,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	/**
 	 * Method that is called when the handler throws an exception during processing.
-	 * 
 	 * @param mvcFacesRequestContext The MVC Faces Request Context
 	 * @param request The request
 	 * @param response The response
@@ -164,7 +161,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	/**
 	 * Method called on a {@link ContextRefreshedEvent}.
-	 * 
 	 * @param context
 	 */
 	protected void onRefresh(ApplicationContext context) {
@@ -195,7 +191,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * Factory method used to construct the {@link MvcFacesContext} that will be used during request handling. By
 	 * default this method returns an instance of {@link FacesHandlerAdapterContext}. Subclasses can override this
 	 * method if required.
-	 * 
 	 * @return The {@link MvcFacesContext} instance that will be used during request handling
 	 */
 	protected MvcFacesContext newFacesHandlerAdapterContext() {
@@ -204,28 +199,24 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	/**
 	 * Returns the {@link FacesViewIdResolver} that will be used to resolve faces view IDs.
-	 * 
 	 * @return The faces view ID resolver
 	 */
 	protected abstract FacesViewIdResolver getFacesViewIdResolver();
 
 	/**
 	 * Returns the {@link ModelBindingExecutor} that will be used to bind the model.
-	 * 
 	 * @return The model binding executor
 	 */
 	protected abstract ModelBindingExecutor getModelBindingExecutor();
 
 	/**
 	 * Returns the {@link ActionUrlMapper} that will be used to map the action URL.
-	 * 
 	 * @return The action URL mapper
 	 */
 	protected abstract ActionUrlMapper getActionUrlMapper();
 
 	/**
 	 * Returns the {@link RedirectHandler} that will be used to issue redirects.
-	 * 
 	 * @return The redirect handler
 	 */
 	protected abstract RedirectHandler getRedirectHandler();
@@ -233,7 +224,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	/**
 	 * Returns the configured Ajax handler that should be used to handle all AJAX requests. This will never return
 	 * <tt>null</tt>.
-	 * 
 	 * @return The non null ajax handler
 	 */
 	public AjaxHandler getAjaxHandler() {
@@ -245,7 +235,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * <tt>true</tt> meaning that all {@link MvcFacesExceptionHandler}s will be dynamically located from the application
 	 * context. If this behaviour is not required set this value to <tt>false</tt> and manually inject handlers using
 	 * {@link #setExceptionHandlers(List)}.
-	 * 
 	 * @param detectAllExceptionHandlers
 	 */
 	public void setDetectAllHandlerExceptionHandlers(boolean detectAllExceptionHandlers) {
@@ -256,7 +245,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * Set a specific set of {@link MvcFacesExceptionHandler}s that will be used by this bean when
 	 * {@link #setDetectAllHandlerExceptionHandlers(boolean)} has been set to <tt>false</tt>. Note: This property will
 	 * be ignored when <tt>detectAllExceptionHandlers</tt> is <tt>true</tt>.
-	 * 
 	 * @param exceptionHandlers
 	 */
 	public void setExceptionHandlers(List exceptionHandlers) {
@@ -265,7 +253,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	/**
 	 * Sets the configured Ajax handler. This value cannot be <tt>null</tt>.
-	 * 
 	 * @param ajaxHandler the ajax handler
 	 */
 	public void setAjaxHandler(AjaxHandler ajaxHandler) {

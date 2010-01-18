@@ -85,7 +85,6 @@ public class DefaultRedirectHandler implements RedirectHandler {
 
 	/**
 	 * Sends a redirect to the requested url.
-	 * 
 	 * @param ajaxHandler The active ajax handler
 	 * @param url the redirect URL
 	 * @param request The request
@@ -112,7 +111,6 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	/**
 	 * Get the actual URL that should be used for the specified location. This method will expand servletRelative,
 	 * contextRelative and serverRelative prefixes.
-	 * 
 	 * @param request The request
 	 * @param location The location string
 	 * @return The URL The final URL with all prefixes expanded
@@ -139,7 +137,6 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	 * Set if redirects should be HTTP 1.0 compatible. When this property is <tt>true</tt> redirects are handled using a
 	 * HTTP 302 header, otherwise a HTTP 303 header is used. If not set the default value of <tt>false</tt> will be
 	 * used.
-	 * 
 	 * @param redirectHttp10Compatible If redirects are HTTP 1.0 compatible.
 	 */
 	public void setRedirectHttp10Compatible(boolean redirectHttp10Compatible) {

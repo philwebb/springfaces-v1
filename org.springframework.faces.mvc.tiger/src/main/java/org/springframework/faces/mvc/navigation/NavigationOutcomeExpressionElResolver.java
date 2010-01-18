@@ -35,7 +35,7 @@ import org.springframework.web.bind.WebDataBinder;
  * can be specified in any part of the URL (e.g. <tt>'/view/#{hotel.id}?bid=#{booking.id}'</tt>).
  * <p>
  * In addition any expression specified in the query part of the URL (without an attribute name) will be fully expanded
- * (e.g. <tt>'/search?#{queryParams}'</tt> would be expanded to <tt>'/search?name=search&pagesize=20'</tt> assuming that <tt>queryParams</tt> contains <tt>name</tt> and <tt>pagesize</tt>
+ * (e.g. <tt>'/search?#{queryParams}'</tt> would be expanded to <tt>'/search?name=search&pagesize=20'</tt> (assuming that <tt>queryParams</tt> contains <tt>name</tt> and <tt>pagesize</tt>
  * properties).
  * 
  * @see ReverseDataBinder
@@ -86,7 +86,6 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 
 	/**
 	 * Resolve, Convert and URL encode the specified expression.
-	 * 
 	 * @param context The navigation outcome expression context
 	 * @param position The position of the expression inside the URL
 	 * @param attribute The attribute from the URL that the expression is linked to or <tt>null</tt> when resolving
@@ -103,7 +102,6 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 
 	/**
 	 * Resolve the specified expression.
-	 * 
 	 * @param context The navigation outcome expression context
 	 * @param position The position of the expression inside the URL
 	 * @param attribute The attribute from the URL that the expression is linked to or <tt>null</tt> when resolving
@@ -123,7 +121,6 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 	/**
 	 * Convert and URL encode the specified resolved expression. By default this method will use a
 	 * {@link ReverseDataBinder} in order to convert resolved expressions.
-	 * 
 	 * @param context The navigation outcome expression context
 	 * @param position The position of the expression inside the URL
 	 * @param attribute The attribute from the URL that the expression is linked to or <tt>null</tt> when resolving

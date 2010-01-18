@@ -52,7 +52,6 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 
 	/**
 	 * Constructor.
-	 * 
 	 * @param handlerType The handler type
 	 * @param urlPathHelper The URL path handler
 	 * @param methodNameResolver The method name resolver
@@ -73,7 +72,6 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 
 	/**
 	 * Determine if a given method is annotated with {@link NavigationCase} or {@link NavigationRules}.
-	 * 
 	 * @param method The method
 	 * @return <tt>true</tt> if the method has navigation annotations
 	 */
@@ -84,8 +82,7 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 	/**
 	 * Determine if the handler type has global navigation methods (i.e. methods annotated with {@link NavigationCase}
 	 * or {@link NavigationRules} that do not also contain {@link RequestMapping} restrictions).
-	 * 
-	 * @return <tt>true</tt> if the handler type has global navigation methods.
+	 * @return <tt>true</tt> if the handler type has global navigation methods
 	 * @see #getGlobalNavigationMethods()
 	 */
 	public final boolean hasGlobalNavigationMethods() {
@@ -95,7 +92,6 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 	/**
 	 * Returns a set of global navigation methods (i.e. methods annotated with {@link NavigationCase} or
 	 * {@link NavigationRules} that are do not also contain {@link RequestMapping} restrictions).
-	 * 
 	 * @return A set of global navigation methods
 	 * @see #hasGlobalNavigationMethods()
 	 */
@@ -106,7 +102,6 @@ public class NavigationCaseMethodResolver extends RequestMappingMethodResolver {
 	/**
 	 * Resolve the methods with {@link NavigationCase} or {@link NavigationRules} annotations that can also process the
 	 * specified request.
-	 * 
 	 * @param request The request
 	 * @return An ordered array of methods that could be used to process the request. The first item in the array is the
 	 * most suitable method, remaining items are ordered by suitability

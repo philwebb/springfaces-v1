@@ -27,7 +27,6 @@ public interface ModelScopeProvider {
 	 * expose the <tt>model</tt> to JSF. The scope should be one of the implicit faces MVC scopes or one of the extended
 	 * spring scopes. The values <tt>request</tt>, <tt>page</tt> or </tt>flash</tt> are recommended. The
 	 * <tt>singleton</tt> and <tt>prototype</tt> scopes are not supported
-	 * 
 	 * @param scopedModelAttribute The name of the attribute and the existing scope (if any scope has been defined).
 	 * This parameter is never <tt>null</tt>.
 	 * @return The scope and variable name that should be used.

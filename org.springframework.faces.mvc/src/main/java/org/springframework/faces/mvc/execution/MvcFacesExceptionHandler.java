@@ -46,7 +46,6 @@ public interface MvcFacesExceptionHandler {
 	 * <p>
 	 * Note: exception handlers are called outside of the JSF lifecyle and will not have access to a
 	 * {@link FacesContext} instance.
-	 * 
 	 * @param exception The exception to be handled
 	 * @param requestContext The current MVC Faces request context
 	 * @param request The request
@@ -60,5 +59,4 @@ public interface MvcFacesExceptionHandler {
 	 */
 	boolean handleException(Exception exception, MvcFacesRequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response, MvcFacesExceptionOutcome outcome) throws Exception;
-
 }

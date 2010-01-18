@@ -31,7 +31,6 @@ public interface FacesViewIdResolver {
 
 	/**
 	 * Resolve the logical view name into a valid JSF view ID.
-	 * 
 	 * @param viewName The view name as provided from {@link ModelAndView#getViewName()}
 	 * @return The JSF view ID. This is generally a reference to the actual resource that will be processed by the JSF
 	 * view handler. For example '/WEB-INF/pages/example.xhtml'
@@ -40,7 +39,6 @@ public interface FacesViewIdResolver {
 
 	/**
 	 * Resolve the JSF view ID into the logical view name.
-	 * 
 	 * @param viewId The JSF view ID. This is generally a reference to the actual resource that will be processed by the
 	 * JSF view handler. For example '/WEB-INF/pages/example.xhtml'
 	 * @return The view name as referenced in {@link ModelAndView#getViewName()}

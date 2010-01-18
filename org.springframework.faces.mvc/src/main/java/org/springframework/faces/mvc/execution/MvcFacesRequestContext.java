@@ -34,18 +34,14 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  */
 public interface MvcFacesRequestContext {
 
-	// FIXME rename to just RequestContext ?
-
 	/**
 	 * Returns the active {@link FacesHandler} that is handling the current request.
-	 * 
 	 * @return the active faces handler
 	 */
 	FacesHandler getFacesHandler();
 
 	/**
 	 * Returns the {@link MvcFacesContext} for the current request.
-	 * 
 	 * @return the active MVC Faces context
 	 */
 	MvcFacesContext getMvcFacesContext();
@@ -53,7 +49,6 @@ public interface MvcFacesRequestContext {
 	/**
 	 * Returns the current exception that is being handled by MVC or <tt>null</tt> if an exception has not been raised.
 	 * Note: When an exception is being processes the JSF lifecycle will stop after {@link PhaseId#PROCESS_VALIDATIONS}.
-	 * 
 	 * @return the current exception or <tt>null</tt>
 	 */
 	Exception getException();
@@ -62,7 +57,6 @@ public interface MvcFacesRequestContext {
 	 * Returns the last navigation event that was being processed by the system or <tt>null</tt> if a navigation request
 	 * has not yet been processed. Note: this value is reset on each request but remains available during exception
 	 * handling.
-	 * 
 	 * @return The last navigation event or <tt>null</tt>
 	 */
 	NavigationRequestEvent getLastNavigationRequestEvent();
@@ -70,7 +64,6 @@ public interface MvcFacesRequestContext {
 	/**
 	 * Returns a mutable map for accessing and/or setting attributes in request scope. <b>Request scoped attributes
 	 * exist for the duration of this request only.</b>
-	 * 
 	 * @return the request scope
 	 */
 	public MutableAttributeMap getRequestScope();
@@ -78,7 +71,6 @@ public interface MvcFacesRequestContext {
 	/**
 	 * Returns a mutable map for accessing and/or setting attributes in flash scope. <b>Flash scoped attributes exist
 	 * until the after next view is rendered.</b>
-	 * 
 	 * @return the flash scope
 	 */
 	public MutableAttributeMap getFlashScope();
@@ -86,7 +78,6 @@ public interface MvcFacesRequestContext {
 	/**
 	 * Returns a mutable map for accessing and/or setting attributes in view scope. <b>View scoped attributes exist for
 	 * the life of the current view state, including post-back.</b>
-	 * 
 	 * @return the view scope
 	 */
 	public MutableAttributeMap getViewScope() throws IllegalStateException;

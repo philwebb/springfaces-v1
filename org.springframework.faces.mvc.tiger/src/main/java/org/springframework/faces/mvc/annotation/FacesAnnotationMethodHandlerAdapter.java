@@ -95,8 +95,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	private static final String DEFAULT_CONTROLLER_NAME = "controller";
 
-	// FIXME @SessionAttributes support
-
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
 	private MethodNameResolver methodNameResolver = new InternalPathMethodNameResolver();
@@ -135,7 +133,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	/**
 	 * Trigger all post-processors and spring callbacks for internally managed beans.
-	 * 
 	 * @param bean The internal bean
 	 * @throws Exception
 	 */
@@ -150,7 +147,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	/**
 	 * Returns the {@link FacesController} annotation from the specified handler or <tt>null</tt> if no annotation can
 	 * be found.
-	 * 
 	 * @param handler The handler
 	 * @return The {@link FacesController} annotation or <tt>null</tt>
 	 */
@@ -166,10 +162,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	/**
 	 * Determine if the handler can be used with this adapter. By default this method accepts all handlers that contain
 	 * the {@link FacesController} annotation.
-	 * 
 	 * @param handler The handler
 	 * @return <tt>true</tt> if the handler is supported by this adapter.
-	 * 
 	 * @see #getHandlerAnnotation(Object)
 	 */
 	protected boolean supportsFaces(Object handler) {
@@ -189,7 +183,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	/**
 	 * Delegate method called from {@link FacesHandler#createView(FacesContext)} in order to create the
 	 * {@link ModelAndView} that should be used when rendering the response.
-	 * 
 	 * @param request The request.
 	 * @param response The response
 	 * @param handler The handler
@@ -207,7 +200,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * outcome of a navigation event. By default this implementation will use the
 	 * {@link NavigationCaseAnnotationLocator} to locate and process {@link NavigationCase} and {@link NavigationRules}
 	 * annotations.
-	 * 
 	 * @param request The request
 	 * @param response The response
 	 * @param event The JSF navigation event
@@ -250,7 +242,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * will be used.
 	 * <p>
 	 * Note: The handler adapter set here must support {@link FacesHandler} instances.
-	 * 
 	 * @param facesHandlerAdapter
 	 */
 	public void setFacesHandlerAdapter(HandlerAdapter facesHandlerAdapter) {
@@ -259,7 +250,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	/**
 	 * @return The {@link HandlerAdapter} that will be used to process the requests.
-	 * 
 	 * @see #setFacesHandlerAdapter(HandlerAdapter)
 	 */
 	protected final HandlerAdapter getFacesHandlerAdapter() {
@@ -351,7 +341,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	/**
 	 * Set a {@link NavigationOutcomeExpressionResolver} that will be used to resolve any expressions contained in the
 	 * {@link NavigationCase} annotations.
-	 * 
 	 * @param navigationOutcomeExpressionResolver
 	 */
 	public void setNavigationOutcomeExpressionResolver(
@@ -369,9 +358,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * controllers.
 	 * <p>
 	 * When not specified the controller will be exposed using the variable name <tt>controller<tt>.
-	 * 
 	 * @param exposedControllerName The name of variable that will be used to expose the {@link FacesController}
-	 * 
 	 * @see FacesController#controllerName()
 	 * @see FacesController#exposeController()
 	 * @see #setExposeController(boolean)
@@ -387,9 +374,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 * a JSF variable.
 	 * <p>
 	 * The default setting is to expose controllers using the variable name <tt>controller</tt>.
-	 * 
 	 * @param exposeController If the controller should be exposed as a JSF variable
-	 * 
 	 * @see FacesController#exposeController()
 	 * @see #setExposedControllerName(String)
 	 */
@@ -399,7 +384,6 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 	/**
 	 * Set the order of the adapter.
-	 * 
 	 * @param order
 	 */
 	public void setOrder(int order) {

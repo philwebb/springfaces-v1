@@ -34,7 +34,6 @@ public interface ModelBindingExecutor {
 	/**
 	 * Called when a view is created so that the executor can store the model for the
 	 * {@link #bindStoredModel(FacesContext)} to later retrieve.
-	 * 
 	 * @param facesContext The current FacesContext
 	 * @param model The model to store
 	 */
@@ -43,9 +42,7 @@ public interface ModelBindingExecutor {
 	/**
 	 * Called before the RENDER_RESPONSE phase to bind the model that was stored during
 	 * {@link #storeModelToBind(FacesContext, Map)}.
-	 * 
 	 * @param facesContext The current FacesContext
 	 */
 	void bindStoredModel(FacesContext facesContext);
-
 }

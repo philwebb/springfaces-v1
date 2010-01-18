@@ -39,6 +39,9 @@ public final class FoundNavigationCase {
 
 	private static final Log logger = LogFactory.getLog(FoundNavigationCase.class);
 
+	/**
+	 * The type of navigation case.
+	 */
 	protected enum FoundNavigationCaseType {
 		METHOD, CLASS, PACKAGE
 	}
@@ -49,7 +52,6 @@ public final class FoundNavigationCase {
 
 	/**
 	 * Constructor.
-	 * 
 	 * @param navigationCase The navigation case annotation
 	 * @param owner The owner object (either a {@link Package}, {@link Method} or {@link Class})
 	 */
@@ -74,7 +76,6 @@ public final class FoundNavigationCase {
 
 	/**
 	 * Returns the {@link NavigationCase} annotation that was located.
-	 * 
 	 * @return The navigation case annotation
 	 */
 	public NavigationCase getNavigationCase() {
@@ -83,7 +84,6 @@ public final class FoundNavigationCase {
 
 	/**
 	 * Returns the owner of the item (either a {@link Method}, {@link Class} or {@link Package}).
-	 * 
 	 * @return The owner
 	 */
 	public Object getOwner() {
@@ -91,7 +91,8 @@ public final class FoundNavigationCase {
 	}
 
 	/**
-	 * @return The type of navigation case that was found.
+	 * Returns the type of navigation case that was found.
+	 * @return the type of navigation case
 	 */
 	protected FoundNavigationCaseType getType() {
 		return type;
@@ -100,7 +101,6 @@ public final class FoundNavigationCase {
 	/**
 	 * Gets the {@link NavigationLocation} outcome for the found navigation case, executing annotated methods as
 	 * required.
-	 * 
 	 * @param event The navigation request event
 	 * @return The outcome of the {@link NavigationCase}. This will either be the value specified in
 	 * {@link NavigationCase#to()} or if this is not specified the result of the method call

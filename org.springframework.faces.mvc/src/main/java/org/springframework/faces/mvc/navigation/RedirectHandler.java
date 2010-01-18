@@ -35,7 +35,6 @@ public interface RedirectHandler {
 
 	/**
 	 * Redirect the client to the specified location.
-	 * 
 	 * @param ajaxHandler The AJAX handler that is being used to handle the request. This will never be <tt>null</tt>
 	 * @param request The native request
 	 * @param response The native response

@@ -31,7 +31,6 @@ public final class ScopedModelAttribute {
 
 	/**
 	 * Constructor.
-	 * 
 	 * @param scope An optional scope
 	 * @param modelAttribute The attribute name
 	 */
@@ -44,7 +43,6 @@ public final class ScopedModelAttribute {
 
 	/**
 	 * Constructor. When this constructor is used the scope will default to <tt>null</tt>
-	 * 
 	 * @param modelAttribute
 	 */
 	public ScopedModelAttribute(String modelAttribute) {
@@ -54,7 +52,6 @@ public final class ScopedModelAttribute {
 	/**
 	 * Returns the scope that should be used to expose the model attribute. This value can be <tt>null</tt> to use the
 	 * default scope.
-	 * 
 	 * @return The scope
 	 */
 	public String getScope() {
@@ -63,7 +60,6 @@ public final class ScopedModelAttribute {
 
 	/**
 	 * Returns the model attribute name.
-	 * 
 	 * @return the model attribute name
 	 */
 	public String getModelAttribute() {
@@ -72,7 +68,6 @@ public final class ScopedModelAttribute {
 
 	/**
 	 * Create a variant of this attribute in the specified scope.
-	 * 
 	 * @param scope The new scope
 	 * @return A new {@link ScopedModelAttribute} with the same attribute name as this object but in the specified scope
 	 */

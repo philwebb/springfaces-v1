@@ -12,16 +12,13 @@ public interface MvcFacesRequestControlContext extends MvcFacesRequestContext {
 
 	/**
 	 * Method called during exception handling to store the current exception.
-	 * 
 	 * @param exception The exception being handled
-	 * 
 	 * @see #getException()
 	 */
 	void setException(Exception exception);
 
 	/**
 	 * Method called during navigation processing to store the navigation event being processes.
-	 * 
 	 * @param lastNavigationRequestEvent The navigation event
 	 */
 	void setLastNavigationRequestEvent(NavigationRequestEvent lastNavigationRequestEvent);

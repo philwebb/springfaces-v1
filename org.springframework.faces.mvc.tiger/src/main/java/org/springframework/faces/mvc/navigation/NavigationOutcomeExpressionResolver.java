@@ -15,7 +15,6 @@
  */
 package org.springframework.faces.mvc.navigation;
 
-
 /**
  * Strategy interface used to resolve navigation outcome expressions.
  * 
@@ -27,11 +26,9 @@ public interface NavigationOutcomeExpressionResolver {
 
 	/**
 	 * Resolve any expression strings contained in the specified outcome.
-	 * 
 	 * @param context The navigation outcome expression context
 	 * @param outcome The navigation outcome
 	 * @return A fully resolved outcome
-	 * 
 	 * @throws Exception on error
 	 */
 	public NavigationLocation resolveNavigationOutcome(NavigationOutcomeExpressionContext context,

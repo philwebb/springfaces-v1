@@ -43,7 +43,6 @@ public @interface NavigationCase {
 	/**
 	 * The 'on' cases that the navigation case applies to. If this value is omitted the navigation case applies for all
 	 * views that the handler controls.
-	 * 
 	 * @return The 'on' cases
 	 */
 	public String[] on() default {};
@@ -53,7 +52,6 @@ public @interface NavigationCase {
 	/**
 	 * The action expression that the navigation case applies to. This is the expression as defined on the component
 	 * that caused the action. For example "#{controller.continue}".
-	 * 
 	 * @return The action expression
 	 */
 	public String fromAction() default "";
@@ -63,7 +61,6 @@ public @interface NavigationCase {
 	 * only be considered if an exception is thrown during the processing of the JSF request. The navigation will also
 	 * apply if a sub-classes of the specified exception is throw. The full exception stack will be considered when
 	 * determining if the navigation case applies.
-	 * 
 	 * @return A class of exception that should trigger the navigation
 	 */
 	public Class<?> onException() default void.class;
@@ -90,7 +87,6 @@ public @interface NavigationCase {
 	 * {@link ModelAttribute} annotated parameters can also be used. Parameters can be declared in any order.
 	 * <p>
 	 * Note: Methods will not be called if there is also a {@link RequestMapping} annotation contained on the method.
-	 * 
 	 * @return The navigation outcome.
 	 */
 	public String to() default "";

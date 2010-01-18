@@ -45,7 +45,6 @@ public abstract class BeanBackedElResolver extends AbstractELResolver {
 	/**
 	 * Returns the underlying bean that will be used to resolve properties. If this method returns <tt>null</tt> the
 	 * resolver will not be used.
-	 * 
 	 * @return The bean instance or <tt>null</tt>
 	 */
 	protected abstract Object getBean();
@@ -60,10 +59,8 @@ public abstract class BeanBackedElResolver extends AbstractELResolver {
 	 * </code> Will resolve an <tt>currentUser</tt> to <tt>bean.getLoggedInUser()</tt>.
 	 * <p>
 	 * If your EL property and bean property are identical the {@link #map(String)} convenience method can be used.
-	 * 
 	 * @param elProperty The EL property
 	 * @param beanProperty The bean property exposed from {@link #getBean()}
-	 * 
 	 * @see #map(String)
 	 */
 	protected void map(String elProperty, String beanProperty) {
@@ -74,7 +71,6 @@ public abstract class BeanBackedElResolver extends AbstractELResolver {
 	 * Map a EL property to a bean property. This is a convenience method that can be used when the EL property and bean
 	 * property. Functionally equivalent to <code>map(property,property)</code>, see {@link #map(String, String)} for
 	 * details.
-	 * 
 	 * @param property The EL and bean property to map.
 	 */
 	protected void map(String property) {

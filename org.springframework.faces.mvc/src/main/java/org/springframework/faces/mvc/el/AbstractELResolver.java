@@ -41,7 +41,6 @@ public abstract class AbstractELResolver extends ELResolver {
 
 	/**
 	 * Determine if the resolver is available for use.
-	 * 
 	 * @return <tt>true</tt> if the resolver is available or <tt>false</tt> if the resolver should not be used. Defaults
 	 * to <tt>true</tt>
 	 */
@@ -53,7 +52,6 @@ public abstract class AbstractELResolver extends ELResolver {
 	 * Determine if the resolve handles the specified property. This method will only be called is
 	 * {@link #isAvailable()} returns <tt>true</tt>. By default this method will return <tt>true</tt> if
 	 * {@link #get(String)} returns a non <tt>null</tt> value and the property itself is not null.
-	 * 
 	 * @param property The property
 	 * @return <tt>true</tt> if resolver handles the specified property, otherwise <tt>false</tt>.
 	 */
@@ -64,7 +62,6 @@ public abstract class AbstractELResolver extends ELResolver {
 	/**
 	 * Called to gets the value of the specified property. This method will only be called is {@link #isAvailable()}
 	 * returns <tt>true</tt>.
-	 * 
 	 * @param property The property
 	 * @return The value of the property or <tt>null</tt>.
 	 */
@@ -73,7 +70,6 @@ public abstract class AbstractELResolver extends ELResolver {
 	/**
 	 * Called to determine if the property is read only. This method will only be called is {@link #isAvailable()}
 	 * returns <tt>true</tt>. By default this method returns <tt>true</tt>
-	 * 
 	 * @param property The property
 	 * @return <tt>true</tt> if the property is read-only or <tt>false</tt> if the property is mutable.
 	 * @see #set(String, Object)
@@ -86,11 +82,10 @@ public abstract class AbstractELResolver extends ELResolver {
 	 * Called to set the property value. This method will only be called is {@link #isAvailable()} and
 	 * {@link #isReadOnly(String)} return <tt>true</tt>. By default his method will throw a
 	 * {@link PropertyNotWritableException}.
-	 * 
 	 * @param property The property
 	 * @param value The value to set
 	 * @throws PropertyNotWritableException if the property is not writable.
-	 * @se {@link #isReadOnly(String)}
+	 * @see {@link #isReadOnly(String)}
 	 */
 	protected void set(String property, Object value) throws PropertyNotWritableException {
 		throw new PropertyNotWritableException("The property " + property + " is not writable.");
@@ -98,12 +93,10 @@ public abstract class AbstractELResolver extends ELResolver {
 
 	/**
 	 * Template method used to handle searching for the property and invoking some operation on the scope.
-	 * 
 	 * @param elContext
 	 * @param base
 	 * @param property
 	 * @param operation Callback interface used to execute the operation
-	 * 
 	 * @return Result of the operation
 	 */
 	protected Object handle(ELContext elContext, Object base, Object property, ElOperation operation) {

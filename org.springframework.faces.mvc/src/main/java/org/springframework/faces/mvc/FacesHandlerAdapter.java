@@ -84,7 +84,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 	/**
 	 * Trigger all post-processors and spring call-backs for internally managed beans.
-	 * 
 	 * @param bean The internal bean
 	 * @throws Exception
 	 */
@@ -140,7 +139,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 	/**
 	 * Factory method used to construct the servlet class.
-	 * 
 	 * @return The faces servlet instance
 	 */
 	protected Servlet newFacesServlet() {
@@ -157,9 +155,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * {@link ServletContext#getInitParameter(String)} method will be intercepted in order to provide a config that will
 	 * work with all {@link FacesServlet}s, regardless of whether the user has set the required parameters in their
 	 * web.xml. Note: This behaviour can be disabled using {@link #setOverrideInitParameters(boolean)}.
-	 * 
 	 * @return {@link ServletConfig} instance
-	 * 
 	 * @see #setOverrideInitParameters(boolean)
 	 */
 	protected ServletContext getFacesServletContext() {
@@ -185,7 +181,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	 * correctly and allow MVC to handle them. By default this class will use AOP to ensure that this configuration
 	 * occurs automatically. If this behaviour is not desired then this set <tt>overrideInitParameters</tt> to
 	 * <tt>false</tt>
-	 * 
 	 * @param overrideInitParameters <tt>true</tt> if init parameters are automatically set for correct MVC operation or
 	 * <tt>false</tt> if parameters should be set manually in web.xml. Defaults to <tt>true</tt> when not explicitly set
 	 */
@@ -196,7 +191,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Sets the class that will be used to construct the {@link FacesServlet} that will be used to handle requests. If
 	 * not specified the default {@link FacesServlet} class will be used.
-	 * 
 	 * @param facesServletClass
 	 */
 	public void setFacesServletClass(Class facesServletClass) {
@@ -206,7 +200,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 	/**
 	 * Set the init parameters that will be used to initialise the FacesServlet.
-	 * 
 	 * @param initParameters init parameters to use with the FacesServlet
 	 */
 	public void setInitParameters(Properties initParameters) {
@@ -217,7 +210,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the {@link FacesViewIdResolver} that will be used to resolve view IDs. If the resolver is not specified a
 	 * {@link SimpleFacesViewIdResolver} will be used.
-	 * 
 	 * @param facesViewIdResolver
 	 * @see SimpleFacesViewIdResolver
 	 */
@@ -229,7 +221,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the {@link ActionUrlMapper} that will be used to map action URLS. If the mapper is not specified a
 	 * {@link PageEncodedActionUrlMapper} will be used.
-	 * 
 	 * @param actionUrlMapper
 	 * @see PageEncodedActionUrlMapper
 	 */
@@ -241,7 +232,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the model binder that will be used to expose model elements to JSF. If the binder is not specified the
 	 * {@link DefaultModelBinder} will be used.
-	 * 
 	 * @param modelBinder
 	 * @see DefaultModelBinder
 	 */
@@ -253,7 +243,6 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the redirect handler that will be used to handle navigation outcome. If the handler is not specified the
 	 * {@link DefaultRedirectHandler} will be used.
-	 * 
 	 * @param redirectHandler
 	 */
 	public void setRedirectHandler(RedirectHandler redirectHandler) {

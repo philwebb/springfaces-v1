@@ -57,9 +57,7 @@ public interface MvcFacesContext {
 
 	/**
 	 * Called to resolve the view ID. This method usually delegates to a {@link FacesViewIdResolver}.
-	 * 
 	 * @param viewName The view name to resolve
-	 * 
 	 * @see FacesViewIdResolver#resolveViewId(String)
 	 */
 	String resolveViewId(String viewName);
@@ -67,11 +65,9 @@ public interface MvcFacesContext {
 	/**
 	 * Called to obtain the Action URL for the specified view ID. This method usually delegates to an
 	 * {@link ActionUrlMapper}.
-	 * 
 	 * @param facesContext The faces context
 	 * @param viewId The current view ID
 	 * @returns The action URL
-	 * 
 	 * @see FacesViewIdResolver#resolveViewName(String)
 	 * @see ActionUrlMapper#getActionUlr(FacesContext, String)
 	 */
@@ -80,11 +76,9 @@ public interface MvcFacesContext {
 	/**
 	 * Called to get the view ID that should be restored following a post-back. This method usually delegates to an
 	 * {@link ActionUrlMapper}.
-	 * 
 	 * @param facesContext The faces context
 	 * @param viewId The view ID to restore
 	 * @param The actual view ID
-	 * 
 	 * @see ActionUrlMapper#getViewNameForRestore(FacesContext)
 	 */
 	String getViewIdForRestore(FacesContext facesContext, String viewId);
@@ -92,7 +86,6 @@ public interface MvcFacesContext {
 	/**
 	 * Called after a new JSF view has been created. This method can be used to bind the MVC model to faces and perform
 	 * any post processing on the created view.
-	 * 
 	 * @param facesContext The faces context
 	 * @param mvcFacesRequestContext The MVC faces request context
 	 * @param view The view that has been created
@@ -104,7 +97,6 @@ public interface MvcFacesContext {
 	/**
 	 * Called during the encode of the JSF page. This method can render additional HTML by using
 	 * {@link FacesContext#getResponseWriter()}.
-	 * 
 	 * @param facesContext The faces context
 	 * @throws IOException
 	 */
@@ -113,7 +105,6 @@ public interface MvcFacesContext {
 	/**
 	 * Called before a phase event. Equivalent to {@link PhaseListener#beforePhase(PhaseEvent)} but only called for MVC
 	 * faces requests.
-	 * 
 	 * @param mvcFacesRequestContext The MVC faces request context
 	 * @param event The phase event
 	 */
@@ -122,7 +113,6 @@ public interface MvcFacesContext {
 	/**
 	 * Called after a phase event. Equivalent to {@link PhaseListener#afterPhase(PhaseEvent)} but only called for MVC
 	 * faces requests.
-	 * 
 	 * @param mvcFacesRequestContext The MVC faces request context
 	 * @param event The phase event
 	 */
@@ -130,7 +120,6 @@ public interface MvcFacesContext {
 
 	/**
 	 * Called after a navigation outcome has been determined to redirect the browser.
-	 * 
 	 * @param facesContext The faces context
 	 * @param mvcFacesRequestContext The MVC faces request context
 	 * @param location The location to redirect to

@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * 
  * <p>
  * This annotation serves as a specialization of {@link Component @Component}, allowing for implementation classes to be
- * autodetected through classpath scanning. It is typically used in combination with annotated handler methods based on
+ * auto-detected through classpath scanning. It is typically used in combination with annotated handler methods based on
  * the {@link org.springframework.web.bind.annotation.RequestMapping} annotation.
  * 
  * @see Component
@@ -46,10 +46,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Target( { ElementType.TYPE })
 @Component
 public @interface FacesController {
+
 	/**
 	 * The value may indicate a suggestion for a logical component name, to be turned into a Spring bean in case of an
-	 * autodetected component.
-	 * 
+	 * auto-detected component.
 	 * @return the suggested component name, if any
 	 */
 	String value() default "";
@@ -57,9 +57,7 @@ public @interface FacesController {
 	/**
 	 * Determine if the controller should be exposed to JSF as a variable. By default controllers will be exposed so
 	 * that they can be referenced in page mark-up, for example: <code>#{controller.doSomething()}</code>.
-	 * 
 	 * @return <tt>true</tt> if the controller should be exposed to JSF <tt>false</tt> if it should not
-	 * 
 	 * @see #controllerName()
 	 */
 	boolean exposeController() default true;
@@ -68,7 +66,6 @@ public @interface FacesController {
 	 * Get the name of the controller that is exposed to JSF when {@link #exposeController()} returns <tt>true</tt>. The
 	 * name of the controller can be specified or this value can be omitted to use the default name (as defined by the
 	 * {@link FacesAnnotationMethodHandlerAdapter}, usually <tt>controller</tt>).
-	 * 
 	 * @return The controller name
 	 * @see #exposeController()
 	 */

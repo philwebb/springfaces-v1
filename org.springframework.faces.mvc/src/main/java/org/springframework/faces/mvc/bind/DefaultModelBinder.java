@@ -38,7 +38,6 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, InitializingBean {
-	// FIXME exclude org.springframework.validation.BindingResult. ?
 
 	private ConfigurableBeanFactory beanFactory;
 	private ModelScopeProvider modelScopeProvider;
@@ -93,7 +92,6 @@ public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, Initia
 	/**
 	 * Set the {@link ModelScopeProvider} that will be used to resolve the scope of each model element. For convenience
 	 * the {@link #setScope(String)} can also be used when the same scope should be used for each model element.
-	 * 
 	 * @param modelScopeProvider The model scope provider used to determine the scope of each model entry
 	 */
 	public void setModelScopeProvider(ModelScopeProvider modelScopeProvider) {
@@ -102,7 +100,6 @@ public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, Initia
 
 	/**
 	 * Convince method that can be used to bind all model elements to a specific scope.
-	 * 
 	 * @param scope The scope to bind all model elements to
 	 */
 	public void setScope(String scope) {

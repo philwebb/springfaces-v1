@@ -37,7 +37,6 @@ public interface FacesHandler {
 	 * the View ID and any model data that should be bound to JSF. The view ID must be a view reference that can be
 	 * resolved by the {@link FacesHandlerAdapter#getFacesViewIdResolver()} to an actual page resource. A <tt>null</tt>
 	 * view ID can be used to indicate that rendering has been completed by the handler directly.
-	 * 
 	 * @param facesContext The faces context
 	 * @return The model and view data
 	 * @throws Exception in the case of an error
@@ -49,7 +48,6 @@ public interface FacesHandler {
 	 * will be redirected to by the {@link FacesHandlerAdapter#getRedirectHandler()}. A <tt>null</tt> response can be
 	 * used if the navigation could not be handled, in such cases the standard JSF navigation handlers are called (if no
 	 * navigation handler manages the outcome the existing page is re-rendered)
-	 * 
 	 * @param facesContext The faces context that requested the navigation
 	 * @param event The navigation request event
 	 * @return The navigation outcome
@@ -61,7 +59,6 @@ public interface FacesHandler {
 	/**
 	 * Called to resolve read-only variables from the handler. This method can be used to expose variables from the
 	 * hander to JSF.
-	 * 
 	 * @param propertyName The name of the property being resolved.
 	 * @return A resolved property or <tt>null</tt> if the propertyName is not recognised by the handler
 	 */
@@ -71,7 +68,6 @@ public interface FacesHandler {
 	 * Called to obtain any specific {@link MvcFacesExceptionHandler}s that should be used to deal with exceptions.
 	 * Return <tt>null</tt> if no specific handlers are required. Handlers registered with
 	 * {@link AbstractFacesHandlerAdapter} will still be called.
-	 * 
 	 * @return specific exception handlers
 	 */
 	MvcFacesExceptionHandler[] getExceptionHandlers();

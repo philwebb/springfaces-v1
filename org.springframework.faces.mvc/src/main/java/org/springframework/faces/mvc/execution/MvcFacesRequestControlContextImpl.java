@@ -32,11 +32,9 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	private MutableAttributeMap viewScope = null;
 
 	/**
-	 * Public constructor.
-	 * 
+	 * Constructor.
 	 * @param mvcFacesContext
 	 * @param facesHandler
-	 * 
 	 * @see #release()
 	 */
 	public MvcFacesRequestControlContextImpl(MvcFacesContext mvcFacesContext, FacesHandler facesHandler) {

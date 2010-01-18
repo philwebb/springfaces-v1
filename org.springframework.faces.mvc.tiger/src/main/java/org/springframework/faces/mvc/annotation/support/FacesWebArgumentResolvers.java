@@ -17,13 +17,23 @@ package org.springframework.faces.mvc.annotation.support;
 
 import org.springframework.web.bind.support.WebArgumentResolver;
 
+/**
+ * Utility class that can be used to manipulate MVC Faces {@link WebArgumentResolver}s.
+ * 
+ * @author Phillip Webb
+ */
 public class FacesWebArgumentResolvers {
 
-	// FIXME DC & Test
+	// FIXME Test
 
 	private static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
 
-	// FIXME move this out along with the static final
+	/**
+	 * Merge the specified {@link WebArgumentResolver} arrays into a single result.
+	 * @param r1 array of {@link WebArgumentResolver} items (can be null)
+	 * @param r2 array of {@link WebArgumentResolver} items (can be null)
+	 * @return An array containing all items from <tt>r1</tt> and <tt>r2</tt>
+	 */
 	public static WebArgumentResolver[] mergeResolvers(WebArgumentResolver[] r1, WebArgumentResolver[] r2) {
 		r1 = (r1 == null ? new WebArgumentResolver[] {} : r1);
 		r2 = (r2 == null ? new WebArgumentResolver[] {} : r2);
@@ -33,7 +43,12 @@ public class FacesWebArgumentResolvers {
 		return rtn;
 	}
 
-	public static WebArgumentResolver[] mergeWithFacesResolvers(WebArgumentResolver[] r) {
-		return mergeResolvers(r, ARGUMENT_RESOLVERS);
+	/**
+	 * Merge the specified resolves with the standard Faces MVC resolvers.
+	 * @param resolvers The resolvers to merge (can be null)
+	 * @return An array containing the resolvers merged with the standard Faces MVC resolvers
+	 */
+	public static WebArgumentResolver[] mergeWithFacesResolvers(WebArgumentResolver[] resolvers) {
+		return mergeResolvers(resolvers, ARGUMENT_RESOLVERS);
 	}
 }

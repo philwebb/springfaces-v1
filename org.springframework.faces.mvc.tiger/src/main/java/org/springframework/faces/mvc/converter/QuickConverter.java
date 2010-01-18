@@ -35,7 +35,6 @@ public interface QuickConverter {
 
 	/**
 	 * Execute conversion from the specified source object to the target class.
-	 * 
 	 * @param <T> The target class type
 	 * @param source The source object to convert (may be null)
 	 * @param targetClass the target type to convert to (required)
@@ -46,7 +45,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>String</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>String</tt>
 	 * @throws ConversionException if an exception occurred
@@ -55,7 +53,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>Byte</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>Byte</tt>
 	 * @throws ConversionException if an exception occurred
@@ -64,7 +61,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>Short</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>Short</tt>
 	 * @throws ConversionException if an exception occurred
@@ -73,7 +69,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to an <tt>Integer</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as an <tt>Integer</tt>
 	 * @throws ConversionException if an exception occurred
@@ -82,7 +77,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>Long</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>Long</tt>
 	 * @throws ConversionException if an exception occurred
@@ -91,7 +85,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>Number</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>Number</tt>
 	 * @throws ConversionException if an exception occurred
@@ -100,7 +93,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>Date</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>Date</tt>
 	 * @throws ConversionException if an exception occurred
@@ -109,7 +101,6 @@ public interface QuickConverter {
 
 	/**
 	 * Convert the specified source to a <tt>DataModel</tt>.
-	 * 
 	 * @param source The source object to convert (may be null)
 	 * @return the converted object as a <tt>DataModel</tt>
 	 * @throws ConversionException if an exception occurred

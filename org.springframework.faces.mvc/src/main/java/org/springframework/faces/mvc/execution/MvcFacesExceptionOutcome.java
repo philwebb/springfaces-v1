@@ -32,7 +32,6 @@ public interface MvcFacesExceptionOutcome {
 	/**
 	 * Issue a redirect to the specific location. The redirect will be handled using the {@link RedirectHandler} from
 	 * the {@link AbstractFacesHandlerAdapter} that is processing the request.
-	 * 
 	 * @param location The redirect location
 	 */
 	void redirect(NavigationLocation location);

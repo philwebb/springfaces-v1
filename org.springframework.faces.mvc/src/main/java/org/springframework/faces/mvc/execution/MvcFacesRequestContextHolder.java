@@ -21,7 +21,6 @@ public class MvcFacesRequestContextHolder {
 
 	/**
 	 * Associate the given RequestContext with the current thread.
-	 * 
 	 * @param requestContext the current MvcFacesRequestContextControl, or <code>null</code> to reset the thread-bound
 	 * context
 	 */
@@ -35,7 +34,6 @@ public class MvcFacesRequestContextHolder {
 
 	/**
 	 * Return the current {@link MvcFacesContext} instance or <tt>null</tt> if the current request is not being handled.
-	 * 
 	 * @return The current {@link MvcFacesContext} by Spring MVC Faces
 	 */
 	public static MvcFacesRequestContext getRequestContext() {

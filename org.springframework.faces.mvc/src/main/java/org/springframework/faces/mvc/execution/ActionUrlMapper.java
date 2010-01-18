@@ -32,11 +32,9 @@ public interface ActionUrlMapper {
 	 * Get the action URL that the view will use for post-back faces operations. Generally this method will either
 	 * return a URL based on the current request or a global post-back URL. When post-back occurs the
 	 * {@link #getViewNameForRestore(FacesContext)} method will be called to obtain the actual view to restore.
-	 * 
 	 * @param facesContext The faces context
 	 * @param viewName The MVC view name that is being rendered
 	 * @return The action URL
-	 * 
 	 * @see #getViewNameForRestore(FacesContext)
 	 */
 	String getActionUlr(FacesContext facesContext, String viewName);
@@ -45,11 +43,9 @@ public interface ActionUrlMapper {
 	 * Used to write additional state information inside the rendered view. This method will be called with the
 	 * ResponseWriter at the correct position for the saved state to be written. Often this method is used to write
 	 * hidden form inputs that can be retrieved during {@link #getViewNameForRestore(FacesContext)}.
-	 * 
 	 * @param facesContext
 	 * @param viewName
 	 * @throws IOException
-	 * 
 	 * @see {@link #getViewNameForRestore(FacesContext)}
 	 */
 	void writeState(FacesContext facesContext, String viewName) throws IOException;
@@ -59,13 +55,10 @@ public interface ActionUrlMapper {
 	 * must provide a mapping between a faces post-back and the actual view to restore. Unlike standard JSF, the view
 	 * that is being rendered is determined by the controller and so there may not be a direct correlation to the
 	 * request URL. The {@link #writeState(FacesContext, String)} method is often used in combination with this method.
-	 * 
 	 * @param facesContext The faces context, this can be used to obtain the request URL if required
 	 * @return The actual view name to restore
-	 * 
 	 * @see #getActionUlr(FacesContext, String)
 	 * @see #writeState(FacesContext, String)
 	 */
 	String getViewNameForRestore(FacesContext facesContext);
-
 }

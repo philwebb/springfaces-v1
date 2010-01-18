@@ -33,7 +33,6 @@ public interface ModelBinder {
 	/**
 	 * Bind the specified MVC model in such a way that it can be accessed from JSF. This method can safely access the
 	 * {@link FacesContext#getViewRoot()} if access to the current view is required.
-	 * 
 	 * @param facesHandler
 	 * @param model
 	 */

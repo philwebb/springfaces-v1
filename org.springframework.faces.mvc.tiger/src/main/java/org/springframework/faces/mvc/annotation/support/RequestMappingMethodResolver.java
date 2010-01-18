@@ -173,7 +173,7 @@ public class RequestMappingMethodResolver {
 
 	/**
 	 * Determine if the handler has type level mappings (i.e. the class itself is has a {@link RequestMapping}
-	 * annotation)
+	 * annotation).
 	 * @return true if the handler as a type level mapping
 	 * @see #getTypeLevelMapping()
 	 */
@@ -206,7 +206,7 @@ public class RequestMappingMethodResolver {
 	 * {@link #getActualSessionAttributeNames()}.
 	 * @param attrName The attribute name
 	 * @param attrType The attribute type
-	 * @return <tt>true</tt> if the attribute is a session attribue
+	 * @return <tt>true</tt> if the attribute is a session attribute
 	 * @see #hasSessionAttributes()
 	 * @see #getActualSessionAttributeNames()
 	 */
@@ -221,6 +221,7 @@ public class RequestMappingMethodResolver {
 
 	/**
 	 * Returns all session attributes that have been collated during calls to {@link #isSessionAttribute(String, Class)}
+	 * .
 	 * @return All actual session attributes
 	 * @see #isSessionAttribute(String, Class)
 	 */
@@ -231,8 +232,7 @@ public class RequestMappingMethodResolver {
 	/**
 	 * Returns an ordered array of methods that could be used to process the request. The first item in the array is the
 	 * method that would be called by the {@link AnnotationMethodHandlerAdapter} class, remaining items are ordered by
-	 * their suitability..
-	 * 
+	 * their suitability.
 	 * @param request the request
 	 * @return All methods that can process the request in order of suitability
 	 * @throws ServletException on error
@@ -477,7 +477,6 @@ public class RequestMappingMethodResolver {
 
 		/**
 		 * Constructor.
-		 * 
 		 * @param typeLevelAnnotation The annotation data that is present on the class.
 		 * @param requestMapping The annotation data to process.
 		 */
@@ -493,7 +492,6 @@ public class RequestMappingMethodResolver {
 
 		/**
 		 * Constructor.
-		 * 
 		 * @param typeLevelAnnotation
 		 * @param method
 		 */
@@ -503,7 +501,6 @@ public class RequestMappingMethodResolver {
 
 		/**
 		 * Constructor (for testing).
-		 * 
 		 * @param paths
 		 * @param params
 		 * @param requestMethods
@@ -573,7 +570,9 @@ public class RequestMappingMethodResolver {
 		}
 
 		/**
-		 * @return The paths that match. NOTE: this can be a subset of {@link RequestMappingAnnotation#getPaths()}.
+		 * The paths that match. NOTE: this can be a subset of {@link RequestMappingAnnotation#getPaths()}.
+		 * 
+		 * @return matching paths
 		 */
 		public List<String> getPaths() {
 			return paths;

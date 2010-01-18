@@ -70,7 +70,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Get the canonical property name for a given optional descriptor.
-	 * 
 	 * @param descriptor The descriptor or <tt>null</tt>
 	 * @return The canonical property name or <tt>null</tt>
 	 */
@@ -80,7 +79,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Determine if a property contains both read and write methods.
-	 * 
 	 * @param descriptor The property descriptor
 	 * @return <tt>true</tt> if the property is mutable
 	 */
@@ -90,7 +88,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Determine if a property should be skipped. Used to ignore object properties.
-	 * 
 	 * @param property the property descriptor
 	 * @return <tt>true</tt> if the property is skipped
 	 */
@@ -100,7 +97,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Default constructor.
-	 * 
 	 * @param dataBinder A non null dataBinder
 	 */
 	public ReverseDataBinder(DataBinder dataBinder) {
@@ -110,7 +106,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Find a property editor by searching custom editors or falling back to default editors.
-	 * 
 	 * @param propertyEditorRegistrySupport An optional {@link PropertyEditorRegistrySupport} instance. If <tt>null</tt>
 	 * a {@link SimpleTypeConverter} instance will be used
 	 * @param targetObject The target object or <tt>null</tt>
@@ -138,7 +133,6 @@ public class ReverseDataBinder {
 	/**
 	 * Find a default editor for the given type. This code is based on <tt>TypeConverterDelegate.findDefaultEditor</tt>
 	 * from Spring 2.5.6.
-	 * 
 	 * @param requiredType the type to find an editor for
 	 * @param descriptor the JavaBeans descriptor for the property
 	 * @return the corresponding editor, or <code>null</code> if none
@@ -182,7 +176,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Utility method to convert a given value into a string using a property editor.
-	 * 
 	 * @param value The value to convert (can be <tt>null</tt>)
 	 * @param propertyEditor The property editor or <tt>null</tt> if no suitable property editor exists
 	 * @return The converted value
@@ -196,12 +189,10 @@ public class ReverseDataBinder {
 			return value == null ? null : value.toString();
 		}
 		return null;
-
 	}
 
 	/**
 	 * Gets the {@link SimpleTypeConverter} that should be used for conversion.
-	 * 
 	 * @return The simple type converter
 	 */
 	protected SimpleTypeConverter getSimpleTypeConverter() {
@@ -216,7 +207,6 @@ public class ReverseDataBinder {
 	 * also trigger a <tt>bind</tt> operation on the <tt>dataBinder</tt>. This method returns {@link PropertyValues}
 	 * containing a name/value pairs for each property that can be bound. Property values are encoded as Strings using
 	 * the property editors bound to the original dataBinder.
-	 * 
 	 * @return property values that could be re-bound using the data binder
 	 * @throws IllegalStateException if the target object values cannot be bound
 	 */
@@ -294,7 +284,6 @@ public class ReverseDataBinder {
 
 	/**
 	 * Reverse convert a simple object value.
-	 * 
 	 * @param value The value to convert
 	 * @return The converted value
 	 */
@@ -310,7 +299,6 @@ public class ReverseDataBinder {
 	 * Skip any bound values when the current value is identical to the value of a newly constructed instance. This
 	 * setting can help to reduce the number of superfluous bound properties. Note: If the target object class does not
 	 * have a default (no-args) constructor this setting will be ignored. The default setting is <tt>true</tt>.
-	 * 
 	 * @param skipDefaultValues <tt>true</tt> if default properties should be ignored, otherwise <tt>false</tt>
 	 */
 	public void setSkipDefaultValues(boolean skipDefaultValues) {

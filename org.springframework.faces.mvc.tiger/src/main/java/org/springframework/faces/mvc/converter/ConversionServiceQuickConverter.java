@@ -98,6 +98,11 @@ public class ConversionServiceQuickConverter implements QuickConverter, Initiali
 		Assert.notNull(conversionService, "The conversion service is required");
 	}
 
+	/**
+	 * Sets the conversion service that will be used to perform the conversion. If this method is not called the current
+	 * bean factory will be searched.
+	 * @param conversionService A conversion service
+	 */
 	public void setConversionService(ConversionService conversionService) {
 		Assert.notNull(conversionService, "The conversion service is required");
 		this.conversionService = conversionService;

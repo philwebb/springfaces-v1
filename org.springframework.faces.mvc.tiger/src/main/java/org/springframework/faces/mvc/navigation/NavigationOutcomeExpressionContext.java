@@ -28,21 +28,18 @@ public interface NavigationOutcomeExpressionContext {
 
 	/**
 	 * Provides access to the current native web request that caused the navigation outcome.
-	 * 
 	 * @return The current native web request
 	 */
-	public NativeWebRequest getWebRequest();
+	NativeWebRequest getWebRequest();
 
 	/**
 	 * Factory method that can be used to create a fully initialized {@link WebDataBinder}. The {@link WebDataBinder}
 	 * will be initialized using {@link InitBinder} annotated methods from the controller.
-	 * 
 	 * @param attrName The attribute name or <tt>null</tt> if the binder does not relate to a specific attribute
 	 * @param target The target object or <tt>null</tt> if the binder does not relate to a specific target
 	 * @param objectName The name of the object being bound or <tt>null</tt> to use the default name
 	 * @return A fully initialized {@link WebDataBinder} instance
-	 * 
 	 * @throws Exception on error
 	 */
-	public WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception;
+	WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception;
 }

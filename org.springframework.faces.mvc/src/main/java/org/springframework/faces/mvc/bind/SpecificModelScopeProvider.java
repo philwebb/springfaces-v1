@@ -28,7 +28,6 @@ public class SpecificModelScopeProvider implements ModelScopeProvider {
 
 	/**
 	 * Constructor.
-	 * 
 	 * @param scope The scope name
 	 */
 	public SpecificModelScopeProvider(String scope) {
