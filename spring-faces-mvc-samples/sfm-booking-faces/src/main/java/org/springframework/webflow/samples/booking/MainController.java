@@ -8,7 +8,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.binding.convert.ConversionService;
+import org.springframework.faces.mvc.converter.QuickConverter;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
@@ -26,7 +26,7 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
 public class MainController {
 
     private BookingService bookingService;
-    private ConversionService conversionService;
+    private QuickConverter converter;
 
     @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
     @RequestMapping("/main2")
@@ -48,7 +48,7 @@ public class MainController {
 
     private DataModel doSearch(SearchCriteria searchCriteria) {
 	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
-	return (DataModel) conversionService.executeConversion(hotels, DataModel.class);
+	return converter.toDataModel(hotels);
     }
 
     // FIXME @ConvertTo(DataModel.class)
@@ -56,7 +56,7 @@ public class MainController {
 	ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 	Principal user = externalContext.getUserPrincipal();
 	List<Booking> bookings = bookingService.findBookings(user == null ? "" : user.getName());
-	return (DataModel) conversionService.executeConversion(bookings, DataModel.class);
+	return converter.toDataModel(bookings);
     }
 
     // FIXME navigation reqest mapping? perhaps on navigation rules
@@ -92,7 +92,8 @@ public class MainController {
     }
 
     @Autowired
-    public void setConversionService(ConversionService conversionService) {
-	this.conversionService = conversionService;
+    public void setConverter(QuickConverter converter) {
+	this.converter = converter;
     }
+
 }
