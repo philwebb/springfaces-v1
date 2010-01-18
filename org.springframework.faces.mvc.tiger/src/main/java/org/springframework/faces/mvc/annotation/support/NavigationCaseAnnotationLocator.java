@@ -89,7 +89,7 @@ public class NavigationCaseAnnotationLocator {
 	 */
 	private FoundNavigationCase findNavigationCase(Object owner, NavigationCaseFilter filter) {
 		NavigationCase navigationCase = findAnnotation(owner, NavigationCase.class);
-		if (filter.isSuitable(navigationCase)) {
+		if (filter.isSuitable(owner, navigationCase)) {
 			return new FoundNavigationCase(navigationCase, owner);
 		}
 		return findNavigationCase(owner, findAnnotation(owner, NavigationRules.class), filter);
@@ -108,7 +108,7 @@ public class NavigationCaseAnnotationLocator {
 			return null;
 		}
 		for (NavigationCase navigationCase : navigationRules.value()) {
-			if (filter.isSuitable(navigationCase)) {
+			if (filter.isSuitable(owner, navigationCase)) {
 				return new FoundNavigationCase(navigationCase, owner);
 			}
 		}
@@ -149,11 +149,11 @@ public class NavigationCaseAnnotationLocator {
 			this.event = event;
 		}
 
-		public boolean isSuitable(NavigationCase navigationCase) {
+		public boolean isSuitable(Object owner, NavigationCase navigationCase) {
 			if (navigationCase == null) {
 				return false;
 			}
-			if (!isSuitableOn(navigationCase)) {
+			if (!isSuitableOn(owner, navigationCase)) {
 				return false;
 			}
 			if (!isSuitableAction(navigationCase)) {
@@ -165,12 +165,21 @@ public class NavigationCaseAnnotationLocator {
 			return true;
 		}
 
-		private boolean isSuitableOn(NavigationCase navigationCase) {
+		private boolean isSuitableOn(Object owner, NavigationCase navigationCase) {
+			// If on has not been specified
 			if (navigationCase.on().length == 0) {
-				return true;
+				if (navigationCase.onException() != null) {
+					// we accept if onException is specified
+					return true;
+				}
+				if ((owner instanceof Method) && (((Method) owner).getName().equals(event.getOutcome()))) {
+					// We use the method name
+					return true;
+				}
 			}
+			// If on has been specified, at least one must match
 			for (String on : navigationCase.on()) {
-				if (on.equals(event.getOutcome())) {
+				if (on.equals("*") || on.equals(event.getOutcome())) {
 					return true;
 				}
 			}

@@ -28,6 +28,18 @@ public class MainController {
     private BookingService bookingService;
     private QuickConverter converter;
 
+    private DataModel doSearch(SearchCriteria searchCriteria) {
+	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
+	return converter.toDataModel(hotels);
+    }
+
+    private DataModel getBookings() {
+	ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+	Principal user = externalContext.getUserPrincipal();
+	List<Booking> bookings = bookingService.findBookings(user == null ? "" : user.getName());
+	return converter.toDataModel(bookings);
+    }
+
     @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
     @RequestMapping("/main2")
     public ModelAndView main(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
@@ -46,20 +58,14 @@ public class MainController {
 	return "reviewHotels";
     }
 
-    private DataModel doSearch(SearchCriteria searchCriteria) {
-	List<Hotel> hotels = bookingService.findHotels(searchCriteria);
-	return converter.toDataModel(hotels);
+    @RequestMapping("/reviewHotel")
+    @NavigationRules( { @NavigationCase(on = "cancel", to = "main2") })
+    public String reviewHotel(@RequestParam("id") Long id, Model model) {
+	Hotel hotel = bookingService.findHotelById(id);
+	model.addAttribute("hotel", hotel);
+	return "reviewHotel";
     }
 
-    // FIXME @ConvertTo(DataModel.class)
-    private DataModel getBookings() {
-	ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-	Principal user = externalContext.getUserPrincipal();
-	List<Booking> bookings = bookingService.findBookings(user == null ? "" : user.getName());
-	return converter.toDataModel(bookings);
-    }
-
-    // FIXME navigation reqest mapping? perhaps on navigation rules
     @NavigationCase(on = { "next", "previous" }, to = "/search2?#{searchCriteria}")
     public void navigate(FacesContext facesContext, NavigationRequestEvent event,
 	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
@@ -71,19 +77,11 @@ public class MainController {
 	}
     }
 
-    @NavigationCase(on = "sort", fragments = "hotels:searchResultsFragment")
+    @NavigationCase(fragments = "hotels:searchResultsFragment")
     public void sort(@ModelAttribute("viewScope") MutableAttributeMap viewScope,
 	    @ModelAttribute("searchCriteria") SearchCriteria searchCriteria, @RequestParam("sortBy") String sortBy) {
 	searchCriteria.setSortBy(sortBy);
 	viewScope.put("hotels", doSearch(searchCriteria));
-    }
-
-    @RequestMapping("/reviewHotel")
-    @NavigationRules( { @NavigationCase(on = "cancel", to = "main2") })
-    public String select(@RequestParam("id") Long id, Model model) {
-	Hotel hotel = bookingService.findHotelById(id);
-	model.addAttribute("hotel", hotel);
-	return "reviewHotel";
     }
 
     @Autowired
@@ -95,5 +93,4 @@ public class MainController {
     public void setConverter(QuickConverter converter) {
 	this.converter = converter;
     }
-
 }

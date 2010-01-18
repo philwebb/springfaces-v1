@@ -41,13 +41,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public @interface NavigationCase {
 
 	/**
-	 * The 'on' cases that the navigation case applies to. If this value is omitted the navigation case applies for all
+	 * The 'on' cases that the navigation case applies to. If this value is omitted (and onException is also not
+	 * specified) the name of the method will be used. The value '*' can be used if the navigation case applies for all
 	 * views that the handler controls.
 	 * @return The 'on' cases
 	 */
 	public String[] on() default {};
-
-	// FIXME allow omit to deduce name from method
 
 	/**
 	 * The action expression that the navigation case applies to. This is the expression as defined on the component

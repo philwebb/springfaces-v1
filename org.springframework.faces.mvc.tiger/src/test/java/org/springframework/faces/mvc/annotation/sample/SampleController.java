@@ -51,6 +51,12 @@ public class SampleController {
 		return "someview";
 	}
 
+	@RequestMapping("/catchall/*")
+	@NavigationRules( { @NavigationCase(on = "*", to = "dto1") })
+	public String catchAll() {
+		return "someview";
+	}
+
 	@RequestMapping("/norules/*")
 	@NavigationCase(on = "mon2", to = "mto2")
 	public String noRules() {

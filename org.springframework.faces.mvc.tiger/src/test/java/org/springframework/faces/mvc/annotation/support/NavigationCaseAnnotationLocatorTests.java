@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 import org.apache.shale.test.mock.MockFacesContext;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
-import org.springframework.faces.mvc.annotation.support.NavigationCaseAnnotationLocator;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 public class NavigationCaseAnnotationLocatorTests extends TestCase {
@@ -89,6 +88,14 @@ public class NavigationCaseAnnotationLocatorTests extends TestCase {
 
 	public void testLocateWithDefault() throws Exception {
 		Method method = SampleController.class.getMethod("defaultOn", new Class<?>[] {});
+		Method[] methods = new Method[] { method };
+		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
+		assertEquals("dto1", locator.findNavigationCase(methods, event("defaultOn", "defaultOn")).getNavigationCase()
+				.to());
+	}
+
+	public void testLocateWithCatchAll() throws Exception {
+		Method method = SampleController.class.getMethod("catchAll", new Class<?>[] {});
 		Method[] methods = new Method[] { method };
 		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
 		assertEquals("dto1", locator.findNavigationCase(methods, event("mon1", "mon1")).getNavigationCase().to());
