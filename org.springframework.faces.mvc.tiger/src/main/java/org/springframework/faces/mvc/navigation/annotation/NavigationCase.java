@@ -99,6 +99,4 @@ public @interface NavigationCase {
 	public String[] fragments() default {};
 
 	// FIXME support if?
-	// FIXME rename package
-	// FIXME AJAX fragment support?
 }
