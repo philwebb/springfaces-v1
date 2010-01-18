@@ -52,13 +52,13 @@ public abstract class AbstractELResolver extends ELResolver {
 	/**
 	 * Determine if the resolve handles the specified property. This method will only be called is
 	 * {@link #isAvailable()} returns <tt>true</tt>. By default this method will return <tt>true</tt> if
-	 * {@link #get(String)} returns a non <tt>null</tt> value.
+	 * {@link #get(String)} returns a non <tt>null</tt> value and the property itself is not null.
 	 * 
 	 * @param property The property
 	 * @return <tt>true</tt> if resolver handles the specified property, otherwise <tt>false</tt>.
 	 */
 	protected boolean handles(String property) {
-		return get(property) != null;
+		return (property != null) && (get(property) != null);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public abstract class AbstractELResolver extends ELResolver {
 		if (base != null || !isAvailable()) {
 			return null;
 		}
-		String propertyString = property.toString();
+		String propertyString = (property == null ? null : property.toString());
 		if (handles(propertyString)) {
 			elContext.setPropertyResolved(true);
 			return operation.execute(propertyString);

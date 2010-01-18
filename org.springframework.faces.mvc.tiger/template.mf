@@ -1,10 +1,12 @@
-Bundle-SymbolicName: org.springframework.faces
-Bundle-Name: Spring Faces
+Bundle-SymbolicName: org.springframework.faces.tiger
+Bundle-Name: Spring Faces Tiger
 Bundle-Vendor: SpringSource
 Bundle-ManifestVersion: 2
 Import-Package: 
  org.springframework.webflow.engine.builder.support;version="[2.0.5, 2.0.6)"
+ org.springframework.faces.mvc.navigation;version="[1.0.0, 1.0.1)"
 Import-Template: 
+ org.springframework.faces.*;version="[1.0.0, 1.0.1)",
  org.springframework.webflow.*;version="[2.0.5, 2.0.6)",
  org.springframework.*;version="[2.5.6.A, 3.0.0)",
  org.apache.commons.logging;version="[1.1.1, 2.0.0)",
@@ -15,5 +17,7 @@ Import-Template:
  javax.faces.*;version="[1.2.0, 2.0.0)",
  org.ajax4jsf.*;version="[1.1.1, 2.0.0)";resolution:=optional,
  com.sun.facelets.*;version="[1.1.0, 2.0.0)";resolution:=optional
+Excluded-Exports: 
+ org.springframework.faces.mvc.navigation
 Unversioned-Imports: 
  org.w3c.dom

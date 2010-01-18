@@ -4,7 +4,6 @@
   "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
 
 <faces-config>
-
 	<application>
 		<view-handler>org.springframework.faces.mvc.support.MvcViewHandler</view-handler>
 		<navigation-handler>org.springframework.faces.mvc.support.MvcNavigationHandler</navigation-handler>

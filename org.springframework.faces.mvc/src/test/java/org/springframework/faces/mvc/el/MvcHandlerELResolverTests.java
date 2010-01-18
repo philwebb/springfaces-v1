@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.context.MvcFacesContext;
-import org.springframework.faces.mvc.el.MvcHandlerELResolver;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
@@ -52,7 +51,7 @@ public class MvcHandlerELResolverTests extends TestCase {
 	}
 
 	public void testGetTypeFound() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE);
+		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE).times(2);
 		EasyMock.replay(new Object[] { facesHandler });
 		Class type = resolver.getType(elContext, null, PROPERTY_NAME);
 		assertEquals(VALUE.getClass(), type);
@@ -61,7 +60,7 @@ public class MvcHandlerELResolverTests extends TestCase {
 	}
 
 	public void testGetValueFound() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE);
+		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE).times(2);
 		EasyMock.replay(new Object[] { facesHandler });
 		Object value = resolver.getValue(elContext, null, PROPERTY_NAME);
 		assertSame(VALUE, value);
@@ -96,7 +95,9 @@ public class MvcHandlerELResolverTests extends TestCase {
 	}
 
 	public void testIsReadOnly() throws Exception {
-		assertTrue(resolver.isReadOnly(elContext, null, null));
+		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE).times(2);
+		EasyMock.replay(new Object[] { facesHandler });
+		assertTrue(resolver.isReadOnly(elContext, null, PROPERTY_NAME));
 	}
 
 	public void testGetFeatureDescriptorsIsNull() throws Exception {

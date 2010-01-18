@@ -46,8 +46,6 @@ import org.apache.shale.test.mock.MockServletOutputStream;
 import org.easymock.EasyMock;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
-import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.util.PathMatcher;
@@ -135,7 +133,7 @@ public class FacesControllerAnnotatedMethodInvokerTests extends TestCase {
 			fail();
 		} catch (IllegalStateException e) {
 			assertEquals("InitBinder methods must not have a return value: "
-					+ "public java.lang.String org.springframework.faces.mvc.annotation."
+					+ "public java.lang.String org.springframework.faces.mvc.annotation.support."
 					+ "FacesControllerAnnotatedMethodInvokerTests$IllegalInitBinderReturnController.initBinder("
 					+ "org.springframework.web.bind.WebDataBinder)", e.getMessage());
 		}
@@ -190,7 +188,7 @@ public class FacesControllerAnnotatedMethodInvokerTests extends TestCase {
 		} catch (IllegalStateException e) {
 			assertEquals(
 					"@ModelAttribute is not supported on @InitBinder methods: "
-							+ "public void org.springframework.faces.mvc.annotation.FacesControllerAnnotatedMethodInvokerTests$"
+							+ "public void org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvokerTests$"
 							+ "IllegalInitBinderModelAttributeController.initBinder("
 							+ "org.springframework.web.bind.WebDataBinder,java.lang.String)", e.getMessage());
 		}
@@ -284,7 +282,7 @@ public class FacesControllerAnnotatedMethodInvokerTests extends TestCase {
 		} catch (IllegalStateException e) {
 			assertEquals(
 					"Unsupported argument [javax.crypto.Cipher] for "
-							+ "@InitBinder method: public void org.springframework.faces.mvc.annotation."
+							+ "@InitBinder method: public void org.springframework.faces.mvc.annotation.support."
 							+ "FacesControllerAnnotatedMethodInvokerTests$UnsupportedArgumentController.initBinder(javax.crypto.Cipher)",
 					e.getMessage());
 		}

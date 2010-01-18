@@ -73,7 +73,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		FoundNavigationCase found = doTest(SampleController.class, FoundNavigationCaseType.CLASS);
 		System.out.println(found.toString());
 		Pattern pattern = Pattern.compile("\\Q[FoundNavigationCase@\\E\\S+\\Q navigationCase = EasyMock "
-				+ "for interface org.springframework.faces.mvc.bind.annotation.NavigationCase, "
+				+ "for interface org.springframework.faces.mvc.navigation.annotation.NavigationCase, "
 				+ "type = CLASS, owner = SampleController]\\E");
 		assertTrue(pattern.matcher(found.toString()).matches());
 	}
