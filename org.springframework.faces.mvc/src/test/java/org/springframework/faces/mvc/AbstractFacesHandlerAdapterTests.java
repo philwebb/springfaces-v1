@@ -93,7 +93,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		this.actionUrlMapper = (ActionUrlMapper) EasyMock.createMock(ActionUrlMapper.class);
 		this.facesViewIdResolver = (FacesViewIdResolver) EasyMock.createMock(FacesViewIdResolver.class);
 		this.modelBindingExecutor = (ModelBindingExecutor) EasyMock.createMock(ModelBindingExecutor.class);
-		this.redirectHandler = (RedirectHandler) EasyMock.createMock(RedirectHandler.class);
+		this.redirectHandler = (RedirectHandler) EasyMock.createNiceMock(RedirectHandler.class);
 		this.request = (HttpServletRequest) EasyMock.createMock(HttpServletRequest.class);
 		this.response = (HttpServletResponse) EasyMock.createMock(HttpServletResponse.class);
 		this.facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
@@ -197,6 +197,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
 			}
 		};
+		this.redirectHandler = (RedirectHandler) EasyMock.createNiceMock(RedirectHandler.class);
 		facesHandlerAdapter.handle(request, response, facesHandler);
 		try {
 			EasyMock.verify(new Object[] { modelBindingExecutor });
@@ -230,6 +231,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
 			}
 		};
+		this.redirectHandler = (RedirectHandler) EasyMock.createNiceMock(RedirectHandler.class);
 		facesHandlerAdapter.handle(request, response, facesHandler);
 		assertEquals(expectedResponseComplete, facesContext.getRenderResponse());
 
@@ -264,7 +266,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
 		HttpServletRequest frequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 		HttpServletResponse fresponse = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-		redirectHandler.handleRedirect(ajaxHandler, frequest, fresponse, new NavigationLocation("location"));
+		redirectHandler.handleRedirect(ajaxHandler, frequest, fresponse, new NavigationLocation("location"), null);
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
@@ -349,7 +351,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		MockMvcFacesExceptionHandler exceptionHandler = new MockMvcFacesExceptionHandler(true);
 		exceptionHandler.setRedirect("location");
 		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
-		redirectHandler.handleRedirect(ajaxHandler, request, response, new NavigationLocation("location"));
+		redirectHandler.handleRedirect(ajaxHandler, request, response, new NavigationLocation("location"), null);
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter.setExceptionHandlers(Collections.singletonList(exceptionHandler));

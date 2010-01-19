@@ -38,11 +38,14 @@ import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
 import org.springframework.faces.mvc.context.MvcFacesContext;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
+import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
+import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
+import org.springframework.faces.mvc.execution.repository.TempExecutionContextRepository;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
@@ -68,6 +71,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	private List userDefinedExceptionHandlers;
 	private MvcFacesExceptionHandler[] allExceptionHandlers;
 	private AjaxHandler ajaxHandler;
+	private ExecutionContextRepository executionContextRepository = new TempExecutionContextRepository();
 
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		return -1;
@@ -83,6 +87,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		MvcFacesRequestControlContextImpl mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(
 				newFacesHandlerAdapterContext(), facesHandler);
 		try {
+			restoreExecution(mvcFacesRequestContext, request);
 			try {
 				doHandle(mvcFacesRequestContext, request, response);
 				return null;
@@ -96,16 +101,27 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
+	 * Restore the any store state for the flow execution.
+	 */
+	private void restoreExecution(MvcFacesRequestContext requestContext, HttpServletRequest request) {
+		String encodedKey = getRedirectHandler().getExecutionContextKey(request);
+		if (encodedKey != null) {
+			ExecutionContextKey key = executionContextRepository.parseKey(encodedKey);
+			executionContextRepository.restore(key, requestContext);
+		}
+	}
+
+	/**
 	 * Internal method called to perform the actual handling of the request. The {@link MvcFacesRequestContext} will be
 	 * active when this method is called. This method is expected to completely handle the rendering of a response or
 	 * throw an exception.
-	 * @param mvcFacesRequestContext The MVC Faces Request Context
+	 * @param requestContext The MVC Faces Request Context
 	 * @param request current HTTP request
 	 * @param response current HTTP response
 	 * @throws Exception in the case of errors
 	 * @see HandlerAdapter#handle(HttpServletRequest, HttpServletResponse, Object)
 	 */
-	protected abstract void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+	protected abstract void doHandle(MvcFacesRequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response) throws Exception;
 
 	/**
@@ -147,6 +163,13 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			}
 		}
 		return false;
+	}
+
+	protected void storeExecutionInRepositoryAndRedirect(MvcFacesRequestContext mvcFacesRequestContext,
+			HttpServletRequest request, HttpServletResponse response, NavigationLocation location) throws IOException {
+		ExecutionContextKey key = executionContextRepository.save(mvcFacesRequestContext);
+		getRedirectHandler().handleRedirect(ajaxHandler, request, response, location, key);
+
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -325,8 +348,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 				NavigationLocation location) throws IOException {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-			AbstractFacesHandlerAdapter.this.getRedirectHandler().handleRedirect(ajaxHandler, request, response,
-					location);
+			storeExecutionInRepositoryAndRedirect(requestContext, request, response, location);
 		}
 	}
 
@@ -351,17 +373,17 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			this.redisplay = true;
 		}
 
-		public void complete(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+		public void complete(MvcFacesRequestContext requestContext, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
 			if (redirectLocation != null && redisplay) {
 				throw new IllegalStateException(
 						"Illegal outcome specified, redirect or redisplay are mutually exclusive");
 			}
 			if (redirectLocation != null) {
-				getRedirectHandler().handleRedirect(ajaxHandler, request, response, redirectLocation);
+				storeExecutionInRepositoryAndRedirect(requestContext, request, response, redirectLocation);
 			}
 			if (redisplay) {
-				doHandle(mvcFacesRequestContext, request, response);
+				doHandle(requestContext, request, response);
 			}
 		}
 	}

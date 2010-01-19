@@ -22,11 +22,8 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	private FacesHandler facesHandler;
 	private Exception exception;
 	private NavigationRequestEvent lastNavigationRequestEvent;
-
 	private MutableAttributeMap requestScope = new LocalAttributeMap();
-
-	// FIXME how to do flash scope
-	private static MutableAttributeMap flashScope = new LocalAttributeMap();
+	private MutableAttributeMap flashScope = new LocalAttributeMap();
 
 	// Late binding
 	private MutableAttributeMap viewScope = null;

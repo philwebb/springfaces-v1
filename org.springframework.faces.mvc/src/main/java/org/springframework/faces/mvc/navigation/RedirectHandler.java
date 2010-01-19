@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
 import org.springframework.js.ajax.AjaxHandler;
 
@@ -41,8 +42,16 @@ public interface RedirectHandler {
 	 * @param location The redirect location, this will be the result of
 	 * {@link FacesHandler#getNavigationOutcomeLocation(javax.faces.context.FacesContext, NavigationRequestEvent)} or
 	 * {@link MvcFacesExceptionOutcome#redirect(NavigationLocation)}
+	 * @param key An optional context key that should be encoded as part of the redirect such that it can be later
+	 * retrieved using {@link #getExecutionContextKey(HttpServletRequest)}.
 	 * @throws IOException
 	 */
 	public void handleRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
-			NavigationLocation location) throws IOException;
+			NavigationLocation location, ExecutionContextKey key) throws IOException;
+
+	/**
+	 * Returns the flow execution context key encoded as part of the request or <tt>null</tt> if not present.
+	 * @return The flow execution context key or <tt>null</tt>.
+	 */
+	public String getExecutionContextKey(HttpServletRequest request);
 }

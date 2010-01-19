@@ -44,6 +44,7 @@ import org.springframework.web.bind.WebDataBinder;
  */
 public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeExpressionResolver {
 
+	// FIXME replace this like FlowUrlHandler to allow specified
 	private static final String UTF_8 = "UTF-8";
 	private static final Pattern EL_PATTERN = Pattern.compile("(?:([A-Za-z0-9\\.\\-\\*\\_\\%]+)\\=)?+(\\#\\{.+?\\})");
 

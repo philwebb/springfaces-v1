@@ -23,8 +23,6 @@ import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.navigation.DefaultRedirectHandler;
-import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.js.ajax.AjaxHandler;
 
 public class DefaultRedirectHandlerTests extends TestCase {
@@ -67,7 +65,7 @@ public class DefaultRedirectHandlerTests extends TestCase {
 		}
 
 		EasyMock.replay(new Object[] { context, request, response, ajaxHandler });
-		handler.handleRedirect(ajaxHandler, request, response, location);
+		handler.handleRedirect(ajaxHandler, request, response, location, null);
 		EasyMock.verify(new Object[] { response, ajaxHandler });
 	}
 

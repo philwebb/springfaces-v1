@@ -16,6 +16,8 @@
 package org.springframework.faces.mvc.navigation;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.js.ajax.AjaxHandler;
 
 /**
@@ -33,6 +36,12 @@ import org.springframework.js.ajax.AjaxHandler;
  * @author Phillip Webb
  */
 public class DefaultRedirectHandler implements RedirectHandler {
+	// FIXME test the execution stuff
+
+	private static final String EXECUTION_CONTEXT_KEY_PARAMETER = "execution";
+
+	// FIXME replace this as NavigationExpParser
+	private static final String UTF_8 = "UTF-8";
 
 	private static final int NONE = 0x00;
 	private static final int STRIP_PREFIX = 0x01;
@@ -57,16 +66,26 @@ public class DefaultRedirectHandler implements RedirectHandler {
 			return ((flags & context) != 0);
 		}
 
-		public String buildUrl(HttpServletRequest httpServletRequest, String location) {
-			StringBuffer url = new StringBuffer();
-			url.append(hasFlag(CONTEXT) ? httpServletRequest.getContextPath() : "");
-			url.append(hasFlag(SERVLET) ? httpServletRequest.getServletPath() : "");
-			location = (hasFlag(STRIP_PREFIX) ? location.substring(prefix.length()) : location);
-			if (hasFlag(SLASH) && !location.startsWith("/")) {
-				url.append("/");
+		public String buildUrl(HttpServletRequest httpServletRequest, String location, ExecutionContextKey key) {
+			try {
+				StringBuffer url = new StringBuffer();
+				url.append(hasFlag(CONTEXT) ? httpServletRequest.getContextPath() : "");
+				url.append(hasFlag(SERVLET) ? httpServletRequest.getServletPath() : "");
+				location = (hasFlag(STRIP_PREFIX) ? location.substring(prefix.length()) : location);
+				if (hasFlag(SLASH) && !location.startsWith("/")) {
+					url.append("/");
+				}
+				url.append(location);
+				if (key != null) {
+					url.append(location.indexOf("?") == -1 ? "?" : "&");
+					url.append(URLEncoder.encode(EXECUTION_CONTEXT_KEY_PARAMETER, UTF_8));
+					url.append("=");
+					url.append(URLEncoder.encode(key.toString(), UTF_8));
+				}
+				return url.toString();
+			} catch (UnsupportedEncodingException e) {
+				throw new IllegalStateException("Unexpected encoding exception", e);
 			}
-			url.append(location);
-			return url.toString();
 		}
 	}
 
@@ -115,22 +134,26 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	 * @param location The location string
 	 * @return The URL The final URL with all prefixes expanded
 	 */
-	protected String getLocationUrl(HttpServletRequest request, String location) {
+	protected String getLocationUrl(HttpServletRequest request, String location, ExecutionContextKey key) {
 		for (Iterator iterator = URL_BUILDERS.iterator(); iterator.hasNext();) {
 			UrlBuilder urlBuilder = (UrlBuilder) iterator.next();
 			if (urlBuilder.isSuitable(location)) {
-				return urlBuilder.buildUrl(request, location);
+				return urlBuilder.buildUrl(request, location, key);
 			}
 		}
 		return location;
 	}
 
 	public void handleRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
-			NavigationLocation location) throws IOException {
+			NavigationLocation location, ExecutionContextKey key) throws IOException {
 		if (location != null && location.getLocation() != null) {
-			String url = getLocationUrl(request, location.getLocation().toString());
+			String url = getLocationUrl(request, location.getLocation().toString(), key);
 			sendRedirect(ajaxHandler, url, request, response, location.getPopup());
 		}
+	}
+
+	public String getExecutionContextKey(HttpServletRequest request) {
+		return request.getParameter(EXECUTION_CONTEXT_KEY_PARAMETER);
 	}
 
 	/**

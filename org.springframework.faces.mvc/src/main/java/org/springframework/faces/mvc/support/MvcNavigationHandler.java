@@ -48,7 +48,7 @@ public class MvcNavigationHandler extends NavigationHandler {
 				requestContext.setLastNavigationRequestEvent(event);
 				NavigationLocation location = requestContext.getFacesHandler().getNavigationOutcomeLocation(
 						facesContext, event);
-				if (location != null && location.getFragments().length > 0) {
+				if (isStoredFragments(location)) {
 					requestContext.getFlashScope().put(View.RENDER_FRAGMENTS_ATTRIBUTE, location.getFragments());
 				}
 				if (location != null && location.getLocation() != null) {
@@ -61,5 +61,21 @@ public class MvcNavigationHandler extends NavigationHandler {
 			}
 		}
 		this.delegate.handleNavigation(facesContext, fromAction, outcome);
+	}
+
+	/**
+	 * Determine if fragments need to be stored for the specified location. Fragments only need to be stored for popups
+	 * and direct redirects.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	private boolean isStoredFragments(NavigationLocation location) {
+		if (location == null || location.getFragments() == null || location.getFragments().length == 0) {
+			// No fragments
+			return false;
+		}
+		// Only store fragments for popups or direct re-renders
+		return (location.getPopup() || location.getLocation() == null);
 	}
 }
