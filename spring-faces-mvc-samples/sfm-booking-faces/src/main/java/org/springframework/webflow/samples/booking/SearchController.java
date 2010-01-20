@@ -30,24 +30,21 @@ public class SearchController {
     private QuickConverter converter;
 
     @RequestMapping
-    public ModelAndView search(@ModelAttribute("searchCriteria") SearchCriteria searchCriteria) {
+    public ModelAndView search(@ModelAttribute SearchCriteria searchCriteria) {
 	return new ModelAndView("reviewHotels").addObject("hotels", doSearch(searchCriteria));
     }
 
     @NavigationCase(on = { "next", "previous" }, to = "/search?#{searchCriteria}")
-    public void navigate(FacesContext facesContext, String event,
-	    @ModelAttribute("searchCriteria") SearchCriteria searchCriteria) {
+    public void navigate(FacesContext facesContext, String event, @ModelAttribute SearchCriteria searchCriteria) {
 	if ("next".equals(event)) {
 	    searchCriteria.nextPage();
-	}
-	if ("previous".equals(event)) {
+	} else if ("previous".equals(event)) {
 	    searchCriteria.previousPage();
 	}
     }
 
     @NavigationCase(fragments = "hotels:searchResultsFragment")
-    public void sort(@ModelAttribute("searchCriteria") SearchCriteria searchCriteria,
-	    @RequestParam("sortBy") String sortBy) {
+    public void sort(@ModelAttribute SearchCriteria searchCriteria, @RequestParam("sortBy") String sortBy) {
 	searchCriteria.setSortBy(sortBy);
 	MvcFacesRequestContextHolder.getRequestContext().getViewScope().put("hotels", doSearch(searchCriteria));
     }
