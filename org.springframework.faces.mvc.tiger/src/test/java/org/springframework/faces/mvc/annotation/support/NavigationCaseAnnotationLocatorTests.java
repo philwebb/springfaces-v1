@@ -27,7 +27,22 @@ import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 public class NavigationCaseAnnotationLocatorTests extends TestCase {
 
+	// FIXME test controller with no annotation methods
+
 	private FacesContext facesContext = new MockFacesContext();
+	private NavigationCaseAnnotationLocator locator;
+	private Object handler;
+	Method[] methods;
+
+	protected void setUp() throws Exception {
+		this.locator = new NavigationCaseAnnotationLocator();
+		this.handler = new SampleController();
+	}
+
+	private void useMethod(String name) throws Exception {
+		Method method = SampleController.class.getMethod(name, new Class<?>[] {});
+		this.methods = new Method[] { method };
+	}
 
 	private NavigationRequestEvent event(String fromAction, String outcome) {
 		return new NavigationRequestEvent(facesContext, fromAction, outcome);
@@ -38,81 +53,66 @@ public class NavigationCaseAnnotationLocatorTests extends TestCase {
 		return new NavigationRequestEvent(this, event, exception);
 	}
 
+	private FoundNavigationCase locate(NavigationRequestEvent event) {
+		return locator.findNavigationCase(handler, methods, event);
+	}
+
 	public void testLocate() throws Exception {
-		Method method = SampleController.class.getMethod("withRules", new Class<?>[] {});
-		Method[] methods = new Method[] { method };
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertEquals("mto1", locator.findNavigationCase(methods, event("mon1", "mon1")).getNavigationCase().to());
-		assertEquals("mto2", locator.findNavigationCase(methods, event("mon2", "mon2")).getNavigationCase().to());
-		assertEquals("cto1", locator.findNavigationCase(methods, event("con1", "con1")).getNavigationCase().to());
-		assertEquals("cto2", locator.findNavigationCase(methods, event("con2", "con2")).getNavigationCase().to());
-		assertEquals("pto1", locator.findNavigationCase(methods, event("pon1", "pon1")).getNavigationCase().to());
-		assertEquals("pto2", locator.findNavigationCase(methods, event("pon2", "pon2")).getNavigationCase().to());
-		assertNull(locator.findNavigationCase(methods, event("missing", "")));
+		useMethod("withRules");
+		assertEquals("mto1", locate(event("mon1", "mon1")).getNavigationCase().to());
+		assertEquals("mto2", locate(event("mon2", "mon2")).getNavigationCase().to());
+		assertEquals("cto1", locate(event("con1", "con1")).getNavigationCase().to());
+		assertEquals("cto2", locate(event("con2", "con2")).getNavigationCase().to());
+		assertEquals("pto1", locate(event("pon1", "pon1")).getNavigationCase().to());
+		assertEquals("pto2", locate(event("pon2", "pon2")).getNavigationCase().to());
+		assertNull(locate(event("missing", "")));
 	}
 
 	public void testLocateWithAction() throws Exception {
-		Method method = SampleController.class.getMethod("withRules", new Class<?>[] {});
-		Method[] methods = new Method[] { method };
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertEquals("mato1", locator.findNavigationCase(methods, event("#{bean.action1}", "maon1"))
-				.getNavigationCase().to());
-		assertEquals("mato2", locator.findNavigationCase(methods, event("#{bean.action2}", "maon1"))
-				.getNavigationCase().to());
-		assertNull(locator.findNavigationCase(methods, event("maon1", "#{bean.missing}")));
-		assertEquals("cato1", locator.findNavigationCase(methods, event("#{bean.action1}", "caon1"))
-				.getNavigationCase().to());
-		assertEquals("cato2", locator.findNavigationCase(methods, event("#{bean.action2}", "caon1"))
-				.getNavigationCase().to());
-		assertNull(locator.findNavigationCase(methods, event("caon1", "#{bean.missing}")));
-		assertEquals("pato1", locator.findNavigationCase(methods, event("#{bean.action1}", "paon1"))
-				.getNavigationCase().to());
-		assertEquals("pato2", locator.findNavigationCase(methods, event("#{bean.action2}", "paon1"))
-				.getNavigationCase().to());
-		assertNull(locator.findNavigationCase(methods, event("paon1", "#{bean.missing}")));
+		useMethod("withRules");
+		assertEquals("mato1", locate(event("#{bean.action1}", "maon1")).getNavigationCase().to());
+		assertEquals("mato2", locate(event("#{bean.action2}", "maon1")).getNavigationCase().to());
+		assertNull(locate(event("maon1", "#{bean.missing}")));
+		assertEquals("cato1", locate(event("#{bean.action1}", "caon1")).getNavigationCase().to());
+		assertEquals("cato2", locate(event("#{bean.action2}", "caon1")).getNavigationCase().to());
+		assertNull(locate(event("caon1", "#{bean.missing}")));
+		assertEquals("pato1", locate(event("#{bean.action1}", "paon1")).getNavigationCase().to());
+		assertEquals("pato2", locate(event("#{bean.action2}", "paon1")).getNavigationCase().to());
+		assertNull(locate(event("paon1", "#{bean.missing}")));
 	}
 
 	public void testLocateWithoutMethods() throws Exception {
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertNull(locator.findNavigationCase(null, event("mon1", "mon1")));
-		assertNull(locator.findNavigationCase(new Method[] {}, event("mon1", "mon1")));
+		Object h = new Object();
+		assertNull(locator.findNavigationCase(h, null, event("mon1", "mon1")));
+		assertNull(locator.findNavigationCase(h, new Method[] {}, event("mon1", "mon1")));
 	}
 
 	public void testLocateNoNavigationRules() throws Exception {
-		Method method = SampleController.class.getMethod("noRules", new Class<?>[] {});
-		Method[] methods = new Method[] { method };
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertEquals("mto2", locator.findNavigationCase(methods, event("mon2", "mon2")).getNavigationCase().to());
-		assertEquals("cto2", locator.findNavigationCase(methods, event("con2", "con2")).getNavigationCase().to());
+		useMethod("noRules");
+		assertEquals("mto2", locate(event("mon2", "mon2")).getNavigationCase().to());
+		assertEquals("cto2", locate(event("con2", "con2")).getNavigationCase().to());
 	}
 
 	public void testLocateWithDefault() throws Exception {
-		Method method = SampleController.class.getMethod("defaultOn", new Class<?>[] {});
-		Method[] methods = new Method[] { method };
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertEquals("dto1", locator.findNavigationCase(methods, event("defaultOn", "defaultOn")).getNavigationCase()
-				.to());
+		useMethod("defaultOn");
+		assertEquals("dto1", locate(event("defaultOn", "defaultOn")).getNavigationCase().to());
 	}
 
 	public void testLocateWithCatchAll() throws Exception {
-		Method method = SampleController.class.getMethod("catchAll", new Class<?>[] {});
-		Method[] methods = new Method[] { method };
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertEquals("dto1", locator.findNavigationCase(methods, event("mon1", "mon1")).getNavigationCase().to());
-		assertEquals("dto1", locator.findNavigationCase(methods, event("con1", "con1")).getNavigationCase().to());
-		assertEquals("dto1", locator.findNavigationCase(methods, event("pon1", "pon1")).getNavigationCase().to());
+		useMethod("catchAll");
+		assertEquals("dto1", locate(event("mon1", "mon1")).getNavigationCase().to());
+		assertEquals("dto1", locate(event("con1", "con1")).getNavigationCase().to());
+		assertEquals("dto1", locate(event("pon1", "pon1")).getNavigationCase().to());
 	}
 
 	public void testLocateForException() throws Exception {
 		Method method = SampleController.class.getMethod("withRules", new Class<?>[] {});
 		Method[] methods = new Method[] { method };
-		NavigationCaseAnnotationLocator locator = new NavigationCaseAnnotationLocator();
-		assertEquals("ceto1", locator.findNavigationCase(methods, event("ceon1", "ceon1", new IllegalStateException()))
-				.getNavigationCase().to());
-		assertEquals("ceto1", locator.findNavigationCase(methods,
+		assertEquals("ceto1", locator.findNavigationCase(handler, methods,
+				event("ceon1", "ceon1", new IllegalStateException())).getNavigationCase().to());
+		assertEquals("ceto1", locator.findNavigationCase(handler, methods,
 				event("ceon1", "ceon1", new RuntimeException(new IllegalStateException()))).getNavigationCase().to());
-		assertNull(locator.findNavigationCase(methods, event("ceon1", "ceon1", new RuntimeException())));
-
+		assertNull(locator.findNavigationCase(handler, methods, event("ceon1", "ceon1", new RuntimeException())));
 	}
 
 }

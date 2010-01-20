@@ -212,8 +212,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		NavigationCaseMethodResolver methodResolver = getMethodResolver(handler);
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
-		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(navigationMethods,
-				event);
+		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(handler,
+				navigationMethods, event);
 		NavigationOutcomeExpressionContextImpl context = new NavigationOutcomeExpressionContextImpl(handler,
 				webRequest, methodResolver);
 		NavigationLocation outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler,

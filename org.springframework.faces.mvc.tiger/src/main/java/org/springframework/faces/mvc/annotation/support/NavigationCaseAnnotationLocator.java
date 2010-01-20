@@ -17,8 +17,6 @@ package org.springframework.faces.mvc.annotation.support;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
@@ -37,45 +35,33 @@ public class NavigationCaseAnnotationLocator {
 	 * Find and return the first suitable {@link NavigationCase} annotation by searching the specified <tt>methods</tt>.
 	 * This method will search for {@link NavigationCase} and {@link NavigationRules} annotations on the specified
 	 * methods array. Methods are searched in order starting at index 0. If no suitable method annotation is found the
-	 * declaring class of the method will be searched, followed by the package.
+	 * handler class will be searched, followed by the package.
+	 * @param handler The handler
 	 * @param methods Array of methods to search
 	 * @param event The navigation request event
 	 * @return A {@link FoundNavigationCase} instance or <tt>null</tt> if no suitable annotation is found
 	 */
-	public FoundNavigationCase findNavigationCase(Method[] methods, NavigationRequestEvent event) {
-		if (methods == null || methods.length == 0) {
-			return null;
-		}
+	public FoundNavigationCase findNavigationCase(Object handler, Method[] methods, NavigationRequestEvent event) {
 		NavigationCaseFilter filter = new NavigationCaseFilter(event);
-
 		FoundNavigationCase navigationCase = null;
 
-		// Search methods (collecting classes)
-		Set<Class<?>> ownerClasses = new LinkedHashSet<Class<?>>();
-		for (Method method : methods) {
-			ownerClasses.add(method.getDeclaringClass());
-			navigationCase = findNavigationCase(method, filter);
-			if (navigationCase != null) {
-				return navigationCase;
+		if (methods != null && methods.length > 0) {
+			for (Method method : methods) {
+				navigationCase = findNavigationCase(method, filter);
+				if (navigationCase != null) {
+					return navigationCase;
+				}
 			}
 		}
 
-		// Search classes (collecting packages_
-		Set<Package> ownerPackages = new LinkedHashSet<Package>();
-		for (Class<?> ownerClass : ownerClasses) {
-			ownerPackages.add(ownerClass.getPackage());
-			navigationCase = findNavigationCase(ownerClass, filter);
-			if (navigationCase != null) {
-				return navigationCase;
-			}
+		navigationCase = findNavigationCase(handler.getClass(), filter);
+		if (navigationCase != null) {
+			return navigationCase;
 		}
 
-		// Search package
-		for (Package ownerPackage : ownerPackages) {
-			navigationCase = findNavigationCase(ownerPackage, filter);
-			if (navigationCase != null) {
-				return navigationCase;
-			}
+		navigationCase = findNavigationCase(handler.getClass().getPackage(), filter);
+		if (navigationCase != null) {
+			return navigationCase;
 		}
 
 		return null;
