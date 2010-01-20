@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.Conventions;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -418,7 +419,9 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 
 		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
 				WebRequest webRequest, boolean failOnErrors) {
-
+			if (modelAttributeName == null) {
+				modelAttributeName = Conventions.getVariableNameForParameter(methodParameter);
+			}
 			ExpressionFactory expressionFactory = facesContext.getApplication().getExpressionFactory();
 			ELContext elContext = FacesContext.getCurrentInstance().getELContext();
 			ValueExpression valueExpression = expressionFactory.createValueExpression(elContext, "#{"
