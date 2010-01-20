@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
 /**
  * Default implementation of {@link ModelBinder} that exposes MVC Model elements to JSF using MVC {@link ScopeType}s or
  * registered spring {@link Scope}s. By default this binder is configured with {@link ImplicitModelScopeProvider}
- * support, falling back to <tt>request</tt> scope when an implicit scope name is not found.
+ * support, falling back to <tt>viewScope</tt> when an implicit scope name is not found.
  * 
  * @author Phillip Webb
  */
@@ -43,7 +43,7 @@ public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, Initia
 	private ModelScopeProvider modelScopeProvider;
 
 	public DefaultModelBinder() {
-		this.modelScopeProvider = new ImplicitModelScopeProvider(ScopeType.REQUEST);
+		this.modelScopeProvider = new ImplicitModelScopeProvider(ScopeType.VIEW);
 	}
 
 	public void bindModel(Map model) {

@@ -25,7 +25,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.faces.mvc.bind.DefaultModelBinder;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.execution.ScopeType;
@@ -56,9 +55,15 @@ public class DefaultModelBinderTests extends TestCase {
 			beanFactory.registerScope(scopeName, scope);
 			EasyMock.replay(new Object[] { scope });
 		} else {
-			EasyMock.expect(context.getRequestScope()).andStubReturn(map);
-			EasyMock.expect(context.getFlashScope()).andStubReturn(map);
-			EasyMock.expect(context.getViewScope()).andStubReturn(map);
+			if (ScopeType.REQUEST.equals(scopeType)) {
+				EasyMock.expect(context.getRequestScope()).andStubReturn(map);
+			}
+			if (ScopeType.FLASH.equals(scopeType)) {
+				EasyMock.expect(context.getFlashScope()).andStubReturn(map);
+			}
+			if (ScopeType.VIEW.equals(scopeType)) {
+				EasyMock.expect(context.getViewScope()).andStubReturn(map);
+			}
 			EasyMock.replay(new Object[] { context });
 		}
 		DefaultModelBinder binder = new DefaultModelBinder();
@@ -75,8 +80,8 @@ public class DefaultModelBinderTests extends TestCase {
 		}
 	}
 
-	public void testDefaultsToRequestScope() throws Exception {
-		doTestBind("request", null, ScopeType.REQUEST);
+	public void testDefaultsToViewScope() throws Exception {
+		doTestBind("view", null, ScopeType.VIEW);
 	}
 
 	public void testOnlyWithConfigurableBeanFactory() throws Exception {

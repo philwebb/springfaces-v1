@@ -42,10 +42,10 @@ public class MainController {
 
     @NavigationRules( { @NavigationCase(on = "search", to = "/search?#{searchCriteria}") })
     @RequestMapping("/main")
-    public ModelAndView main(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
+    public ModelAndView main(@ModelAttribute("searchCriteria") SearchCriteria searchCriteria) {
 	searchCriteria.resetPage();
 	ModelAndView modelAndView = new ModelAndView("enterSearchCriteria");
-	modelAndView.addObject("viewScope.bookings", getBookings());
+	modelAndView.addObject("bookings", getBookings());
 	return modelAndView;
     }
 
@@ -61,8 +61,8 @@ public class MainController {
     @NavigationRules( {
 	    @NavigationCase(on = "select", to = "reviewHotel?id=#{hotels.selectedRow.id}"),
 	    @NavigationCase(on = "changeSearch", to = "/main?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true, fragments = "hotelSearchFragment") })
-    public String search(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria, Model model) {
-	model.addAttribute("viewScope.hotels", doSearch(searchCriteria));
+    public String search(@ModelAttribute("searchCriteria") SearchCriteria searchCriteria, Model model) {
+	model.addAttribute("hotels", doSearch(searchCriteria));
 	return "reviewHotels";
     }
 
@@ -70,8 +70,7 @@ public class MainController {
     @NavigationRules( { @NavigationCase(on = "cancel", to = "main"),
 	    @NavigationCase(on = "book", to = "booking?hotelId=#{hotel.id}") })
     public String reviewHotel(@RequestParam("id") Long id, Model model) {
-	Hotel hotel = bookingService.findHotelById(id);
-	model.addAttribute("viewScope.hotel", hotel);
+	model.addAttribute("hotel", bookingService.findHotelById(id));
 	return "reviewHotel";
     }
 
@@ -80,7 +79,7 @@ public class MainController {
 
     @NavigationCase(on = { "next", "previous" }, to = "/search?#{searchCriteria}")
     public void navigate(FacesContext facesContext, NavigationRequestEvent event,
-	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
+	    @ModelAttribute("searchCriteria") SearchCriteria searchCriteria) {
 	if ("next".equals(event.getOutcome())) {
 	    searchCriteria.nextPage();
 	}
