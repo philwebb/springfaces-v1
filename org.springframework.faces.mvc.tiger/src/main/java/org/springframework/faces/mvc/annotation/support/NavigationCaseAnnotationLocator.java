@@ -168,7 +168,7 @@ public class NavigationCaseAnnotationLocator {
 		private boolean isSuitableOn(Object owner, NavigationCase navigationCase) {
 			// If on has not been specified
 			if (navigationCase.on().length == 0) {
-				if (navigationCase.onException() != null) {
+				if (!void.class.equals(navigationCase.onException())) {
 					// we accept if onException is specified
 					return true;
 				}
