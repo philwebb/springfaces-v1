@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 @NavigationRules( { @NavigationCase(on = "search", to = "/search?#{searchCriteria}") })
 @RequestMapping("/main")
 public class MainController {
-    // FIXME cache control
+
     @Autowired
     private BookingService bookingService;
 

@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 @NavigationRules( { @NavigationCase(on = "cancel", to = "main"),
 	@NavigationCase(on = "book", to = "booking?hotelId=#{hotel.id}") })
 public class ReviewController {
-    // FIXME support flowRedirect:
 
     @Autowired
     private BookingService bookingService;
