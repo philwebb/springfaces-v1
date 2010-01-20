@@ -6,26 +6,26 @@
 	<secured attributes="ROLE_USER" />
 
 	<persistence-context/>
-	
+
 	<input name="hotelId" required="true" />
 
 	<on-start>
 		<evaluate expression="bookingService.createBooking(hotelId, currentUser.name)" result="flowScope.booking" />
 	</on-start>
-	
+
 	<view-state id="enterBookingDetails" model="booking">
 		<transition on="proceed" to="reviewBooking" />
 		<transition on="cancel" to="bookingCancelled" bind="false" />
 	</view-state>
-	
+
 	<view-state id="reviewBooking">
 		<transition on="confirm" to="bookingConfirmed" />
 		<transition on="revise" to="enterBookingDetails" />
 		<transition on="cancel" to="bookingCancelled" />
 	</view-state>
-	
-	<end-state id="bookingConfirmed" commit="true" />
 
-	<end-state id="bookingCancelled" />
-		
+	<end-state id="bookingConfirmed" commit="true" view="externalRedirect:servletRelative:main"/>
+
+	<end-state id="bookingCancelled" view="externalRedirect:servletRelative:main"/>
+
 </flow>

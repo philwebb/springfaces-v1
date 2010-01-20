@@ -40,33 +40,45 @@ public class MainController {
 	return converter.toDataModel(bookings);
     }
 
-    @NavigationRules( { @NavigationCase(on = "search", to = "/search2?#{searchCriteria}") })
-    @RequestMapping("/main2")
+    @NavigationRules( { @NavigationCase(on = "search", to = "/search?#{searchCriteria}") })
+    @RequestMapping("/main")
     public ModelAndView main(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
 	searchCriteria.resetPage();
 	ModelAndView modelAndView = new ModelAndView("enterSearchCriteria");
-	modelAndView.addObject("bookings", getBookings());
+	modelAndView.addObject("viewScope.bookings", getBookings());
 	return modelAndView;
     }
 
-    @RequestMapping("/search2")
+    @NavigationCase(fragments = "bookingsFragment")
+    public void cancelBooking(@ModelAttribute("bookings.selectedRow") Booking booking,
+	    @ModelAttribute("viewScope") MutableAttributeMap viewScope) {
+	bookingService.cancelBooking(booking);
+	// FIXME would be nice to have onRender to do this
+	viewScope.put("bookings", getBookings());
+    }
+
+    @RequestMapping("/search")
     @NavigationRules( {
 	    @NavigationCase(on = "select", to = "reviewHotel?id=#{hotels.selectedRow.id}"),
-	    @NavigationCase(on = "changeSearch", to = "/main2?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true, fragments = "hotelSearchFragment") })
+	    @NavigationCase(on = "changeSearch", to = "/main?searchString=#{searchCriteria.searchString}&pageSize=#{searchCriteria.pageSize}", popup = true, fragments = "hotelSearchFragment") })
     public String search(@ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria, Model model) {
 	model.addAttribute("viewScope.hotels", doSearch(searchCriteria));
 	return "reviewHotels";
     }
 
     @RequestMapping("/reviewHotel")
-    @NavigationRules( { @NavigationCase(on = "cancel", to = "main2") })
+    @NavigationRules( { @NavigationCase(on = "cancel", to = "main"),
+	    @NavigationCase(on = "book", to = "booking?hotelId=#{hotel.id}") })
     public String reviewHotel(@RequestParam("id") Long id, Model model) {
 	Hotel hotel = bookingService.findHotelById(id);
-	model.addAttribute("hotel", hotel);
+	model.addAttribute("viewScope.hotel", hotel);
 	return "reviewHotel";
     }
 
-    @NavigationCase(on = { "next", "previous" }, to = "/search2?#{searchCriteria}")
+    // FIXME support flow redirect
+    // FIXME change the default scope to viewScope
+
+    @NavigationCase(on = { "next", "previous" }, to = "/search?#{searchCriteria}")
     public void navigate(FacesContext facesContext, NavigationRequestEvent event,
 	    @ModelAttribute("viewScope.searchCriteria") SearchCriteria searchCriteria) {
 	if ("next".equals(event.getOutcome())) {
