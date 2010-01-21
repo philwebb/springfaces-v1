@@ -45,7 +45,8 @@ import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
 import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
-import org.springframework.faces.mvc.execution.repository.TempExecutionContextRepository;
+import org.springframework.faces.mvc.execution.repository.NoSuchExecutionException;
+import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
@@ -71,7 +72,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	private List userDefinedExceptionHandlers;
 	private MvcFacesExceptionHandler[] allExceptionHandlers;
 	private AjaxHandler ajaxHandler;
-	private ExecutionContextRepository executionContextRepository = new TempExecutionContextRepository();
+	// FIXME setter
+	private ExecutionContextRepository executionContextRepository = new SessionBindingExecutionContextRepository();
 
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		return -1;
@@ -107,7 +109,11 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		String encodedKey = getRedirectHandler().getExecutionContextKey(request);
 		if (encodedKey != null) {
 			ExecutionContextKey key = executionContextRepository.parseKey(encodedKey);
-			executionContextRepository.restore(key, requestContext);
+			try {
+				executionContextRepository.restore(key, request, requestContext);
+			} catch (NoSuchExecutionException e) {
+				logger.warn("Unable to restore flashScope for MVC Faces request", e);
+			}
 		}
 	}
 
@@ -167,7 +173,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	protected void storeExecutionInRepositoryAndRedirect(MvcFacesRequestContext mvcFacesRequestContext,
 			HttpServletRequest request, HttpServletResponse response, NavigationLocation location) throws IOException {
-		ExecutionContextKey key = executionContextRepository.save(mvcFacesRequestContext);
+		ExecutionContextKey key = executionContextRepository.save(request, mvcFacesRequestContext);
 		getRedirectHandler().handleRedirect(ajaxHandler, request, response, location, key);
 
 	}

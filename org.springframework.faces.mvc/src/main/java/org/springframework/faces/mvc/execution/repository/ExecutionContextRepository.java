@@ -15,6 +15,8 @@
  */
 package org.springframework.faces.mvc.execution.repository;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
@@ -23,46 +25,51 @@ import org.springframework.faces.mvc.navigation.RedirectHandler;
  * Central subsystem interface use to save and restore information from {@link MvcFacesRequestContext} so that
  * <tt>flashScope</tt> data remains available across HTTP redirects. Although Spring Faces MVC is primarily RESTful in
  * design a repository is required in order to support <tt>flashScope</tt>. Implementations of interface are responsible
- * for saving data (usually to HTTP session) and returning a {@link ExecutionContextKey} that can be included as part of
- * a {@link RedirectHandler} redirect. The data can later be restored once the redirect completes.
+ * for saving data (usually to HTTP session) and returning a {@link ExecutionContextKey key} that can be included as
+ * part of a {@link RedirectHandler handled} redirect. The data can later be restored once the redirect completes.
  * <p>
  * Note: This class will be accessed from multiple threads simultaneously, the implementation must be thread safe and
  * must implement a suitable locking strategy.
  * 
- * @see #save(MvcFacesRequestContext)
- * @see #restore(ExecutionContextKey, MvcFacesRequestContext)
+ * @see #save(HttpServletRequest, MvcFacesRequestContext)
+ * @see #restore(ExecutionContextKey, HttpServletRequest, MvcFacesRequestContext)
  * 
  * @author Phillip Webb
  */
 public interface ExecutionContextRepository {
 
-	// FIXME exceptions
-	// FIXME test
-
 	/**
 	 * Parse the specified string value and return an execution context key.
 	 * @param key The encoded key
-	 * @return A {@link ExecutionContextKey} instance.
+	 * @return A {@link ExecutionContextKey} instance
+	 * @throws BadlyFormattedExecutionContextKeyException If the specified key is badly formatted and cannot be parsed
+	 * @throws ExecutionContextRepositoryException On error
 	 */
-	ExecutionContextKey parseKey(String key);
+	ExecutionContextKey parseKey(String key) throws BadlyFormattedExecutionContextKeyException,
+			ExecutionContextRepositoryException;
 
 	/**
 	 * Save <tt>flashScope</tt> data from the specified request context into the repository and return an execution key
 	 * that can be used later. If the request context does not include data that needs to be saved a <tt>null</tt> key
 	 * should be returned.
 	 * @param requestContext The MVC faces request context
+	 * @param request The HTTP request
 	 * @return An execution context key or <tt>null</tt>
-	 * @see #restore(ExecutionContextKey, MvcFacesRequestContext)
+	 * @throws ExecutionContextRepositoryException on error
+	 * @see #restore(ExecutionContextKey, HttpServletRequest, MvcFacesRequestContext)
 	 */
-	ExecutionContextKey save(MvcFacesRequestContext requestContext);
+	ExecutionContextKey save(HttpServletRequest request, MvcFacesRequestContext requestContext)
+			throws ExecutionContextRepositoryException;
 
 	/**
 	 * Restore <tt>flashScope</tt> data from the repository into the specified context. Any existing context data should
 	 * be replaced. Once this method has been called the repository data can be removed.
 	 * @param key The execution context key
+	 * @param request The HTTP request
 	 * @param requestContext The MVC faces request context
+	 * @throws NoSuchExecutionException If the specified execution key does not exist
+	 * @throws ExecutionContextRepositoryException on error
 	 */
-	void restore(ExecutionContextKey key, MvcFacesRequestContext requestContext);
-
-	// FIXME throws
+	void restore(ExecutionContextKey key, HttpServletRequest request, MvcFacesRequestContext requestContext)
+			throws NoSuchExecutionException, ExecutionContextRepositoryException;
 }

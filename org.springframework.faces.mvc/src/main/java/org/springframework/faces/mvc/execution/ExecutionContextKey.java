@@ -15,6 +15,17 @@
  */
 package org.springframework.faces.mvc.execution;
 
+import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
+
+/**
+ * A key that uniquely identifies a MVC faces execution in a managed {@link ExecutionContextRepository}. This class is
+ * abstract. The repository subsystem encapsulates the structure of concrete key implementations.
+ */
 public abstract class ExecutionContextKey {
 
+	public abstract boolean equals(Object o);
+
+	public abstract int hashCode();
+
+	public abstract String toString();
 }
