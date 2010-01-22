@@ -12,11 +12,11 @@ import org.springframework.webflow.core.collection.LocalAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
- * Default implementation of {@link MvcFacesRequestControlContext}.
+ * Default implementation of {@link RequestControlContext}.
  * 
  * @author Phillip Webb
  */
-public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControlContext {
+public class RequestControlContextImpl implements RequestControlContext {
 
 	private boolean released;
 	private MvcFacesExecution execution;
@@ -36,14 +36,14 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	 * @param facesHandler
 	 * @see #release()
 	 */
-	public MvcFacesRequestControlContextImpl(ExternalContext externalContext, MvcFacesExecution execution,
+	public RequestControlContextImpl(ExternalContext externalContext, MvcFacesExecution execution,
 			FacesHandler facesHandler) {
 		Assert.notNull(execution);
 		Assert.notNull(facesHandler);
 		this.externalContext = externalContext;
 		this.execution = execution;
 		this.facesHandler = facesHandler;
-		MvcFacesRequestContextHolder.setRequestContext(this);
+		RequestContextHolder.setRequestContext(this);
 	}
 
 	/**
@@ -52,10 +52,10 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	 */
 	public void release() {
 		if (released) {
-			throw new IllegalStateException("The MvcFacesRequest has already been released");
+			throw new IllegalStateException("The RequestContext has already been released");
 		}
 		released = true;
-		MvcFacesRequestContextHolder.setRequestContext(null);
+		RequestContextHolder.setRequestContext(null);
 	}
 
 	public ExternalContext getExternalContext() {

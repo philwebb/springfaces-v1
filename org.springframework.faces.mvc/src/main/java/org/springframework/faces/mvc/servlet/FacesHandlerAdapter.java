@@ -40,7 +40,7 @@ import org.springframework.faces.mvc.bind.ModelBinder;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
 import org.springframework.faces.mvc.bind.RequestMappedModelBindingExecutor;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.PageEncodedActionUrlMapper;
 import org.springframework.faces.mvc.navigation.DefaultRedirectHandler;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
@@ -73,7 +73,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 		return handler instanceof FacesHandler;
 	}
 
-	protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+	protected void doHandle(RequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		facesServlet.service(request, response);
 	}

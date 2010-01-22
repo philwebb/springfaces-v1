@@ -7,7 +7,7 @@ import javax.faces.model.DataModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.faces.mvc.converter.QuickConverter;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
@@ -46,7 +46,7 @@ public class SearchController {
     @NavigationCase(fragments = "hotels:searchResultsFragment")
     public void sort(@ModelAttribute SearchCriteria searchCriteria, @RequestParam("sortBy") String sortBy) {
 	searchCriteria.setSortBy(sortBy);
-	MvcFacesRequestContextHolder.getRequestContext().getViewScope().put("hotels", doSearch(searchCriteria));
+	RequestContextHolder.getRequestContext().getViewScope().put("hotels", doSearch(searchCriteria));
     }
 
     private DataModel doSearch(SearchCriteria searchCriteria) {

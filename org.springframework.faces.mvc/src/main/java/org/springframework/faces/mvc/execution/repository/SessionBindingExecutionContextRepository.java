@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.util.Assert;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
@@ -71,7 +71,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		}
 	}
 
-	public ExecutionContextKey save(MvcFacesRequestContext requestContext) throws ExecutionContextRepositoryException {
+	public ExecutionContextKey save(RequestContext requestContext) throws ExecutionContextRepositoryException {
 		try {
 			if (!StoredExecutionContext.shouldBeSaved(requestContext)) {
 				return null;
@@ -86,7 +86,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		}
 	}
 
-	public void restore(ExecutionContextKey key, MvcFacesRequestContext requestContext) {
+	public void restore(ExecutionContextKey key, RequestContext requestContext) {
 		try {
 			SharedAttributeMap sessionMap = requestContext.getExternalContext().getSessionMap();
 			getContainer(sessionMap).restore(key, requestContext);
@@ -164,7 +164,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		 * @param requestContext The request context
 		 * @return The key of the newly saved execution
 		 */
-		public synchronized ExecutionContextKey save(MvcFacesRequestContext requestContext) {
+		public synchronized ExecutionContextKey save(RequestContext requestContext) {
 			IntegerExecutionContextKey key = new IntegerExecutionContextKey(++sequence);
 			stored.put(key, new StoredExecutionContext(requestContext));
 			if (capactityExceeded() && (getSize() > 1)) {
@@ -178,7 +178,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		 * @param key The execution key
 		 * @param requestContext The request to restore
 		 */
-		public synchronized void restore(ExecutionContextKey key, MvcFacesRequestContext requestContext) {
+		public synchronized void restore(ExecutionContextKey key, RequestContext requestContext) {
 			StoredExecutionContext storedExecutionContext = (StoredExecutionContext) stored.remove(key);
 			if (storedExecutionContext == null) {
 				throw new NoSuchExecutionException(key);
@@ -201,7 +201,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		 * Constructor.
 		 * @param requestContext The request context to save data from.
 		 */
-		public StoredExecutionContext(MvcFacesRequestContext requestContext) {
+		public StoredExecutionContext(RequestContext requestContext) {
 			this.flashScope = new LocalAttributeMap();
 			this.flashScope.putAll(requestContext.getFlashScope());
 		}
@@ -210,7 +210,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		 * Restore data to the specified request context.
 		 * @param requestContext
 		 */
-		public void restore(MvcFacesRequestContext requestContext) {
+		public void restore(RequestContext requestContext) {
 			requestContext.getFlashScope().replaceWith(this.flashScope);
 		}
 
@@ -219,7 +219,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		 * @param requestContext
 		 * @return <tt>true</tt> if the request should be saved
 		 */
-		public static boolean shouldBeSaved(MvcFacesRequestContext requestContext) {
+		public static boolean shouldBeSaved(RequestContext requestContext) {
 			return ((requestContext != null) && (!requestContext.getFlashScope().isEmpty()));
 		}
 	}

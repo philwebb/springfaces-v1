@@ -25,24 +25,24 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.execution.ScopeType;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
 
 public class DefaultModelBinderTests extends TestCase {
 
 	protected void tearDown() throws Exception {
-		MvcFacesRequestContextHolder.setRequestContext(null);
+		RequestContextHolder.setRequestContext(null);
 	}
 
 	public void doTestBind(String scopeName, AdditionalBinderConfig additionalBinderConfig, ScopeType scopeType)
 			throws Exception {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		Scope scope = null;
-		MvcFacesRequestControlContext context = (MvcFacesRequestControlContext) EasyMock
-				.createNiceMock(MvcFacesRequestControlContext.class);
-		MvcFacesRequestContextHolder.setRequestContext(context);
+		RequestControlContext context = (RequestControlContext) EasyMock
+				.createNiceMock(RequestControlContext.class);
+		RequestContextHolder.setRequestContext(context);
 		LocalAttributeMap map = new LocalAttributeMap();
 		if (scopeType == null) {
 			scope = (Scope) EasyMock.createMock(Scope.class);

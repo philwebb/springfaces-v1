@@ -15,8 +15,8 @@
  */
 package org.springframework.faces.mvc.el;
 
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.execution.ScopeType;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
@@ -70,7 +70,7 @@ public class ScopeSearchingElResolver extends AbstractELResolver {
 		}
 	}
 
-	protected MvcFacesRequestContext getRequestContext() {
-		return MvcFacesRequestContextHolder.getRequestContext();
+	protected RequestContext getRequestContext() {
+		return RequestContextHolder.getRequestContext();
 	}
 }

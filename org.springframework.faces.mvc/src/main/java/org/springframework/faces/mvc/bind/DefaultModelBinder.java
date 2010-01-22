@@ -25,8 +25,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.execution.ScopeType;
 import org.springframework.util.Assert;
 
@@ -47,24 +47,24 @@ public class DefaultModelBinder implements ModelBinder, BeanFactoryAware, Initia
 	}
 
 	public void bindModel(Map model) {
-		MvcFacesRequestContext context = MvcFacesRequestContextHolder.getRequestContext();
-		Assert.notNull(context, "MvcFacesRequestContext not found");
+		RequestContext requestContext = RequestContextHolder.getRequestContext();
+		Assert.notNull(requestContext, "RequestContext not found");
 		for (Iterator iterator = model.entrySet().iterator(); iterator.hasNext();) {
 			final Map.Entry modelEntry = (Map.Entry) iterator.next();
 			final Object modelValue = modelEntry.getValue();
 			ScopedModelAttribute scopedModelAttribute = new ScopedModelAttribute((String) modelEntry.getKey());
 			scopedModelAttribute = modelScopeProvider.getModelScope(scopedModelAttribute, modelValue);
 			Assert.notNull(scopedModelAttribute.getScope());
-			bindModelAttribute(context, scopedModelAttribute, modelValue);
+			bindModelAttribute(requestContext, scopedModelAttribute, modelValue);
 		}
 	}
 
-	private void bindModelAttribute(MvcFacesRequestContext context, ScopedModelAttribute scopedModelAttribute,
+	private void bindModelAttribute(RequestContext requestContext, ScopedModelAttribute scopedModelAttribute,
 			final Object modelValue) {
 		// Attempt to use the internal Faces MVC scopes
 		ScopeType mvcScope = ScopeType.find(scopedModelAttribute.getScope());
 		if (mvcScope != null) {
-			mvcScope.getScope(context).put(scopedModelAttribute.getModelAttribute(), modelValue);
+			mvcScope.getScope(requestContext).put(scopedModelAttribute.getModelAttribute(), modelValue);
 		} else {
 			// Fall back to the spring registered scopes
 			Scope scope = beanFactory.getRegisteredScope(scopedModelAttribute.getScope());

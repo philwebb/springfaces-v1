@@ -39,8 +39,8 @@ import org.springframework.faces.mvc.bind.RequestMappedModelBindingExecutor;
 import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.execution.PageEncodedActionUrlMapper;
 import org.springframework.faces.mvc.navigation.DefaultRedirectHandler;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
@@ -118,9 +118,9 @@ public class FacesHandlerAdapterTests extends TestCase {
 		FacesHandler handler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
-		MvcFacesRequestContext mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(externalContext,
+		RequestContext requestContext = new RequestControlContextImpl(externalContext,
 				execution, handler);
-		adapter.doHandle(mvcFacesRequestContext, request, response);
+		adapter.doHandle(requestContext, request, response);
 		((TrackingMockServlet) adapter.getFacesServlet()).assertSame(request, response);
 	}
 

@@ -25,7 +25,7 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
  * An enumeration of the core scope types of Spring Faces MVC. Provides easy access to each scope by <i>type</i> using
- * {@link #getScope(MvcFacesRequestContext)}.
+ * {@link #getScope(RequestContext)}.
  * <p>
  * A "scope" defines a data structure for storing model data within an MVC JSF execution. Different scope types have
  * different semantics in terms of how long attributes placed in those scope maps remain valid.
@@ -40,29 +40,29 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
 public abstract class ScopeType extends StaticLabeledEnum implements ModelScopeProvider {
 
 	/**
-	 * The "request" scope type. See {@link MvcFacesRequestContext#getRequestScope()} for details.
+	 * The "request" scope type. See {@link RequestContext#getRequestScope()} for details.
 	 */
 	public static final ScopeType REQUEST = new ScopeType(0, "Request") {
-		public MutableAttributeMap getScope(MvcFacesRequestContext context) {
-			return context.getRequestScope();
+		public MutableAttributeMap getScope(RequestContext requestContext) {
+			return requestContext.getRequestScope();
 		}
 	};
 
 	/**
-	 * The "flash" scope type. See {@link MvcFacesRequestContext#getFlashScope()} for details.
+	 * The "flash" scope type. See {@link RequestContext#getFlashScope()} for details.
 	 */
 	public static final ScopeType FLASH = new ScopeType(1, "Flash") {
-		public MutableAttributeMap getScope(MvcFacesRequestContext context) {
-			return context.getFlashScope();
+		public MutableAttributeMap getScope(RequestContext requestContext) {
+			return requestContext.getFlashScope();
 		}
 	};
 
 	/**
-	 * The "view" scope type. See {@link MvcFacesRequestContext#getViewScope()} for details.
+	 * The "view" scope type. See {@link RequestContext#getViewScope()} for details.
 	 */
 	public static final ScopeType VIEW = new ScopeType(1, "View") {
-		public MutableAttributeMap getScope(MvcFacesRequestContext context) {
-			return context.getViewScope();
+		public MutableAttributeMap getScope(RequestContext requestContext) {
+			return requestContext.getViewScope();
 		}
 	};
 
@@ -82,11 +82,11 @@ public abstract class ScopeType extends StaticLabeledEnum implements ModelScopeP
 	}
 
 	/**
-	 * Accessor that returns the mutable attribute map for this scope type for a given {@link MvcFacesRequestContext}.
-	 * @param context the context representing an executing request
+	 * Accessor that returns the mutable attribute map for this scope type for a given {@link RequestContext}.
+	 * @param requestContext the context representing an executing request
 	 * @return the scope map of this type for that request, allowing attributes to be accessed and set
 	 */
-	public abstract MutableAttributeMap getScope(MvcFacesRequestContext context);
+	public abstract MutableAttributeMap getScope(RequestContext requestContext);
 
 	/**
 	 * All known values.

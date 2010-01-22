@@ -20,10 +20,10 @@ import javax.faces.event.PhaseId;
 
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
-import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
+import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockRequestContextCallback;
 
 public class MvcPhaseListenerTests extends AbstractJsfTestCase {
 
@@ -35,18 +35,18 @@ public class MvcPhaseListenerTests extends AbstractJsfTestCase {
 		final MvcPhaseListener listener = new MvcPhaseListener();
 		final PhaseEvent event = new PhaseEvent(facesContext, PhaseId.RESTORE_VIEW, lifecycle);
 
-		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
-			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+		MvcFacesTestUtils.doWithMockRequestContext(new MockRequestContextCallback() {
+			public void prepare(RequestContext mvcFacesRequestContext) throws Exception {
 				assertEquals(PhaseId.ANY_PHASE, listener.getPhaseId());
-				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().beforePhase(
+				((RequestControlContext) mvcFacesRequestContext).getExecution().beforePhase(
 						mvcFacesRequestContext, event);
 				EasyMock.expectLastCall();
-				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().afterPhase(
+				((RequestControlContext) mvcFacesRequestContext).getExecution().afterPhase(
 						mvcFacesRequestContext, event);
 				EasyMock.expectLastCall();
 			}
 
-			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+			public void execute(RequestContext mvcFacesRequestContext) throws Exception {
 				listener.beforePhase(event);
 				listener.afterPhase(event);
 			}

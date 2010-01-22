@@ -18,22 +18,21 @@ package org.springframework.faces.mvc.execution;
 import javax.faces.event.PhaseId;
 
 import org.springframework.faces.mvc.context.ExternalContext;
-import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
  * A context for a single JSF request that is being handled by the Spring MVC framework. The
- * {@link MvcFacesRequestContext} is associated to the current thread and remains available during the execution the
- * request. The context provides access to the {@link FacesHandler} instance is handling the request and a
- * {@link MvcFacesExecution}.
+ * {@link RequestContext} is associated to the current thread and remains available during the execution the
+ * request. The context provides access to the {@link FacesHandler} instance is handling the request and an
+ * {@link ExternalContext}.
  * 
- * @see MvcFacesRequestContextHolder
+ * @see RequestContextHolder
  * 
  * @author Phillip Webb
  */
-public interface MvcFacesRequestContext {
+public interface RequestContext {
 
 	// FIXME
 	public ExternalContext getExternalContext();

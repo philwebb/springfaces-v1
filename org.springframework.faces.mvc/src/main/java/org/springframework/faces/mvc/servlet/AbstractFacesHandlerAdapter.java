@@ -43,9 +43,9 @@ import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestControlContext;
+import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
 import org.springframework.faces.mvc.execution.repository.NoSuchExecutionException;
 import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository;
@@ -91,26 +91,26 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			throws Exception {
 		FacesHandler facesHandler = (FacesHandler) handler;
 		ExternalContext externalContext = createExternalContext(request, response);
-		MvcFacesRequestControlContextImpl mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(
+		RequestControlContextImpl requestContext = new RequestControlContextImpl(
 				externalContext, newExecution(), facesHandler);
 		try {
-			restoreExecution(mvcFacesRequestContext, request);
+			restoreExecution(requestContext, request);
 			try {
-				doHandle(mvcFacesRequestContext, request, response);
+				doHandle(requestContext, request, response);
 				return null;
 			} catch (Exception e) {
-				handleException(mvcFacesRequestContext, request, response, e);
+				handleException(requestContext, request, response, e);
 				return null;
 			}
 		} finally {
-			mvcFacesRequestContext.release();
+			requestContext.release();
 		}
 	}
 
 	/**
 	 * Restore the any store state for the flow execution.
 	 */
-	private void restoreExecution(MvcFacesRequestContext requestContext, HttpServletRequest request) {
+	private void restoreExecution(RequestContext requestContext, HttpServletRequest request) {
 		String encodedKey = getRedirectHandler().getExecutionContextKey(request);
 		if (encodedKey != null) {
 			ExecutionContextKey key = executionContextRepository.parseKey(encodedKey);
@@ -134,7 +134,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
-	 * Internal method called to perform the actual handling of the request. The {@link MvcFacesRequestContext} will be
+	 * Internal method called to perform the actual handling of the request. The {@link RequestContext} will be
 	 * active when this method is called. This method is expected to completely handle the rendering of a response or
 	 * throw an exception.
 	 * @param requestContext The MVC Faces Request Context
@@ -143,26 +143,26 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	 * @throws Exception in the case of errors
 	 * @see HandlerAdapter#handle(HttpServletRequest, HttpServletResponse, Object)
 	 */
-	protected abstract void doHandle(MvcFacesRequestContext requestContext, HttpServletRequest request,
+	protected abstract void doHandle(RequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response) throws Exception;
 
 	/**
 	 * Method that is called when the handler throws an exception during processing.
-	 * @param mvcFacesRequestContext The MVC Faces Request Context
+	 * @param requestContext The MVC Faces Request Context
 	 * @param request The request
 	 * @param response The response
 	 * @param exception The exception that was thrown
 	 * @throws Exception
 	 */
-	protected void handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+	protected void handleException(RequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response, Exception exception) throws Exception {
-		((MvcFacesRequestControlContext) mvcFacesRequestContext).setException(exception);
+		((RequestControlContext) requestContext).setException(exception);
 		MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome = new MvcFacesExceptionOutcomeImpl();
 		// Try the handler specified exception handlers
-		boolean handled = handleException(mvcFacesRequestContext, request, response, exception,
-				mvcFacesExceptionOutcome, mvcFacesRequestContext.getFacesHandler().getExceptionHandlers());
+		boolean handled = handleException(requestContext, request, response, exception,
+				mvcFacesExceptionOutcome, requestContext.getFacesHandler().getExceptionHandlers());
 		if (!handled) {
-			handled = handleException(mvcFacesRequestContext, request, response, exception, mvcFacesExceptionOutcome,
+			handled = handleException(requestContext, request, response, exception, mvcFacesExceptionOutcome,
 					allExceptionHandlers);
 		}
 		if (!handled) {
@@ -170,7 +170,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 	}
 
-	private boolean handleException(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
+	private boolean handleException(RequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response, Exception exception, MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome,
 			MvcFacesExceptionHandler[] handlers) throws Exception {
 		if (handlers == null || handlers.length == 0) {
@@ -178,17 +178,17 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 		for (int i = 0; i < handlers.length; i++) {
 			mvcFacesExceptionOutcome.reset();
-			if (handlers[i].handleException(exception, mvcFacesRequestContext, mvcFacesExceptionOutcome)) {
-				mvcFacesExceptionOutcome.complete(mvcFacesRequestContext, request, response);
+			if (handlers[i].handleException(exception, requestContext, mvcFacesExceptionOutcome)) {
+				mvcFacesExceptionOutcome.complete(requestContext, request, response);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	protected void storeExecutionInRepositoryAndRedirect(MvcFacesRequestContext mvcFacesRequestContext,
+	protected void storeExecutionInRepositoryAndRedirect(RequestContext requestContext,
 			HttpServletRequest request, HttpServletResponse response, NavigationLocation location) throws IOException {
-		ExecutionContextKey key = executionContextRepository.save(mvcFacesRequestContext);
+		ExecutionContextKey key = executionContextRepository.save(requestContext);
 		getRedirectHandler().handleRedirect(ajaxHandler, request, response, location, key);
 
 	}
@@ -326,7 +326,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			return AbstractFacesHandlerAdapter.this.getFacesViewIdResolver().resolveViewId(viewName);
 		}
 
-		public void viewCreated(FacesContext facesContext, MvcFacesRequestContext mvcFacesRequestContext,
+		public void viewCreated(FacesContext facesContext, RequestContext requestContext,
 				UIViewRoot view, Map model) {
 			AbstractFacesHandlerAdapter.this.getModelBindingExecutor().storeModelToBind(facesContext, model);
 			MvcFacesStateHolderComponent.attach(facesContext, view);
@@ -338,34 +338,34 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			AbstractFacesHandlerAdapter.this.getActionUrlMapper().writeState(facesContext, viewName);
 		}
 
-		private void stopAtProcessValidationsWhenHasCurrentException(MvcFacesRequestContext mvcFacesRequestContext,
+		private void stopAtProcessValidationsWhenHasCurrentException(RequestContext requestContext,
 				PhaseEvent event) {
-			if (PhaseId.PROCESS_VALIDATIONS.equals(event.getPhaseId()) && mvcFacesRequestContext.getException() != null) {
-				clearFlashScope(mvcFacesRequestContext);
+			if (PhaseId.PROCESS_VALIDATIONS.equals(event.getPhaseId()) && requestContext.getException() != null) {
+				clearFlashScope(requestContext);
 				event.getFacesContext().renderResponse();
 			}
 		}
 
-		private void clearFlashScope(MvcFacesRequestContext mvcFacesRequestContext) {
-			mvcFacesRequestContext.getFlashScope().clear();
+		private void clearFlashScope(RequestContext requestContext) {
+			requestContext.getFlashScope().clear();
 		}
 
-		public void beforePhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
+		public void beforePhase(RequestContext requestContext, PhaseEvent event) {
 			if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
 				AbstractFacesHandlerAdapter.this.getModelBindingExecutor().bindStoredModel(event.getFacesContext());
 			}
-			stopAtProcessValidationsWhenHasCurrentException(mvcFacesRequestContext, event);
+			stopAtProcessValidationsWhenHasCurrentException(requestContext, event);
 		}
 
-		public void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event) {
+		public void afterPhase(RequestContext requestContext, PhaseEvent event) {
 			if (PhaseId.RENDER_RESPONSE.equals(event.getPhaseId())) {
-				if (mvcFacesRequestContext.getLastNavigationRequestEvent() == null) {
-					clearFlashScope(mvcFacesRequestContext);
+				if (requestContext.getLastNavigationRequestEvent() == null) {
+					clearFlashScope(requestContext);
 				}
 			}
 		}
 
-		public void redirect(FacesContext facesContext, MvcFacesRequestContext requestContext,
+		public void redirect(FacesContext facesContext, RequestContext requestContext,
 				NavigationLocation location) throws IOException {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
@@ -394,7 +394,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			this.redisplay = true;
 		}
 
-		public void complete(MvcFacesRequestContext requestContext, HttpServletRequest request,
+		public void complete(RequestContext requestContext, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
 			if (redirectLocation != null && redisplay) {
 				throw new IllegalStateException(

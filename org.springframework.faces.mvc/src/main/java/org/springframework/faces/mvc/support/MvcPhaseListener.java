@@ -24,8 +24,8 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
 import org.springframework.faces.mvc.context.MvcFacesExecution;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.web.jsf.DelegatingPhaseListenerMulticaster;
 
 /**
@@ -38,7 +38,7 @@ public class MvcPhaseListener extends DelegatingPhaseListenerMulticaster {
 	protected Collection getDelegates(FacesContext facesContext) {
 		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
 			final MvcFacesExecution execution = MvcFacesExecutionSupport.getExecution();
-			final MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
+			final RequestContext requestContext = RequestContextHolder.getRequestContext();
 			return Collections.singleton(new PhaseListener() {
 
 				public PhaseId getPhaseId() {

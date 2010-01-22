@@ -24,8 +24,8 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseListener;
 
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
 import org.springframework.faces.mvc.support.MvcNavigationHandler;
@@ -37,15 +37,15 @@ import org.springframework.web.servlet.HandlerAdapter;
 
 /**
  * Interface that provides the various methods that can executed on a a running MVC Faces request. Acts as a central
- * facade for various the various MVC/JSF integration classes. This interface is exposed via the
- * {@link MvcFacesRequestContext} object and provides a unified facade for the {@link MvcNavigationHandler},
- * {@link MvcPhaseListener}, {@link MvcStateManager} and {@link MvcViewHandler} JSF support classes. The context will
- * most likely delegate to a MVC HandlerAdapter and the {@link FacesViewIdResolver}, {@link RedirectHandler} &
- * {@link ActionUrlMapper} interfaces. Note: This interface will only be called for MVC faces requests (that is when
- * {@link MvcFacesRequestContextHolder#getRequestContext()} does not return <tt>null</tt>).
+ * facade for various the various MVC/JSF integration classes. This interface is exposed via the {@link RequestContext}
+ * object and provides a unified facade for the {@link MvcNavigationHandler}, {@link MvcPhaseListener},
+ * {@link MvcStateManager} and {@link MvcViewHandler} JSF support classes. The context will most likely delegate to a
+ * MVC HandlerAdapter and the {@link FacesViewIdResolver}, {@link RedirectHandler} & {@link ActionUrlMapper} interfaces.
+ * Note: This interface will only be called for MVC faces requests (that is when
+ * {@link RequestContextHolder#getRequestContext()} does not return <tt>null</tt>).
  * 
- * @see MvcFacesRequestContext
- * @see MvcFacesRequestContextHolder
+ * @see RequestContext
+ * @see RequestContextHolder
  * @see HandlerAdapter
  * @see FacesViewIdResolver
  * @see RedirectHandler
@@ -87,12 +87,11 @@ public interface MvcFacesExecution {
 	 * Called after a new JSF view has been created. This method can be used to bind the MVC model to faces and perform
 	 * any post processing on the created view.
 	 * @param facesContext The faces context
-	 * @param mvcFacesRequestContext The MVC faces request context
+	 * @param requestContext The MVC faces request context
 	 * @param view The view that has been created
 	 * @param model The MVC model obtained from the handler
 	 */
-	void viewCreated(FacesContext facesContext, MvcFacesRequestContext mvcFacesRequestContext, UIViewRoot view,
-			Map model);
+	void viewCreated(FacesContext facesContext, RequestContext requestContext, UIViewRoot view, Map model);
 
 	/**
 	 * Called during the encode of the JSF page. This method can render additional HTML by using
@@ -105,26 +104,26 @@ public interface MvcFacesExecution {
 	/**
 	 * Called before a phase event. Equivalent to {@link PhaseListener#beforePhase(PhaseEvent)} but only called for MVC
 	 * faces requests.
-	 * @param mvcFacesRequestContext The MVC faces request context
+	 * @param requestContext The MVC faces request context
 	 * @param event The phase event
 	 */
-	void beforePhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event);
+	void beforePhase(RequestContext requestContext, PhaseEvent event);
 
 	/**
 	 * Called after a phase event. Equivalent to {@link PhaseListener#afterPhase(PhaseEvent)} but only called for MVC
 	 * faces requests.
-	 * @param mvcFacesRequestContext The MVC faces request context
+	 * @param requestContext The MVC faces request context
 	 * @param event The phase event
 	 */
-	void afterPhase(MvcFacesRequestContext mvcFacesRequestContext, PhaseEvent event);
+	void afterPhase(RequestContext requestContext, PhaseEvent event);
 
 	/**
 	 * Called after a navigation outcome has been determined to redirect the browser.
 	 * @param facesContext The faces context
-	 * @param mvcFacesRequestContext The MVC faces request context
+	 * @param requestContext The MVC faces request context
 	 * @param location The location to redirect to
 	 * @throws IOException
 	 */
-	void redirect(FacesContext facesContext, MvcFacesRequestContext mvcFacesRequestContext, NavigationLocation location)
+	void redirect(FacesContext facesContext, RequestContext requestContext, NavigationLocation location)
 			throws IOException;
 }

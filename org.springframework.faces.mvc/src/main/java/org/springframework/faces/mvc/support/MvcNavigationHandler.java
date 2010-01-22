@@ -19,8 +19,8 @@ import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.webflow.execution.View;
@@ -41,8 +41,7 @@ public class MvcNavigationHandler extends NavigationHandler {
 
 	public void handleNavigation(FacesContext facesContext, String fromAction, String outcome) {
 		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
-			MvcFacesRequestControlContext requestContext = (MvcFacesRequestControlContext) MvcFacesRequestContextHolder
-					.getRequestContext();
+			RequestControlContext requestContext = (RequestControlContext) RequestContextHolder.getRequestContext();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, fromAction, outcome);
 			try {
 				requestContext.setLastNavigationRequestEvent(event);

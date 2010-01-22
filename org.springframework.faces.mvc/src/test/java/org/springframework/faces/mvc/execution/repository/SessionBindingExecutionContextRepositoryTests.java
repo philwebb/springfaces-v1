@@ -21,7 +21,7 @@ import org.easymock.EasyMock;
 import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository.StoredExecutionContextContainer;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
@@ -32,13 +32,13 @@ public class SessionBindingExecutionContextRepositoryTests extends TestCase {
 	private static final String SESSION_KEY = "mvcFacesExecutions";
 
 	private SessionBindingExecutionContextRepository repository;
-	private MvcFacesRequestContext requestContext;
+	private RequestContext requestContext;
 	private MutableAttributeMap flashScope;
 	private ExternalContext externalContext;
 
 	protected void setUp() throws Exception {
 		repository = new SessionBindingExecutionContextRepository();
-		requestContext = (MvcFacesRequestContext) EasyMock.createNiceMock(MvcFacesRequestContext.class);
+		requestContext = (RequestContext) EasyMock.createNiceMock(RequestContext.class);
 		flashScope = new LocalAttributeMap();
 		externalContext = new WebFlowExternalContextAdapter(new MockExternalContext());
 		EasyMock.expect(requestContext.getFlashScope()).andStubReturn(flashScope);

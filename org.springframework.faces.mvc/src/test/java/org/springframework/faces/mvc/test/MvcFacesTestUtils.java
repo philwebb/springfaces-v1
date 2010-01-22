@@ -32,8 +32,8 @@ import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 
 public class MvcFacesTestUtils {
@@ -83,18 +83,18 @@ public class MvcFacesTestUtils {
 
 	}
 
-	public static abstract class MockMvcFacesRequestContextCallback {
-		public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+	public static abstract class MockRequestContextCallback {
+		public void prepare(RequestContext mvcFacesRequestContext) throws Exception {
 		};
 
-		public abstract void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception;
+		public abstract void execute(RequestContext mvcFacesRequestContext) throws Exception;
 	}
 
-	public static void doWithMockMvcFacesRequestContext(MockMvcFacesRequestContextCallback callback) throws Exception {
+	public static void doWithMockRequestContext(MockRequestContextCallback callback) throws Exception {
 		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestControlContextImpl mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(
+		RequestControlContextImpl mvcFacesRequestContext = new RequestControlContextImpl(
 				externalContext, execution, facesHandler);
 		try {
 			callback.prepare(mvcFacesRequestContext);

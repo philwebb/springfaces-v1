@@ -9,7 +9,7 @@ import javax.faces.model.DataModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.faces.mvc.converter.QuickConverter;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
 import org.springframework.faces.mvc.stereotype.FacesController;
@@ -37,7 +37,7 @@ public class MainController {
     @NavigationCase(fragments = "bookingsFragment")
     public void cancelBooking(@ModelAttribute("bookings.selectedRow") Booking booking) {
 	bookingService.cancelBooking(booking);
-	MvcFacesRequestContextHolder.getRequestContext().getViewScope().put("bookings", getBookings());
+	RequestContextHolder.getRequestContext().getViewScope().put("bookings", getBookings());
     }
 
     private DataModel getBookings() {

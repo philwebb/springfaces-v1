@@ -19,11 +19,11 @@ import javax.faces.application.StateManager;
 
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
-import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
+import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockRequestContextCallback;
 
 public class MvcStateManagerTests extends AbstractJsfTestCase {
 
@@ -41,13 +41,13 @@ public class MvcStateManagerTests extends AbstractJsfTestCase {
 	}
 
 	public void testWriteStatePropagates() throws Exception {
-		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
-			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().writeState(facesContext);
+		MvcFacesTestUtils.doWithMockRequestContext(new MockRequestContextCallback() {
+			public void prepare(RequestContext mvcFacesRequestContext) throws Exception {
+				((RequestControlContext) mvcFacesRequestContext).getExecution().writeState(facesContext);
 				EasyMock.expectLastCall();
 			}
 
-			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+			public void execute(RequestContext mvcFacesRequestContext) throws Exception {
 				StateManager delegate = (StateManager) MvcFacesTestUtils.nullImplementation(StateManager.class);
 				MvcStateManager stateManager = new MvcStateManager(delegate);
 				stateManager.writeState(facesContext, null);

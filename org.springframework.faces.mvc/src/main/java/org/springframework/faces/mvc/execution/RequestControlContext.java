@@ -9,7 +9,7 @@ import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
  * 
  * @author Phillip Webb
  */
-public interface MvcFacesRequestControlContext extends MvcFacesRequestContext {
+public interface RequestControlContext extends RequestContext {
 
 	/**
 	 * Returns the {@link MvcFacesExecution} for the current request.

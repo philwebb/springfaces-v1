@@ -43,7 +43,7 @@ import org.springframework.faces.mvc.annotation.support.NavigationCaseMethodReso
 import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionContext;
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
@@ -437,7 +437,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return new MvcFacesExceptionHandler[] { this };
 		}
 
-		public boolean handleException(Exception exception, MvcFacesRequestContext requestContext,
+		public boolean handleException(Exception exception, RequestContext requestContext,
 				MvcFacesExceptionOutcome outcome) throws Exception {
 			requestContext.getFacesHandler();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, requestContext

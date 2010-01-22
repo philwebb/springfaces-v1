@@ -3,7 +3,7 @@ package org.springframework.faces.mvc.el;
 import javax.el.CompositeELResolver;
 import javax.faces.context.FacesContext;
 
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 
 /**
  * Resolves "implicit" or well-known variables from Faces MVC; for example "viewScope" in an expression like
@@ -33,7 +33,7 @@ public class ImplicitMvcFacesElResolver extends CompositeELResolver {
 		}
 
 		protected Object getBean() {
-			return MvcFacesRequestContextHolder.getRequestContext();
+			return RequestContextHolder.getRequestContext();
 		}
 	}
 

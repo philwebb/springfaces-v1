@@ -16,11 +16,11 @@
 package org.springframework.faces.mvc.execution.repository;
 
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
 
 /**
- * Central subsystem interface use to save and restore information from {@link MvcFacesRequestContext} so that
+ * Central subsystem interface use to save and restore information from {@link RequestContext} so that
  * <tt>flashScope</tt> data remains available across HTTP redirects. Although Spring Faces MVC is primarily RESTful in
  * design a repository is required in order to support <tt>flashScope</tt>. Implementations of interface are responsible
  * for saving data (usually to HTTP session) and returning a {@link ExecutionContextKey key} that can be included as
@@ -29,8 +29,8 @@ import org.springframework.faces.mvc.navigation.RedirectHandler;
  * Note: This class will be accessed from multiple threads simultaneously, the implementation must be thread safe and
  * must implement a suitable locking strategy.
  * 
- * @see #save(MvcFacesRequestContext)
- * @see #restore(ExecutionContextKey, MvcFacesRequestContext)
+ * @see #save(RequestContext)
+ * @see #restore(ExecutionContextKey, RequestContext)
  * 
  * @author Phillip Webb
  */
@@ -53,9 +53,9 @@ public interface ExecutionContextRepository {
 	 * @param requestContext The MVC faces request context
 	 * @return An execution context key or <tt>null</tt>
 	 * @throws ExecutionContextRepositoryException on error
-	 * @see #restore(ExecutionContextKey, MvcFacesRequestContext)
+	 * @see #restore(ExecutionContextKey, RequestContext)
 	 */
-	ExecutionContextKey save(MvcFacesRequestContext requestContext) throws ExecutionContextRepositoryException;
+	ExecutionContextKey save(RequestContext requestContext) throws ExecutionContextRepositoryException;
 
 	/**
 	 * Restore <tt>flashScope</tt> data from the repository into the specified context. Any existing context data should
@@ -64,8 +64,8 @@ public interface ExecutionContextRepository {
 	 * @param requestContext The MVC faces request context
 	 * @throws NoSuchExecutionException If the specified execution key does not exist
 	 * @throws ExecutionContextRepositoryException on error
-	 * @see #save(MvcFacesRequestContext)
+	 * @see #save(RequestContext)
 	 */
-	void restore(ExecutionContextKey key, MvcFacesRequestContext requestContext) throws NoSuchExecutionException,
+	void restore(ExecutionContextKey key, RequestContext requestContext) throws NoSuchExecutionException,
 			ExecutionContextRepositoryException;
 }

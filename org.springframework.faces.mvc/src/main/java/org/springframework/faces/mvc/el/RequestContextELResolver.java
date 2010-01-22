@@ -15,22 +15,22 @@
  */
 package org.springframework.faces.mvc.el;
 
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 
 /**
- * Custom EL resolver that resolves the current {@link MvcFacesRequestContext} under the variable
+ * Custom EL resolver that resolves the current {@link RequestContext} under the variable
  * {@link #REQUEST_CONTEXT_VARIABLE_NAME} . Allows for accessing any property of the RequestContext instance. For
  * example: "#{flowRequestContext.requestScope.myProperty}".
  * 
  * @author Phillip Webb
  */
-public class MvcFacesRequestContextELResolver extends AbstractELResolver {
+public class RequestContextELResolver extends AbstractELResolver {
 	// FIXME test
 	/**
 	 * Name of the request context variable.
 	 */
-	public static final String REQUEST_CONTEXT_VARIABLE_NAME = "mvcFacesRequestContext";
+	public static final String REQUEST_CONTEXT_VARIABLE_NAME = "mvcRequestContext";
 
 	protected boolean isAvailable() {
 		return getRequestContext() != null;
@@ -44,7 +44,7 @@ public class MvcFacesRequestContextELResolver extends AbstractELResolver {
 		return getRequestContext();
 	}
 
-	protected MvcFacesRequestContext getRequestContext() {
-		return MvcFacesRequestContextHolder.getRequestContext();
+	protected RequestContext getRequestContext() {
+		return RequestContextHolder.getRequestContext();
 	}
 }

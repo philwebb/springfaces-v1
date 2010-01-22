@@ -22,14 +22,14 @@ import javax.faces.context.FacesContext;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
-import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
+import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockRequestContextCallback;
 
 public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 
@@ -41,9 +41,9 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 		NavigationHandler delegate = (NavigationHandler) MvcFacesTestUtils
 				.methodTrackingObject(NavigationHandler.class);
 		final MvcNavigationHandler handler = new MvcNavigationHandler(delegate);
-		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
-			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				FacesHandler facesHandler = mvcFacesRequestContext.getFacesHandler();
+		MvcFacesTestUtils.doWithMockRequestContext(new MockRequestContextCallback() {
+			public void prepare(RequestContext requestContext) throws Exception {
+				FacesHandler facesHandler = requestContext.getFacesHandler();
 				EasyMock.expect(
 						facesHandler.getNavigationOutcomeLocation((FacesContext) EasyMock.eq(facesContext),
 								(NavigationRequestEvent) EasyMock.anyObject())).andAnswer(new IAnswer() {
@@ -56,13 +56,13 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 				});
 				// if navigating ensure the context is called
 				if (location != null) {
-					((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().redirect(facesContext,
-							mvcFacesRequestContext, location);
+					((RequestControlContext) requestContext).getExecution().redirect(facesContext,
+							requestContext, location);
 					EasyMock.expectLastCall();
 				}
 			}
 
-			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+			public void execute(RequestContext mvcFacesRequestContext) throws Exception {
 				handler.handleNavigation(facesContext, "action", "outcome");
 				assertEquals("action", mvcFacesRequestContext.getLastNavigationRequestEvent().getFromAction());
 				assertEquals("outcome", mvcFacesRequestContext.getLastNavigationRequestEvent().getOutcome());
@@ -92,8 +92,8 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 				.methodTrackingObject(NavigationHandler.class);
 		final MvcNavigationHandler handler = new MvcNavigationHandler(delegate);
 		try {
-			MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
-				public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+			MvcFacesTestUtils.doWithMockRequestContext(new MockRequestContextCallback() {
+				public void prepare(RequestContext mvcFacesRequestContext) throws Exception {
 					FacesHandler facesHandler = mvcFacesRequestContext.getFacesHandler();
 					EasyMock.expect(
 							facesHandler.getNavigationOutcomeLocation((FacesContext) EasyMock.eq(facesContext),
@@ -101,7 +101,7 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 							new IllegalStateException("Error"));
 				}
 
-				public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
+				public void execute(RequestContext mvcFacesRequestContext) throws Exception {
 					handler.handleNavigation(facesContext, "action", "outcome");
 				}
 			});

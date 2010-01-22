@@ -24,11 +24,11 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
  * Interface to be implemented by classes that can handle exceptions thrown during execution of a MVC Faces request.
  * Implementors are either registered as beans in the application context or returned from
  * {@link FacesHandler#getExceptionHandlers()}. This interface is similar to the MVC {@link HandlerExceptionResolver}
- * except that it is called when the {@link MvcFacesRequestContext} is still active and that it provides the opportunity
+ * except that it is called when the {@link RequestContext} is still active and that it provides the opportunity
  * to request specific outcomes, such as re-rendering the current request.
  * 
  * @see MvcFacesExceptionOutcome
- * @see MvcFacesRequestContext
+ * @see RequestContext
  * @see HandlerExceptionResolver
  * 
  * @author Phillip Webb
@@ -53,6 +53,6 @@ public interface MvcFacesExceptionHandler {
 	 * @throws Exception An exception during the handling. Note: this exception will simply propagate to MVC, it will
 	 * not trigger further handlers
 	 */
-	boolean handleException(Exception exception, MvcFacesRequestContext requestContext, MvcFacesExceptionOutcome outcome)
+	boolean handleException(Exception exception, RequestContext requestContext, MvcFacesExceptionOutcome outcome)
 			throws Exception;
 }

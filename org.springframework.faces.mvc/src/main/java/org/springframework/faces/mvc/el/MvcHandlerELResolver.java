@@ -17,8 +17,8 @@ package org.springframework.faces.mvc.el;
 
 import javax.el.ELResolver;
 
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 
 /**
@@ -30,11 +30,11 @@ import org.springframework.faces.mvc.servlet.FacesHandler;
 public class MvcHandlerELResolver extends AbstractELResolver {
 	// FIXME update test
 	protected boolean isAvailable() {
-		return MvcFacesRequestContextHolder.getRequestContext() != null;
+		return RequestContextHolder.getRequestContext() != null;
 	}
 
 	protected Object get(String property) {
-		MvcFacesRequestContext mvcFacesRequestContext = MvcFacesRequestContextHolder.getRequestContext();
-		return mvcFacesRequestContext.getFacesHandler().resolveVariable(property);
+		RequestContext requestContext = RequestContextHolder.getRequestContext();
+		return requestContext.getFacesHandler().resolveVariable(property);
 	}
 }

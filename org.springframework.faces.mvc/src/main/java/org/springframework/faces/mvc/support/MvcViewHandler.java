@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.faces.mvc.context.MvcFacesExecution;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.ui.AjaxViewRoot;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.util.Assert;
@@ -49,6 +49,7 @@ public class MvcViewHandler extends ViewHandler {
 		this.delegate = delegate;
 	}
 
+	// FIXME this don't feel right
 	private boolean isSpringJavascriptAjaxRequest(ExternalContext context) {
 		if (context.getRequest() instanceof HttpServletRequest) {
 			return springJsAjaxHandler.isAjaxRequest((HttpServletRequest) context.getRequest(),
@@ -61,7 +62,7 @@ public class MvcViewHandler extends ViewHandler {
 	public UIViewRoot createView(FacesContext context, String viewId) {
 		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
 			MvcFacesExecution execution = MvcFacesExecutionSupport.getExecution();
-			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
+			RequestContext requestContext = RequestContextHolder.getRequestContext();
 			ModelAndView modelAndView;
 			try {
 				modelAndView = requestContext.getFacesHandler().createView(context);
@@ -105,7 +106,7 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public void renderView(FacesContext context, UIViewRoot viewToRender) throws IOException, FacesException {
-		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+		if (RequestContextHolder.getRequestContext() != null) {
 			// Check to see if the response has already been rendered
 			if (viewToRender instanceof EmptyUIViewRoot) {
 				return;
