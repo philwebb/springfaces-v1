@@ -26,6 +26,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
@@ -70,9 +71,11 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
 				EasyMock.expect(mvcFacesRequestContext.getFacesHandler().createView(facesContext)).andReturn(
 						modelAndView);
-				EasyMock.expect(mvcFacesRequestContext.getMvcFacesContext().resolveViewId(VIEW_ID)).andReturn(
-						XHTML_VIEW_NAME);
-				mvcFacesRequestContext.getMvcFacesContext().viewCreated((FacesContext) EasyMock.eq(facesContext),
+				EasyMock.expect(
+						((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().resolveViewId(VIEW_ID))
+						.andReturn(XHTML_VIEW_NAME);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().viewCreated(
+						(FacesContext) EasyMock.eq(facesContext),
 						(MvcFacesRequestContext) EasyMock.eq(mvcFacesRequestContext),
 						(UIViewRoot) EasyMock.eq(uiViewRoot), (ModelMap) EasyMock.eq(modelAndView.getModelMap()));
 				EasyMock.expectLastCall();
@@ -147,8 +150,9 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 		final MvcViewHandler handler = new MvcViewHandler(delegate);
 		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				EasyMock.expect(mvcFacesRequestContext.getMvcFacesContext().getViewIdForRestore(facesContext, VIEW_ID))
-						.andReturn(XHTML_VIEW_NAME);
+				EasyMock.expect(
+						((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().getViewIdForRestore(
+								facesContext, VIEW_ID)).andReturn(XHTML_VIEW_NAME);
 			}
 
 			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
@@ -162,8 +166,9 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 		final MvcViewHandler handler = new MvcViewHandler(delegate);
 		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				EasyMock.expect(mvcFacesRequestContext.getMvcFacesContext().getViewIdForRestore(facesContext, VIEW_ID))
-						.andReturn(null);
+				EasyMock.expect(
+						((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().getViewIdForRestore(
+								facesContext, VIEW_ID)).andReturn(null);
 			}
 
 			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
@@ -183,8 +188,9 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 		final MvcViewHandler handler = new MvcViewHandler(delegate);
 		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				EasyMock.expect(mvcFacesRequestContext.getMvcFacesContext().getActionUlr(facesContext, VIEW_ID))
-						.andReturn(ACTION_URL);
+				EasyMock.expect(
+						((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().getActionUlr(
+								facesContext, VIEW_ID)).andReturn(ACTION_URL);
 			}
 
 			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
@@ -198,8 +204,9 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 		final MvcViewHandler handler = new MvcViewHandler(delegate);
 		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				EasyMock.expect(mvcFacesRequestContext.getMvcFacesContext().getActionUlr(facesContext, VIEW_ID))
-						.andReturn(null);
+				EasyMock.expect(
+						((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().getActionUlr(
+								facesContext, VIEW_ID)).andReturn(null);
 			}
 
 			public void execute(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {

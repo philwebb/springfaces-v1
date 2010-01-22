@@ -20,6 +20,7 @@ import javax.faces.application.StateManager;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
@@ -42,7 +43,7 @@ public class MvcStateManagerTests extends AbstractJsfTestCase {
 	public void testWriteStatePropagates() throws Exception {
 		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
-				mvcFacesRequestContext.getMvcFacesContext().writeState(facesContext);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().writeState(facesContext);
 				EasyMock.expectLastCall();
 			}
 

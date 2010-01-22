@@ -36,13 +36,13 @@ import org.springframework.faces.mvc.view.FacesViewIdResolver;
 import org.springframework.web.servlet.HandlerAdapter;
 
 /**
- * A MVC Faces Context object that acts as a central facade for various the various MVC/JSF integration classes. This
- * interface is exposed via the {@link MvcFacesRequestContext} object and provides a unified facade for the
- * {@link MvcNavigationHandler}, {@link MvcPhaseListener}, {@link MvcStateManager} and {@link MvcViewHandler} JSF
- * support classes. The context will most likely delegate to a MVC {@link HandlerAdapter} and the
- * {@link FacesViewIdResolver}, {@link RedirectHandler} & {@link ActionUrlMapper} interfaces. Note: This interface will
- * only be called for MVC faces requests (that is when {@link MvcFacesRequestContextHolder#getRequestContext()} does not
- * return <tt>null</tt>).
+ * Interface that provides the various methods that can executed on a a running MVC Faces request. Acts as a central
+ * facade for various the various MVC/JSF integration classes. This interface is exposed via the
+ * {@link MvcFacesRequestContext} object and provides a unified facade for the {@link MvcNavigationHandler},
+ * {@link MvcPhaseListener}, {@link MvcStateManager} and {@link MvcViewHandler} JSF support classes. The context will
+ * most likely delegate to a MVC HandlerAdapter and the {@link FacesViewIdResolver}, {@link RedirectHandler} &
+ * {@link ActionUrlMapper} interfaces. Note: This interface will only be called for MVC faces requests (that is when
+ * {@link MvcFacesRequestContextHolder#getRequestContext()} does not return <tt>null</tt>).
  * 
  * @see MvcFacesRequestContext
  * @see MvcFacesRequestContextHolder
@@ -53,8 +53,8 @@ import org.springframework.web.servlet.HandlerAdapter;
  * 
  * @author Phillip Webb
  */
-public interface MvcFacesContext {
-
+public interface MvcFacesExecution {
+	// FIXME move
 	/**
 	 * Called to resolve the view ID. This method usually delegates to a {@link FacesViewIdResolver}.
 	 * @param viewName The view name to resolve

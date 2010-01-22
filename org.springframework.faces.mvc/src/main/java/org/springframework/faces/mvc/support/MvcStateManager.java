@@ -21,8 +21,6 @@ import javax.faces.application.StateManager;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
-import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
-
 /**
  * {@link StateManager} implementation that provides integration with Spring MVC.
  * 
@@ -37,8 +35,8 @@ public class MvcStateManager extends StateManager {
 	}
 
 	public void writeState(FacesContext context, StateManager.SerializedView state) throws IOException {
-		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
-			MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().writeState(context);
+		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
+			MvcFacesExecutionSupport.getExecution().writeState(context);
 		}
 		delegate.writeState(context, state);
 	}

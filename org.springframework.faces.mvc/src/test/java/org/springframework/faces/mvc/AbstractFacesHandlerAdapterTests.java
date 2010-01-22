@@ -35,7 +35,7 @@ import org.easymock.EasyMock;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
-import org.springframework.faces.mvc.context.MvcFacesContext;
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
@@ -111,7 +111,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().resolveViewId("viewname");
+				((MvcFacesRequestControlContext) MvcFacesRequestContextHolder.getRequestContext()).getExecution()
+						.resolveViewId("viewname");
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -125,8 +126,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().getActionUlr(facesContext,
-						"viewid");
+				((MvcFacesRequestControlContext) MvcFacesRequestContextHolder.getRequestContext()).getExecution()
+						.getActionUlr(facesContext, "viewid");
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -140,8 +141,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().getViewIdForRestore(facesContext,
-						"viewid");
+				((MvcFacesRequestControlContext) MvcFacesRequestContextHolder.getRequestContext()).getExecution()
+						.getViewIdForRestore(facesContext, "viewid");
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -158,8 +159,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				mvcFacesRequestContext.getMvcFacesContext().viewCreated(facesContext, mvcFacesRequestContext, viewRoot,
-						model);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().viewCreated(facesContext,
+						mvcFacesRequestContext, viewRoot, model);
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -178,7 +179,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().writeState(facesContext);
+				((MvcFacesRequestControlContext) MvcFacesRequestContextHolder.getRequestContext()).getExecution()
+						.writeState(facesContext);
 			}
 		};
 		facesHandlerAdapter.handle(request, response, facesHandler);
@@ -194,7 +196,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
 				PhaseEvent event = new PhaseEvent(facesContext, phaseId, lifecycle);
-				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().beforePhase(
+						mvcFacesRequestContext, event);
 			}
 		};
 		this.redirectHandler = (RedirectHandler) EasyMock.createNiceMock(RedirectHandler.class);
@@ -228,7 +231,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 					HttpServletResponse response) throws Exception {
 				((MvcFacesRequestControlContext) mvcFacesRequestContext).setException(exception);
 				PhaseEvent event = new PhaseEvent(facesContext, phaseId, lifecycle);
-				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().beforePhase(
+						mvcFacesRequestContext, event);
 			}
 		};
 		this.redirectHandler = (RedirectHandler) EasyMock.createNiceMock(RedirectHandler.class);
@@ -246,8 +250,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	public void testNewFacesHandlerAdapterContext() throws Exception {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
-			protected MvcFacesContext newFacesHandlerAdapterContext() {
-				return new AbstractFacesHandlerAdapter.FacesHandlerAdapterContext() {
+			protected MvcFacesExecution newExecution() {
+				return new AbstractFacesHandlerAdapter.FacesHandlerAdapterExecution() {
 					public String toString() {
 						return "customhandler";
 					}
@@ -272,8 +276,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
 			protected void doHandle(MvcFacesRequestContext mvcFacesRequestContext, HttpServletRequest request,
 					HttpServletResponse response) throws Exception {
-				MvcFacesRequestContextHolder.getRequestContext().getMvcFacesContext().redirect(facesContext,
-						mvcFacesRequestContext, new NavigationLocation("location"));
+				((MvcFacesRequestControlContext) MvcFacesRequestContextHolder.getRequestContext()).getExecution()
+						.redirect(facesContext, mvcFacesRequestContext, new NavigationLocation("location"));
 			}
 		};
 		facesHandlerAdapter.setAjaxHandler(ajaxHandler);

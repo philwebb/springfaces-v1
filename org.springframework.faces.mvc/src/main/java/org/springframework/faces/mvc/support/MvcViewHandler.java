@@ -26,6 +26,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 import org.springframework.faces.ui.AjaxViewRoot;
@@ -58,7 +59,8 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public UIViewRoot createView(FacesContext context, String viewId) {
-		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
+			MvcFacesExecution execution = MvcFacesExecutionSupport.getExecution();
 			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
 			ModelAndView modelAndView;
 			try {
@@ -74,9 +76,9 @@ public class MvcViewHandler extends ViewHandler {
 				return new EmptyUIViewRoot();
 			}
 
-			viewId = requestContext.getMvcFacesContext().resolveViewId(modelAndView.getViewName());
+			viewId = execution.resolveViewId(modelAndView.getViewName());
 			UIViewRoot view = delegate.createView(context, viewId);
-			requestContext.getMvcFacesContext().viewCreated(context, requestContext, view, modelAndView.getModel());
+			execution.viewCreated(context, requestContext, view, modelAndView.getModel());
 
 			if (isSpringJavascriptAjaxRequest(context.getExternalContext())) {
 				view = new AjaxViewRoot(view);
@@ -88,10 +90,9 @@ public class MvcViewHandler extends ViewHandler {
 
 	public UIViewRoot restoreView(FacesContext context, String viewId) {
 		boolean mvcRequest = false;
-		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
-			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
+		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
 			String originalViewId = viewId;
-			viewId = requestContext.getMvcFacesContext().getViewIdForRestore(context, viewId);
+			viewId = MvcFacesExecutionSupport.getExecution().getViewIdForRestore(context, viewId);
 			Assert.notNull(viewId, "The MVC Faces Context could not map the view \"" + originalViewId
 					+ "\" to a valid viewId");
 			mvcRequest = true;
@@ -114,9 +115,8 @@ public class MvcViewHandler extends ViewHandler {
 	}
 
 	public String getActionURL(FacesContext context, String viewId) {
-		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
-			MvcFacesRequestContext requestContext = MvcFacesRequestContextHolder.getRequestContext();
-			String actionUrl = requestContext.getMvcFacesContext().getActionUlr(context, viewId);
+		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
+			String actionUrl = MvcFacesExecutionSupport.getExecution().getActionUlr(context, viewId);
 			Assert.notNull(actionUrl, "The action URL for the view \"" + viewId + "\" is not mapped");
 			return actionUrl;
 		}

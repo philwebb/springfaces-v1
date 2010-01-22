@@ -51,7 +51,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
-import org.springframework.faces.mvc.context.MvcFacesContext;
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
@@ -374,9 +374,9 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		assertEquals(1, exceptionHandlers.length);
 		MvcFacesExceptionHandler exceptionHandler = exceptionHandlers[0];
 		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
-		MvcFacesContext mvcFacesContext = EasyMock.createMock(MvcFacesContext.class);
+		MvcFacesExecution execution = EasyMock.createMock(MvcFacesExecution.class);
 		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
-		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext,
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(execution,
 				underlyingAdapter.getHandler()) {
 			public NavigationRequestEvent getLastNavigationRequestEvent() {
 				return event;

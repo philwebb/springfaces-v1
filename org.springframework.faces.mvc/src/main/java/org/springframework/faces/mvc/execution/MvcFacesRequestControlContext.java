@@ -1,5 +1,6 @@
 package org.springframework.faces.mvc.execution;
 
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 /**
@@ -9,6 +10,14 @@ import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
  * @author Phillip Webb
  */
 public interface MvcFacesRequestControlContext extends MvcFacesRequestContext {
+
+	/**
+	 * Returns the {@link MvcFacesExecution} for the current request.
+	 * @return the active MVC Faces context
+	 */
+	MvcFacesExecution getExecution();
+
+	// FIXME move out of this class?
 
 	/**
 	 * Method called during exception handling to store the current exception.

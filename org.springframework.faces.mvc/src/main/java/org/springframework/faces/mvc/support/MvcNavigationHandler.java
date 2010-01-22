@@ -40,7 +40,7 @@ public class MvcNavigationHandler extends NavigationHandler {
 	}
 
 	public void handleNavigation(FacesContext facesContext, String fromAction, String outcome) {
-		if (MvcFacesRequestContextHolder.getRequestContext() != null) {
+		if (MvcFacesExecutionSupport.isMvcFacesRequest()) {
 			MvcFacesRequestControlContext requestContext = (MvcFacesRequestControlContext) MvcFacesRequestContextHolder
 					.getRequestContext();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, fromAction, outcome);
@@ -52,7 +52,7 @@ public class MvcNavigationHandler extends NavigationHandler {
 					requestContext.getFlashScope().put(View.RENDER_FRAGMENTS_ATTRIBUTE, location.getFragments());
 				}
 				if (location != null && location.getLocation() != null) {
-					requestContext.getMvcFacesContext().redirect(facesContext, requestContext, location);
+					requestContext.getExecution().redirect(facesContext, requestContext, location);
 					FacesContext.getCurrentInstance().responseComplete();
 					return;
 				}

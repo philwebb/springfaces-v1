@@ -24,6 +24,7 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
@@ -55,8 +56,8 @@ public class MvcNavigationHandlerTests extends AbstractJsfTestCase {
 				});
 				// if navigating ensure the context is called
 				if (location != null) {
-					mvcFacesRequestContext.getMvcFacesContext()
-							.redirect(facesContext, mvcFacesRequestContext, location);
+					((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().redirect(facesContext,
+							mvcFacesRequestContext, location);
 					EasyMock.expectLastCall();
 				}
 			}

@@ -1,7 +1,6 @@
 package org.springframework.faces.mvc.execution;
 
 import org.springframework.core.NamedThreadLocal;
-import org.springframework.faces.mvc.context.MvcFacesContext;
 
 /**
  * Simple holder class that associates a {@link MvcFacesRequestContext} instance with the current thread. The
@@ -33,8 +32,9 @@ public class MvcFacesRequestContextHolder {
 	}
 
 	/**
-	 * Return the current {@link MvcFacesContext} instance or <tt>null</tt> if the current request is not being handled.
-	 * @return The current {@link MvcFacesContext} by Spring MVC Faces
+	 * Return the current {@link MvcFacesRequestContext} instance or <tt>null</tt> if the current request is not being
+	 * handled.
+	 * @return The current {@link MvcFacesRequestContext}
 	 */
 	public static MvcFacesRequestContext getRequestContext() {
 		return (MvcFacesRequestContext) requestContextHolder.get();

@@ -36,7 +36,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
-import org.springframework.faces.mvc.context.MvcFacesContext;
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
@@ -87,7 +87,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			throws Exception {
 		FacesHandler facesHandler = (FacesHandler) handler;
 		MvcFacesRequestControlContextImpl mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(
-				newFacesHandlerAdapterContext(), facesHandler);
+				newExecution(), facesHandler);
 		try {
 			restoreExecution(mvcFacesRequestContext, request);
 			try {
@@ -217,13 +217,13 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
-	 * Factory method used to construct the {@link MvcFacesContext} that will be used during request handling. By
-	 * default this method returns an instance of {@link FacesHandlerAdapterContext}. Subclasses can override this
+	 * Factory method used to construct the {@link MvcFacesExecution} that will be used during request handling. By
+	 * default this method returns an instance of {@link FacesHandlerAdapterExecution}. Subclasses can override this
 	 * method if required.
-	 * @return The {@link MvcFacesContext} instance that will be used during request handling
+	 * @return The {@link MvcFacesExecution} instance that will be used during request handling
 	 */
-	protected MvcFacesContext newFacesHandlerAdapterContext() {
-		return new FacesHandlerAdapterContext();
+	protected MvcFacesExecution newExecution() {
+		return new FacesHandlerAdapterExecution();
 	}
 
 	/**
@@ -290,9 +290,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
-	 * {@link MvcFacesContext} implementation for the adapter
+	 * {@link MvcFacesExecution} implementation for the adapter
 	 */
-	protected class FacesHandlerAdapterContext implements MvcFacesContext {
+	protected class FacesHandlerAdapterExecution implements MvcFacesExecution {
 
 		public String resolveViewId(String viewName) {
 			return AbstractFacesHandlerAdapter.this.getFacesViewIdResolver().resolveViewId(viewName);

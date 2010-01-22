@@ -3,7 +3,7 @@ package org.springframework.faces.mvc.execution;
 import javax.faces.context.FacesContext;
 
 import org.springframework.faces.mvc.FacesHandler;
-import org.springframework.faces.mvc.context.MvcFacesContext;
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.util.Assert;
@@ -18,7 +18,7 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
 public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControlContext {
 
 	private boolean released;
-	private MvcFacesContext mvcFacesContext;
+	private MvcFacesExecution execution;
 	private FacesHandler facesHandler;
 	private Exception exception;
 	private NavigationRequestEvent lastNavigationRequestEvent;
@@ -30,14 +30,14 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 
 	/**
 	 * Constructor.
-	 * @param mvcFacesContext
+	 * @param execution
 	 * @param facesHandler
 	 * @see #release()
 	 */
-	public MvcFacesRequestControlContextImpl(MvcFacesContext mvcFacesContext, FacesHandler facesHandler) {
-		Assert.notNull(mvcFacesContext);
+	public MvcFacesRequestControlContextImpl(MvcFacesExecution execution, FacesHandler facesHandler) {
+		Assert.notNull(execution);
 		Assert.notNull(facesHandler);
-		this.mvcFacesContext = mvcFacesContext;
+		this.execution = execution;
 		this.facesHandler = facesHandler;
 		MvcFacesRequestContextHolder.setRequestContext(this);
 	}
@@ -58,8 +58,8 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 		return facesHandler;
 	}
 
-	public MvcFacesContext getMvcFacesContext() {
-		return mvcFacesContext;
+	public MvcFacesExecution getExecution() {
+		return execution;
 	}
 
 	public void setException(Exception exception) {

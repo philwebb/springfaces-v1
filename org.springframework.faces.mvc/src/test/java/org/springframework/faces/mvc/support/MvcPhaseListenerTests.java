@@ -21,6 +21,7 @@ import javax.faces.event.PhaseId;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MockMvcFacesRequestContextCallback;
 
@@ -37,9 +38,11 @@ public class MvcPhaseListenerTests extends AbstractJsfTestCase {
 		MvcFacesTestUtils.doWithMockMvcFacesRequestContext(new MockMvcFacesRequestContextCallback() {
 			public void prepare(MvcFacesRequestContext mvcFacesRequestContext) throws Exception {
 				assertEquals(PhaseId.ANY_PHASE, listener.getPhaseId());
-				mvcFacesRequestContext.getMvcFacesContext().beforePhase(mvcFacesRequestContext, event);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().beforePhase(
+						mvcFacesRequestContext, event);
 				EasyMock.expectLastCall();
-				mvcFacesRequestContext.getMvcFacesContext().afterPhase(mvcFacesRequestContext, event);
+				((MvcFacesRequestControlContext) mvcFacesRequestContext).getExecution().afterPhase(
+						mvcFacesRequestContext, event);
 				EasyMock.expectLastCall();
 			}
 

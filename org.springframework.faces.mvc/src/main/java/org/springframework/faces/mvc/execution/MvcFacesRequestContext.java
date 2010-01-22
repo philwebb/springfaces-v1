@@ -18,7 +18,7 @@ package org.springframework.faces.mvc.execution;
 import javax.faces.event.PhaseId;
 
 import org.springframework.faces.mvc.FacesHandler;
-import org.springframework.faces.mvc.context.MvcFacesContext;
+import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
@@ -26,7 +26,7 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  * A context for a single JSF request that is being handled by the Spring MVC framework. The
  * {@link MvcFacesRequestContext} is associated to the current thread and remains available during the execution the
  * request. The context provides access to the {@link FacesHandler} instance is handling the request and a
- * {@link MvcFacesContext}.
+ * {@link MvcFacesExecution}.
  * 
  * @see MvcFacesRequestContextHolder
  * 
@@ -39,12 +39,6 @@ public interface MvcFacesRequestContext {
 	 * @return the active faces handler
 	 */
 	FacesHandler getFacesHandler();
-
-	/**
-	 * Returns the {@link MvcFacesContext} for the current request.
-	 * @return the active MVC Faces context
-	 */
-	MvcFacesContext getMvcFacesContext();
 
 	/**
 	 * Returns the current exception that is being handled by MVC or <tt>null</tt> if an exception has not been raised.
