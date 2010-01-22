@@ -26,6 +26,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
+import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
@@ -39,6 +40,11 @@ public class MvcViewHandlerTests extends AbstractJsfTestCase {
 	private static final String VIEW_ID = "someview";
 	private static final String XHTML_VIEW_NAME = "someview.xhtml";
 	private static final String ACTION_URL = "/web/someaction/url";
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		MvcFacesRequestContextHolder.setRequestContext(null);
+	}
 
 	public MvcViewHandlerTests(String name) {
 		super(name);

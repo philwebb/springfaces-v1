@@ -17,9 +17,9 @@ package org.springframework.faces.mvc.el;
 
 import javax.el.ELResolver;
 
-import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 
 /**
  * A read-only {@link ELResolver} that delegates to a {@link FacesHandler#resolveVariable(String)} when processing a MVC

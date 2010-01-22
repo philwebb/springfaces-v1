@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc;
+package org.springframework.faces.mvc.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +36,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
+import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
+import org.springframework.faces.mvc.context.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
@@ -57,6 +59,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
+import org.springframework.webflow.context.servlet.ServletExternalContext;
+import org.springframework.webflow.mvc.servlet.MvcExternalContext;
 
 /**
  * Abstract base implementation of a MVC {@link HandlerAdapter} that can be used to process {@link FacesHandler}s.
@@ -86,8 +90,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		FacesHandler facesHandler = (FacesHandler) handler;
+		ExternalContext externalContext = createExternalContext(request, response);
 		MvcFacesRequestControlContextImpl mvcFacesRequestContext = new MvcFacesRequestControlContextImpl(
-				newExecution(), facesHandler);
+				externalContext, newExecution(), facesHandler);
 		try {
 			restoreExecution(mvcFacesRequestContext, request);
 			try {
@@ -110,11 +115,22 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		if (encodedKey != null) {
 			ExecutionContextKey key = executionContextRepository.parseKey(encodedKey);
 			try {
-				executionContextRepository.restore(key, request, requestContext);
+				executionContextRepository.restore(key, requestContext);
 			} catch (NoSuchExecutionException e) {
 				logger.warn("Unable to restore flashScope for MVC Faces request", e);
 			}
 		}
+	}
+
+	/**
+	 * Creates the external context for the current HTTP servlet request.
+	 * @param request the current request
+	 * @param response the current response
+	 */
+	protected ExternalContext createExternalContext(HttpServletRequest request, HttpServletResponse response) {
+		ServletExternalContext context = new MvcExternalContext(getServletContext(), request, response, null);
+		context.setAjaxRequest(ajaxHandler.isAjaxRequest(request, response));
+		return new WebFlowExternalContextAdapter(context);
 	}
 
 	/**
@@ -173,7 +189,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 
 	protected void storeExecutionInRepositoryAndRedirect(MvcFacesRequestContext mvcFacesRequestContext,
 			HttpServletRequest request, HttpServletResponse response, NavigationLocation location) throws IOException {
-		ExecutionContextKey key = executionContextRepository.save(request, mvcFacesRequestContext);
+		ExecutionContextKey key = executionContextRepository.save(mvcFacesRequestContext);
 		getRedirectHandler().handleRedirect(ajaxHandler, request, response, location, key);
 
 	}

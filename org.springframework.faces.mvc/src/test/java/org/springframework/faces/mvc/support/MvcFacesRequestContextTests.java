@@ -18,12 +18,13 @@ package org.springframework.faces.mvc.support;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContextHolder;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContext;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 
 public class MvcFacesRequestContextTests extends TestCase {
 
@@ -35,10 +36,11 @@ public class MvcFacesRequestContextTests extends TestCase {
 		}
 
 		public void run() {
+			ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 			MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
 			FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-			final MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(execution,
-					facesHandler);
+			final MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(
+					externalContext, execution, facesHandler);
 			try {
 				while (wait) {
 					try {
@@ -73,10 +75,11 @@ public class MvcFacesRequestContextTests extends TestCase {
 	}
 
 	public void testDoubleRelease() throws Exception {
-		MvcFacesExecution mvcFacesContext = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
+		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
+		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext,
-				facesHandler);
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(externalContext,
+				execution, facesHandler);
 		requestContext.release();
 		try {
 			requestContext.release();
@@ -87,20 +90,22 @@ public class MvcFacesRequestContextTests extends TestCase {
 	}
 
 	public void testSetGetException() throws Exception {
-		MvcFacesExecution mvcFacesContext = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
+		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
+		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext,
-				facesHandler);
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(externalContext,
+				execution, facesHandler);
 		Exception exception = new Exception();
 		requestContext.setException(exception);
 		assertSame(exception, requestContext.getException());
 	}
 
 	public void testSetGetLastNavigationRequestEvent() throws Exception {
-		MvcFacesExecution mvcFacesContext = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
+		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
+		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(mvcFacesContext,
-				facesHandler);
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(externalContext,
+				execution, facesHandler);
 		NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
 		requestContext.setLastNavigationRequestEvent(event);
 		assertSame(event, requestContext.getLastNavigationRequestEvent());

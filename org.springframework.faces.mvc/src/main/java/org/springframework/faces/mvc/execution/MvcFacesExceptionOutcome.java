@@ -17,9 +17,9 @@ package org.springframework.faces.mvc.execution;
 
 import javax.faces.event.PhaseId;
 
-import org.springframework.faces.mvc.AbstractFacesHandlerAdapter;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
+import org.springframework.faces.mvc.servlet.AbstractFacesHandlerAdapter;
 
 /**
  * Callback interface that can be used by {@link MvcFacesExceptionHandler} implementations to request that a specific

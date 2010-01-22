@@ -48,9 +48,8 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.faces.mvc.FacesHandler;
-import org.springframework.faces.mvc.FacesHandlerAdapter;
 import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
+import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
@@ -61,6 +60,8 @@ import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionResol
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
+import org.springframework.faces.mvc.servlet.FacesHandler;
+import org.springframework.faces.mvc.servlet.FacesHandlerAdapter;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -374,10 +375,11 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		assertEquals(1, exceptionHandlers.length);
 		MvcFacesExceptionHandler exceptionHandler = exceptionHandlers[0];
 		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
+		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 		MvcFacesExecution execution = EasyMock.createMock(MvcFacesExecution.class);
 		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
-		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(execution,
-				underlyingAdapter.getHandler()) {
+		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(externalContext,
+				execution, underlyingAdapter.getHandler()) {
 			public NavigationRequestEvent getLastNavigationRequestEvent() {
 				return event;
 			}

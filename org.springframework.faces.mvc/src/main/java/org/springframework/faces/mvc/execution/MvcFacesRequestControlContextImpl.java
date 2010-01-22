@@ -2,9 +2,10 @@ package org.springframework.faces.mvc.execution;
 
 import javax.faces.context.FacesContext;
 
-import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.util.Assert;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
@@ -24,6 +25,7 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	private NavigationRequestEvent lastNavigationRequestEvent;
 	private MutableAttributeMap requestScope = new LocalAttributeMap();
 	private MutableAttributeMap flashScope = new LocalAttributeMap();
+	private ExternalContext externalContext;
 
 	// Late binding
 	private MutableAttributeMap viewScope = null;
@@ -34,9 +36,11 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 	 * @param facesHandler
 	 * @see #release()
 	 */
-	public MvcFacesRequestControlContextImpl(MvcFacesExecution execution, FacesHandler facesHandler) {
+	public MvcFacesRequestControlContextImpl(ExternalContext externalContext, MvcFacesExecution execution,
+			FacesHandler facesHandler) {
 		Assert.notNull(execution);
 		Assert.notNull(facesHandler);
+		this.externalContext = externalContext;
 		this.execution = execution;
 		this.facesHandler = facesHandler;
 		MvcFacesRequestContextHolder.setRequestContext(this);
@@ -52,6 +56,10 @@ public class MvcFacesRequestControlContextImpl implements MvcFacesRequestControl
 		}
 		released = true;
 		MvcFacesRequestContextHolder.setRequestContext(null);
+	}
+
+	public ExternalContext getExternalContext() {
+		return externalContext;
 	}
 
 	public FacesHandler getFacesHandler() {

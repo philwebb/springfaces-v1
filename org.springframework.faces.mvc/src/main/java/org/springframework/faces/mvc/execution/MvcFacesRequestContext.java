@@ -17,9 +17,10 @@ package org.springframework.faces.mvc.execution;
 
 import javax.faces.event.PhaseId;
 
-import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
@@ -33,6 +34,9 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  * @author Phillip Webb
  */
 public interface MvcFacesRequestContext {
+
+	// FIXME
+	public ExternalContext getExternalContext();
 
 	/**
 	 * Returns the active {@link FacesHandler} that is handling the current request.

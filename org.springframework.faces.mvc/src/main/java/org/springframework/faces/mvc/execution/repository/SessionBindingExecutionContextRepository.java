@@ -18,14 +18,10 @@ package org.springframework.faces.mvc.execution.repository;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.util.Assert;
-import org.springframework.webflow.context.servlet.HttpSessionMap;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
-import org.springframework.webflow.core.collection.LocalSharedAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.SharedAttributeMap;
 
@@ -64,8 +60,7 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 	 * @param request The HTTP request
 	 * @return A container (never <tt>null</tt>)
 	 */
-	private StoredExecutionContextContainer getContainer(HttpServletRequest request) {
-		SharedAttributeMap sessionMap = createSessionMap(request);
+	private StoredExecutionContextContainer getContainer(SharedAttributeMap sessionMap) {
 		synchronized (sessionMap.getMutex()) {
 			StoredExecutionContextContainer container = (StoredExecutionContextContainer) sessionMap.get(sessionKey);
 			if (container == null) {
@@ -76,22 +71,13 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		}
 	}
 
-	/**
-	 * Factory method used to create the session map.
-	 * @param request
-	 * @return The session map
-	 */
-	protected SharedAttributeMap createSessionMap(HttpServletRequest request) {
-		return new LocalSharedAttributeMap(new HttpSessionMap(request));
-	}
-
-	public ExecutionContextKey save(HttpServletRequest request, MvcFacesRequestContext requestContext)
-			throws ExecutionContextRepositoryException {
+	public ExecutionContextKey save(MvcFacesRequestContext requestContext) throws ExecutionContextRepositoryException {
 		try {
 			if (!StoredExecutionContext.shouldBeSaved(requestContext)) {
 				return null;
 			}
-			return getContainer(request).save(requestContext);
+			SharedAttributeMap sessionMap = requestContext.getExternalContext().getSessionMap();
+			return getContainer(sessionMap).save(requestContext);
 		} catch (RuntimeException e) {
 			if (e instanceof ExecutionContextRepositoryException) {
 				throw e;
@@ -100,9 +86,10 @@ public class SessionBindingExecutionContextRepository implements ExecutionContex
 		}
 	}
 
-	public void restore(ExecutionContextKey key, HttpServletRequest request, MvcFacesRequestContext requestContext) {
+	public void restore(ExecutionContextKey key, MvcFacesRequestContext requestContext) {
 		try {
-			getContainer(request).restore(key, requestContext);
+			SharedAttributeMap sessionMap = requestContext.getExternalContext().getSessionMap();
+			getContainer(sessionMap).restore(key, requestContext);
 		} catch (RuntimeException e) {
 			if (e instanceof ExecutionContextRepositoryException) {
 				throw e;

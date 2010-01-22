@@ -15,41 +15,35 @@
  */
 package org.springframework.faces.mvc.execution.repository;
 
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.springframework.binding.collection.SharedMap;
-import org.springframework.binding.collection.SharedMapDecorator;
+import org.springframework.faces.mvc.context.ExternalContext;
+import org.springframework.faces.mvc.context.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository.StoredExecutionContextContainer;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
-import org.springframework.webflow.core.collection.LocalSharedAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
-import org.springframework.webflow.core.collection.SharedAttributeMap;
+import org.springframework.webflow.test.MockExternalContext;
 
 public class SessionBindingExecutionContextRepositoryTests extends TestCase {
 
 	private static final String SESSION_KEY = "mvcFacesExecutions";
 
 	private SessionBindingExecutionContextRepository repository;
-	private SharedMap sharedSessionMap;
-	private HttpServletRequest request;
 	private MvcFacesRequestContext requestContext;
 	private MutableAttributeMap flashScope;
+	private ExternalContext externalContext;
 
 	protected void setUp() throws Exception {
-		sharedSessionMap = new SharedMapDecorator(new HashMap());
-		repository = new MockSessionBindingExecutionContextRepository();
-		request = (HttpServletRequest) EasyMock.createNiceMock(HttpServletRequest.class);
+		repository = new SessionBindingExecutionContextRepository();
 		requestContext = (MvcFacesRequestContext) EasyMock.createNiceMock(MvcFacesRequestContext.class);
 		flashScope = new LocalAttributeMap();
+		externalContext = new WebFlowExternalContextAdapter(new MockExternalContext());
 		EasyMock.expect(requestContext.getFlashScope()).andStubReturn(flashScope);
-		EasyMock.replay(new Object[] { requestContext, request });
+		EasyMock.expect(requestContext.getExternalContext()).andStubReturn(externalContext);
+		EasyMock.replay(new Object[] { requestContext });
 	}
 
 	public void testParseValidKey() throws Exception {
@@ -67,33 +61,33 @@ public class SessionBindingExecutionContextRepositoryTests extends TestCase {
 
 	public void testTestWithoutData() throws Exception {
 		flashScope.clear();
-		repository.save(request, requestContext);
-		assertTrue(sharedSessionMap.isEmpty());
+		repository.save(requestContext);
+		assertTrue(externalContext.getSessionMap().isEmpty());
 	}
 
 	public void testFirstTimeSave() throws Exception {
 		flashScope.put("testkey", "testvalue");
-		ExecutionContextKey key = repository.save(request, requestContext);
+		ExecutionContextKey key = repository.save(requestContext);
 		assertEquals(new IntegerExecutionContextKey(1), key);
-		assertTrue(sharedSessionMap.containsKey(SESSION_KEY));
+		assertTrue(externalContext.getSessionMap().contains(SESSION_KEY));
 		flashScope.clear();
-		repository.restore(key, request, requestContext);
+		repository.restore(key, requestContext);
 		assertEquals("testvalue", flashScope.get("testkey"));
 	}
 
 	public void testLimtedToOneAndCleanup() throws Exception {
 		repository.setMaxExecutions(1);
 		flashScope.clear().put("k1", "v1");
-		ExecutionContextKey key1 = repository.save(request, requestContext);
+		ExecutionContextKey key1 = repository.save(requestContext);
 		flashScope.clear().put("k2", "v2");
-		ExecutionContextKey key2 = repository.save(request, requestContext);
+		ExecutionContextKey key2 = repository.save(requestContext);
 		assertEquals(new IntegerExecutionContextKey(1), key1);
 		assertEquals(new IntegerExecutionContextKey(2), key2);
 		flashScope.clear();
-		repository.restore(key2, request, requestContext);
+		repository.restore(key2, requestContext);
 		assertEquals("v2", flashScope.get("k2"));
 		try {
-			repository.restore(key1, request, requestContext);
+			repository.restore(key1, requestContext);
 			fail();
 		} catch (NoSuchExecutionException e) {
 			assertEquals("Unable to locate a Faces MVC execution with the key '1'", e.getMessage());
@@ -103,16 +97,16 @@ public class SessionBindingExecutionContextRepositoryTests extends TestCase {
 	public void testCustomSessionKey() throws Exception {
 		repository.setSessionKey("custom");
 		flashScope.clear().put("k1", "v1");
-		repository.save(request, requestContext);
-		assertTrue(sharedSessionMap.containsKey("custom"));
+		repository.save(requestContext);
+		assertTrue(externalContext.getSessionMap().contains("custom"));
 	}
 
 	public void testDoubleCleanup() throws Exception {
 		flashScope.put("k1", "v1");
-		ExecutionContextKey key1 = repository.save(request, requestContext);
-		repository.restore(key1, request, requestContext);
+		ExecutionContextKey key1 = repository.save(requestContext);
+		repository.restore(key1, requestContext);
 		try {
-			repository.restore(key1, request, requestContext);
+			repository.restore(key1, requestContext);
 			fail();
 		} catch (NoSuchExecutionException e) {
 			assertEquals("Unable to locate a Faces MVC execution with the key '1'", e.getMessage());
@@ -122,9 +116,10 @@ public class SessionBindingExecutionContextRepositoryTests extends TestCase {
 	private void doTestSize(int inserts, int expected) throws Exception {
 		flashScope.put("k1", "v1");
 		for (int i = 0; i < inserts; i++) {
-			repository.save(request, requestContext);
+			repository.save(requestContext);
 		}
-		StoredExecutionContextContainer container = (StoredExecutionContextContainer) sharedSessionMap.get(SESSION_KEY);
+		StoredExecutionContextContainer container = (StoredExecutionContextContainer) externalContext.getSessionMap()
+				.get(SESSION_KEY);
 		assertEquals(expected, container.getSize());
 	}
 
@@ -135,11 +130,5 @@ public class SessionBindingExecutionContextRepositoryTests extends TestCase {
 	public void testUnlmited() throws Exception {
 		repository.setMaxExecutions(-1);
 		doTestSize(50, 50);
-	}
-
-	private class MockSessionBindingExecutionContextRepository extends SessionBindingExecutionContextRepository {
-		protected SharedAttributeMap createSessionMap(HttpServletRequest request) {
-			return new LocalSharedAttributeMap(sharedSessionMap);
-		}
 	}
 }

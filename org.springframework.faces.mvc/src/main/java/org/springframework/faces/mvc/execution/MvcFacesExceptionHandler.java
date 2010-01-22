@@ -19,7 +19,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**

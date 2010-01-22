@@ -21,9 +21,9 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.faces.mvc.FacesHandler;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.js.ajax.AjaxHandler;
 
 /**

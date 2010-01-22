@@ -15,8 +15,6 @@
  */
 package org.springframework.faces.mvc.execution.repository;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesRequestContext;
 import org.springframework.faces.mvc.navigation.RedirectHandler;
@@ -31,8 +29,8 @@ import org.springframework.faces.mvc.navigation.RedirectHandler;
  * Note: This class will be accessed from multiple threads simultaneously, the implementation must be thread safe and
  * must implement a suitable locking strategy.
  * 
- * @see #save(HttpServletRequest, MvcFacesRequestContext)
- * @see #restore(ExecutionContextKey, HttpServletRequest, MvcFacesRequestContext)
+ * @see #save(MvcFacesRequestContext)
+ * @see #restore(ExecutionContextKey, MvcFacesRequestContext)
  * 
  * @author Phillip Webb
  */
@@ -53,23 +51,21 @@ public interface ExecutionContextRepository {
 	 * that can be used later. If the request context does not include data that needs to be saved a <tt>null</tt> key
 	 * should be returned.
 	 * @param requestContext The MVC faces request context
-	 * @param request The HTTP request
 	 * @return An execution context key or <tt>null</tt>
 	 * @throws ExecutionContextRepositoryException on error
-	 * @see #restore(ExecutionContextKey, HttpServletRequest, MvcFacesRequestContext)
+	 * @see #restore(ExecutionContextKey, MvcFacesRequestContext)
 	 */
-	ExecutionContextKey save(HttpServletRequest request, MvcFacesRequestContext requestContext)
-			throws ExecutionContextRepositoryException;
+	ExecutionContextKey save(MvcFacesRequestContext requestContext) throws ExecutionContextRepositoryException;
 
 	/**
 	 * Restore <tt>flashScope</tt> data from the repository into the specified context. Any existing context data should
 	 * be replaced. Once this method has been called the repository data can be removed.
 	 * @param key The execution context key
-	 * @param request The HTTP request
 	 * @param requestContext The MVC faces request context
 	 * @throws NoSuchExecutionException If the specified execution key does not exist
 	 * @throws ExecutionContextRepositoryException on error
+	 * @see #save(MvcFacesRequestContext)
 	 */
-	void restore(ExecutionContextKey key, HttpServletRequest request, MvcFacesRequestContext requestContext)
-			throws NoSuchExecutionException, ExecutionContextRepositoryException;
+	void restore(ExecutionContextKey key, MvcFacesRequestContext requestContext) throws NoSuchExecutionException,
+			ExecutionContextRepositoryException;
 }

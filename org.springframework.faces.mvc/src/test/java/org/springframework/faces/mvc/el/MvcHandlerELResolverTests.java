@@ -20,9 +20,10 @@ import javax.el.ELContext;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.FacesHandler;
+import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.MvcFacesRequestControlContextImpl;
+import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
 
@@ -41,8 +42,9 @@ public class MvcHandlerELResolverTests extends TestCase {
 		this.resolver = new MvcHandlerELResolver();
 		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
 		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
+		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 		this.facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
-		this.requestContext = new MvcFacesRequestControlContextImpl(execution, facesHandler);
+		this.requestContext = new MvcFacesRequestControlContextImpl(externalContext, execution, facesHandler);
 	}
 
 	protected void tearDown() throws Exception {
