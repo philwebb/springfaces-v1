@@ -452,8 +452,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		}
 
 		public boolean handleException(Exception exception, MvcFacesRequestContext requestContext,
-				HttpServletRequest request, HttpServletResponse response, MvcFacesExceptionOutcome outcome)
-				throws Exception {
+				MvcFacesExceptionOutcome outcome) throws Exception {
 			Assert.assertEquals(IllegalStateException.class, exception.getClass());
 			Assert.assertEquals("errortest", exception.getMessage());
 			Assert.assertSame(exception, requestContext.getException());

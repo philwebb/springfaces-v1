@@ -178,8 +178,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		}
 		for (int i = 0; i < handlers.length; i++) {
 			mvcFacesExceptionOutcome.reset();
-			if (handlers[i].handleException(exception, mvcFacesRequestContext, request, response,
-					mvcFacesExceptionOutcome)) {
+			if (handlers[i].handleException(exception, mvcFacesRequestContext, mvcFacesExceptionOutcome)) {
 				mvcFacesExceptionOutcome.complete(mvcFacesRequestContext, request, response);
 				return true;
 			}

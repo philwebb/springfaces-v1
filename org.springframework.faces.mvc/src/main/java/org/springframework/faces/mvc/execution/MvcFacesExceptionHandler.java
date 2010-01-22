@@ -16,8 +16,6 @@
 package org.springframework.faces.mvc.execution;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -48,8 +46,6 @@ public interface MvcFacesExceptionHandler {
 	 * {@link FacesContext} instance.
 	 * @param exception The exception to be handled
 	 * @param requestContext The current MVC Faces request context
-	 * @param request The request
-	 * @param response The response
 	 * @param outcome A callback object that can be used to request a specific action (see
 	 * {@link MvcFacesExceptionOutcome} for details
 	 * @return <tt>true</tt> if the exception was handled (no further processing will occur and no other handlers will
@@ -57,6 +53,6 @@ public interface MvcFacesExceptionHandler {
 	 * @throws Exception An exception during the handling. Note: this exception will simply propagate to MVC, it will
 	 * not trigger further handlers
 	 */
-	boolean handleException(Exception exception, MvcFacesRequestContext requestContext, HttpServletRequest request,
-			HttpServletResponse response, MvcFacesExceptionOutcome outcome) throws Exception;
+	boolean handleException(Exception exception, MvcFacesRequestContext requestContext, MvcFacesExceptionOutcome outcome)
+			throws Exception;
 }

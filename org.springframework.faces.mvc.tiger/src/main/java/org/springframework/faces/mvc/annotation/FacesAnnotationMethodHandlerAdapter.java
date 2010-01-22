@@ -438,11 +438,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		}
 
 		public boolean handleException(Exception exception, MvcFacesRequestContext requestContext,
-				HttpServletRequest request, HttpServletResponse response, MvcFacesExceptionOutcome outcome)
-				throws Exception {
+				MvcFacesExceptionOutcome outcome) throws Exception {
 			requestContext.getFacesHandler();
 			NavigationRequestEvent event = new NavigationRequestEvent(this, requestContext
 					.getLastNavigationRequestEvent(), exception);
+			HttpServletRequest request = (HttpServletRequest) requestContext.getExternalContext().getNativeRequest();
+			HttpServletResponse response = (HttpServletResponse) requestContext.getExternalContext()
+					.getNativeResponse();
 			NavigationLocation location = FacesAnnotationMethodHandlerAdapter.this.getNavigationOutcome(request,
 					response, event, handler);
 			if (location != null) {

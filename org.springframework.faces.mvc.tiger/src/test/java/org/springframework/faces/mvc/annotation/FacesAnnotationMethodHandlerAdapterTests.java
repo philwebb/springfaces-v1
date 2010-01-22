@@ -93,6 +93,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 	private StaticWebApplicationContext context;
 	private HttpServletRequest request;
 	private HttpServletResponse response;
+	private ExternalContext externalContext;
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -111,6 +112,10 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		adapter.afterPropertiesSet();
 		request = EasyMock.createNiceMock(HttpServletRequest.class);
 		response = EasyMock.createMock(HttpServletResponse.class);
+		externalContext = EasyMock.createMock(ExternalContext.class);
+		EasyMock.expect(externalContext.getNativeRequest()).andStubReturn(request);
+		EasyMock.expect(externalContext.getNativeResponse()).andStubReturn(response);
+		EasyMock.replay(externalContext);
 	}
 
 	private Set<Class<? extends WebArgumentResolver>> assertHasFacesResolvers(
@@ -375,7 +380,6 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		assertEquals(1, exceptionHandlers.length);
 		MvcFacesExceptionHandler exceptionHandler = exceptionHandlers[0];
 		MvcFacesExceptionOutcome outcome = EasyMock.createMock(MvcFacesExceptionOutcome.class);
-		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 		MvcFacesExecution execution = EasyMock.createMock(MvcFacesExecution.class);
 		final NavigationRequestEvent event = new NavigationRequestEvent(this, "#{action}", "outcome");
 		MvcFacesRequestControlContextImpl requestContext = new MvcFacesRequestControlContextImpl(externalContext,
@@ -391,7 +395,7 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 				EasyMock.expectLastCall();
 			}
 			EasyMock.replay(request, response, outcome);
-			boolean handled = exceptionHandler.handleException(exception, requestContext, request, response, outcome);
+			boolean handled = exceptionHandler.handleException(exception, requestContext, outcome);
 			assertEquals(redirect != null, handled);
 		} finally {
 			requestContext.release();
