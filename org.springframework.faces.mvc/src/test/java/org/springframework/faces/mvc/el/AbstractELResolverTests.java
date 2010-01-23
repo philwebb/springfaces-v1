@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.el;
 
 import java.util.HashMap;
@@ -21,13 +36,20 @@ public class AbstractELResolverTests extends TestCase {
 
 	private AbstractELResolver resolver;
 	private ELContext elContext;
-	private Map map = new HashMap();
+	private Map map;
+	private Boolean handles;
+	private Boolean available;
+	private Boolean readOnly;
 
 	protected void setUp() throws Exception {
 		super.setUp();
+		this.map = new HashMap();
 		this.resolver = new MockELResolver();
 		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
 		this.map.put(PROPERTY_NAME, PROPERTY_VALUE);
+		this.handles = null;
+		this.available = null;
+		this.readOnly = null;
 	}
 
 	public void testGetCommonPropertyType() throws Exception {
@@ -82,13 +104,13 @@ public class AbstractELResolverTests extends TestCase {
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 	}
 
-	public void testSetValueNonNullBase() throws Exception {
+	public void testReadOnlySetValueNonNullBase() throws Exception {
 		resolver.setValue(elContext, BASE_OBJECT, PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 		assertEquals(PROPERTY_VALUE, map.get(PROPERTY_NAME));
 	}
 
-	public void testSetValueFound() throws Exception {
+	public void testReadOnlySetValueFound() throws Exception {
 		try {
 			resolver.setValue(elContext, null, PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
 			fail();
@@ -97,21 +119,70 @@ public class AbstractELResolverTests extends TestCase {
 		}
 	}
 
-	public void testSetValueNotFound() throws Exception {
+	public void testReadOnlySetValueNotFound() throws Exception {
 		resolver.setValue(elContext, null, MISSING_PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
 		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
 		assertFalse(map.containsKey(MISSING_PROPERTY_NAME));
 	}
 
-	// FIXME test set
+	public void testMutableSetValueFound() throws Exception {
+		readOnly = Boolean.FALSE;
+		resolver.setValue(elContext, null, PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
+		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
+		assertEquals(REPLACED_PROPERTY_VALUE, map.get(PROPERTY_NAME));
+	}
 
-	// FIXME test null return support
+	public void testMutableSetValueNotFound() throws Exception {
+		readOnly = Boolean.FALSE;
+		resolver.setValue(elContext, null, MISSING_PROPERTY_NAME, REPLACED_PROPERTY_VALUE);
+		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
+		assertNull(map.get(MISSING_PROPERTY_NAME));
+	}
 
-	// FIXME test custom isAvailable
+	public void testCanReturnNull() throws Exception {
+		handles = Boolean.TRUE;
+		assertNull(resolver.getValue(elContext, null, MISSING_PROPERTY_NAME));
+		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
+	}
+
+	public void testNoAvailable() throws Exception {
+		available = Boolean.FALSE;
+		assertNull(resolver.getValue(elContext, null, PROPERTY_NAME));
+		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
+	}
 
 	private class MockELResolver extends AbstractELResolver {
+
+		protected boolean handles(String property) {
+			if (handles == null) {
+				return super.handles(property);
+			}
+			return handles.booleanValue();
+		}
+
+		protected boolean isAvailable() {
+			if (available == null) {
+				return super.isAvailable();
+			}
+			return available.booleanValue();
+		}
+
+		protected boolean isReadOnly(String property) {
+			if (readOnly == null) {
+				return super.isReadOnly(property);
+			}
+			return readOnly.booleanValue();
+		}
+
 		protected Object get(String property) {
 			return map.get(property);
+		}
+
+		protected void set(String property, Object value) throws PropertyNotWritableException {
+			if (readOnly == null) {
+				super.set(property, value);
+			}
+			map.put(property, value);
 		}
 	}
 }

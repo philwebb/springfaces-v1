@@ -1,6 +1,20 @@
+/*
+ * Copyright 2004-2008 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.faces.mvc.context;
 
-import java.io.Writer;
 import java.security.Principal;
 import java.util.Locale;
 
@@ -15,9 +29,8 @@ import org.springframework.webflow.core.collection.SharedAttributeMap;
  * state of an external actor calling into MVC. It represents the context about a single, <i>external</i> client request
  * to manipulate a flow execution.
  * <p>
- * The design of this interface was inspired by WebFlow and JSF's own ExternalContext abstraction and shares the same
- * name for consistency. If a particular external client type does not support all methods defined by this interface,
- * they can just be implemented as returning an empty map or <code>null</code>.
+ * The design of this interface was inspired by the WebFlow and JSF ExternalContext abstraction and shares the same name
+ * for consistency.
  * 
  * @author Keith Donald
  * @author Erwin Vervaet
@@ -106,92 +119,4 @@ public interface ExternalContext {
 	 * @return the environment specific response object.
 	 */
 	public Object getNativeResponse();
-
-	/**
-	 * Get a writer for writing out a response.
-	 * @return the writer
-	 * @throws IllegalStateException if the response has completed or is not allowed
-	 */
-	public Writer getResponseWriter() throws IllegalStateException;
-
-	// FIXME what to expose
-	// /**
-	// * Is a <i>render</i> response allowed to be written for this request? Always return false after a response has
-	// been
-	// * completed. May return false before that to indicate a response is not allowed to be completed. For example, in
-	// a
-	// * Portlet environment, render responses are only allowed in render requests.
-	// * @return true if yes, false otherwise
-	// */
-	// public boolean isResponseAllowed();
-	//
-	// /**
-	// * Request that a flow execution redirect be performed by the calling environment. Typically called from within a
-	// * flow execution to request a refresh operation, usually to support "refresh after event processing" behavior.
-	// * Calling this method also sets responseComplete status to true.
-	// * @see #isResponseComplete()
-	// * @throws IllegalStateException if the response has completed
-	// */
-	// public void requestFlowExecutionRedirect() throws IllegalStateException;
-	//
-	// /**
-	// * Request that a flow definition redirect be performed by the calling environment. Typically called from within a
-	// * flow execution end state to request starting a new, independent execution of a flow in a chain-like manner.
-	// * Calling this method also sets responseComplete status to true.
-	// * @see #isResponseComplete()
-	// * @param flowId the id of the flow definition to redirect to
-	// * @param input input to pass the flow; this input is generally encoded the url to launch the flow
-	// * @throws IllegalStateException if the response has completed
-	// */
-	// public void requestFlowDefinitionRedirect(String flowId, MutableAttributeMap input) throws IllegalStateException;
-	//
-	// /**
-	// * Request a redirect to an arbitrary resource location. May not be supported in some environments. Calling this
-	// * method also sets responseComplete status to true.
-	// * @see #isResponseComplete()
-	// * @param location the location of the resource to redirect to
-	// * @throws IllegalStateException if the response has completed
-	// */
-	// public void requestExternalRedirect(String location) throws IllegalStateException;
-	//
-	// /**
-	// * Request that the current redirect requested be sent to the client in a manner that causes the client to issue
-	// the
-	// * redirect from a popup dialog. Only call this method after a redirect has been requested.
-	// * @see #requestFlowExecutionRedirect()
-	// * @see #requestFlowDefinitionRedirect(String, MutableAttributeMap)
-	// * @see #requestExternalRedirect(String)
-	// * @throws IllegalStateException if a redirect has not been requested
-	// */
-	// public void requestRedirectInPopup() throws IllegalStateException;
-	//
-	// /**
-	// * Called by flow artifacts such as View states and end states to indicate they handled the response, typically by
-	// * writing out content to the response stream. Setting this flag allows this external context to know the response
-	// * was handled, and that it not need to take additional response handling action itself.
-	// */
-	// public void recordResponseComplete();
-	//
-	// /**
-	// * Has the response been completed? Response complete status can be achieved by:
-	// * <ul>
-	// * <li>Writing out the response and calling {@link #recordResponseComplete()}, or
-	// * <li>Calling one of the redirect request methods
-	// * </ul>
-	// * @see #getResponseWriter()
-	// * @see #recordResponseComplete()
-	// * @see #requestFlowExecutionRedirect()
-	// * @see #requestFlowDefinitionRedirect(String, MutableAttributeMap)
-	// * @see #requestExternalRedirect(String)
-	// * @return true if yes, false otherwise
-	// */
-	// public boolean isResponseComplete();
-	//
-	// /**
-	// * Returns true if the response has been completed with flow execution redirect request.
-	// * @return true if a redirect response has been completed
-	// * @see #isResponseComplete()
-	// * @see #requestFlowExecutionRedirect()
-	// */
-	// public boolean isResponseCompleteFlowExecutionRedirect();
 }

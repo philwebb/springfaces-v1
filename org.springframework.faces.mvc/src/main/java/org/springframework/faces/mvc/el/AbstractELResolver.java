@@ -85,7 +85,7 @@ public abstract class AbstractELResolver extends ELResolver {
 	 * @param property The property
 	 * @param value The value to set
 	 * @throws PropertyNotWritableException if the property is not writable.
-	 * @see {@link #isReadOnly(String)}
+	 * @see #isReadOnly(String)
 	 */
 	protected void set(String property, Object value) throws PropertyNotWritableException {
 		throw new PropertyNotWritableException("The property " + property + " is not writable.");

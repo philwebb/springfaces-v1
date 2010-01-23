@@ -34,7 +34,7 @@ import org.springframework.binding.expression.el.DefaultELContext;
  * @author Phillip Webb
  */
 public abstract class BeanBackedElResolver extends AbstractELResolver {
-	// FIXME test
+
 	private static final BeanELResolver elPropertyResolver = new BeanELResolver();
 
 	/**

@@ -19,10 +19,10 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.context.ExternalContext;
-import org.springframework.faces.mvc.context.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository.StoredExecutionContextContainer;
+import org.springframework.faces.mvc.support.WebFlowExternalContextAdapter;
 import org.springframework.webflow.core.collection.LocalAttributeMap;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.test.MockExternalContext;

@@ -37,7 +37,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.OrderComparator;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
 import org.springframework.faces.mvc.context.ExternalContext;
-import org.springframework.faces.mvc.context.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
@@ -51,6 +50,7 @@ import org.springframework.faces.mvc.execution.repository.NoSuchExecutionExcepti
 import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
+import org.springframework.faces.mvc.support.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.view.FacesViewIdResolver;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
