@@ -23,10 +23,10 @@ import java.lang.reflect.Method;
 
 import javax.faces.application.NavigationHandler;
 
-import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolver;
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.servlet.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 

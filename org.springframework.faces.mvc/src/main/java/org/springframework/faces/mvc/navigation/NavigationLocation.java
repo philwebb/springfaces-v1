@@ -16,6 +16,7 @@
 package org.springframework.faces.mvc.navigation;
 
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.faces.mvc.servlet.RedirectHandler;
 import org.springframework.util.ObjectUtils;
 
 /**

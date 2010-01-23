@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.navigation;
+package org.springframework.faces.mvc.servlet;
 
 import java.io.IOException;
 
@@ -23,7 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
-import org.springframework.faces.mvc.servlet.FacesHandler;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.js.ajax.AjaxHandler;
 
 /**

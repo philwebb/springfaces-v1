@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 public class ConversionServiceQuickConverter implements QuickConverter, InitializingBean, BeanFactoryAware {
-
+	// FIXME test
 	private ConversionService conversionService;
 	private BeanFactory beanFactory;
 

@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.faces.mvc.annotation.FacesAnnotationHandlerMapping;
-import org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter;
+import org.springframework.faces.mvc.servlet.annotation.FacesAnnotationHandlerMapping;
+import org.springframework.faces.mvc.servlet.annotation.FacesAnnotationMethodHandlerAdapter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 

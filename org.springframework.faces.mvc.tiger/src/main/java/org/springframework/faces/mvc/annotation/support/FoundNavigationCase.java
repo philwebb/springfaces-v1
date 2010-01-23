@@ -107,7 +107,7 @@ public final class FoundNavigationCase {
 	 * @throws Exception on error
 	 */
 	public NavigationLocation getOutcome(NavigationRequestEvent event, Object target, NativeWebRequest request,
-			FacesControllerAnnotatedMethodInvokerFactory invokerFactory) throws Exception {
+			AnnotatedMethodInvokerFactory invokerFactory) throws Exception {
 		Object location = null;
 		if (StringUtils.hasText(navigationCase.to())) {
 			location = navigationCase.to();
@@ -125,7 +125,7 @@ public final class FoundNavigationCase {
 							+ "called as @RequestMapping annotation also present");
 				}
 			} else {
-				FacesControllerAnnotatedMethodInvoker invoker = invokerFactory
+				AnnotatedMethodInvoker invoker = invokerFactory
 						.newInvoker(new NavigationRequestEventWebArgumentResolver(event));
 				Object methodResult = invoker.invokeOnActiveHandler(method, target, request);
 				location = methodResult != null ? methodResult : location;

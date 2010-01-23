@@ -23,7 +23,7 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
-import org.springframework.faces.mvc.context.MvcFacesExecution;
+import org.springframework.faces.mvc.execution.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.web.jsf.DelegatingPhaseListenerMulticaster;

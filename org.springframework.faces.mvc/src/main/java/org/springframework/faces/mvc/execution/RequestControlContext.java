@@ -1,6 +1,5 @@
 package org.springframework.faces.mvc.execution;
 
-import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 
 /**

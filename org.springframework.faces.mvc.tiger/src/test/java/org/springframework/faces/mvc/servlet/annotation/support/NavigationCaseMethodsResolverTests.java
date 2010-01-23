@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation.support;
+package org.springframework.faces.mvc.servlet.annotation.support;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -22,9 +22,9 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.springframework.faces.mvc.annotation.support.NavigationCaseMethodResolver;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
+import org.springframework.faces.mvc.servlet.annotation.support.NavigationCaseMethodResolver;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;

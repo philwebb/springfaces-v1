@@ -42,8 +42,6 @@ import org.springframework.faces.mvc.bind.RequestMappedModelBindingExecutor;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.PageEncodedActionUrlMapper;
-import org.springframework.faces.mvc.navigation.DefaultRedirectHandler;
-import org.springframework.faces.mvc.navigation.RedirectHandler;
 import org.springframework.faces.mvc.view.FacesViewIdResolver;
 import org.springframework.faces.mvc.view.SimpleFacesViewIdResolver;
 import org.springframework.util.Assert;

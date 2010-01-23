@@ -28,6 +28,7 @@ import org.springframework.faces.mvc.annotation.support.FoundNavigationCase.Foun
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
+import org.springframework.faces.mvc.servlet.annotation.support.RequestMappingMethodResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -35,12 +36,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public class FoundNavigationCaseTests extends TestCase {
 
-	private FacesControllerAnnotatedMethodInvokerFactory invokerFactory;
+	private AnnotatedMethodInvokerFactory invokerFactory;
 	private NativeWebRequest nativeWebRequest;
 
 	protected void setUp() throws Exception {
-		this.invokerFactory = new FacesControllerAnnotatedMethodInvokerFactory() {
-			public FacesControllerAnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
+		this.invokerFactory = new AnnotatedMethodInvokerFactory() {
+			public AnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
 				return new MockFacesControllerAnnotatedMethodInvoker(null, null, null, additionalArgumentResolvers);
 			}
 		};
@@ -160,7 +161,7 @@ public class FoundNavigationCaseTests extends TestCase {
 		assertFalse(target.isMethodCalled());
 	}
 
-	private class MockFacesControllerAnnotatedMethodInvoker extends FacesControllerAnnotatedMethodInvoker {
+	private class MockFacesControllerAnnotatedMethodInvoker extends AnnotatedMethodInvoker {
 
 		public MockFacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
 				WebBindingInitializer bindingInitializer, ParameterNameDiscoverer parameterNameDiscoverer,

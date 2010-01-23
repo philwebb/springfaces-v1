@@ -17,7 +17,7 @@ package org.springframework.faces.mvc.execution.repository;
 
 import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.RequestContext;
-import org.springframework.faces.mvc.navigation.RedirectHandler;
+import org.springframework.faces.mvc.servlet.RedirectHandler;
 
 /**
  * Central subsystem interface use to save and restore information from {@link RequestContext} so that

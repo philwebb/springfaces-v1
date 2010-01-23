@@ -3,7 +3,6 @@ package org.springframework.faces.mvc.execution;
 import javax.faces.context.FacesContext;
 
 import org.springframework.faces.mvc.context.ExternalContext;
-import org.springframework.faces.mvc.context.MvcFacesExecution;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;

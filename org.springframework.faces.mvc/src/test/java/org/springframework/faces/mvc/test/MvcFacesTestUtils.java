@@ -31,7 +31,7 @@ import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.DefaultAopProxyFactory;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.faces.mvc.context.ExternalContext;
-import org.springframework.faces.mvc.context.MvcFacesExecution;
+import org.springframework.faces.mvc.execution.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.servlet.FacesHandler;

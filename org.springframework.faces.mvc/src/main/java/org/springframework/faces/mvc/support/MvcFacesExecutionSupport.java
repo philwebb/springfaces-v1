@@ -1,6 +1,6 @@
 package org.springframework.faces.mvc.support;
 
-import org.springframework.faces.mvc.context.MvcFacesExecution;
+import org.springframework.faces.mvc.execution.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.execution.RequestControlContext;

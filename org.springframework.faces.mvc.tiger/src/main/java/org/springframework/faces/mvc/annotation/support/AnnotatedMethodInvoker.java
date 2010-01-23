@@ -15,26 +15,15 @@
  */
 package org.springframework.faces.mvc.annotation.support;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +34,7 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.faces.mvc.servlet.annotation.support.RequestMappingMethodResolver;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -61,17 +51,16 @@ import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartRequest;
-import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
-import org.springframework.web.servlet.support.RequestContextUtils;
+
+//Based on AnnotatedMethodInvoker from Spring MVC
 
 /**
- * Helper class used to invoke annotated methods on {@link FacesController} annotated classes. The class is based
- * heavily on the <tt>ServletHandlerMethodInvoker</tt> internal class used by {@link AnnotationMethodHandlerAdapter}s.
+ * Helper class used to invoke annotated methods on {@link FacesController} annotated classes.
  * 
  * @author Juergen Hoeller
  * @author Phillip Webb
  */
-public abstract class FacesControllerAnnotatedMethodInvoker {
+public abstract class AnnotatedMethodInvoker {
 
 	// FIXME tidy up, dc, tests
 
@@ -97,9 +86,8 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 
 	private WebArgumentResolver[] customArgumentResolvers;
 
-	public FacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
-			WebBindingInitializer bindingInitializer, ParameterNameDiscoverer parameterNameDiscoverer,
-			WebArgumentResolver... customArgumentResolvers) {
+	public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver, WebBindingInitializer bindingInitializer,
+			ParameterNameDiscoverer parameterNameDiscoverer, WebArgumentResolver... customArgumentResolvers) {
 
 		this.methodResolver = resolver;
 		this.bindingInitializer = bindingInitializer;
@@ -110,6 +98,7 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 	protected abstract WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 			throws Exception;
 
+	// FIXME can we replace NWR with EC
 	public final Object invokeOnActiveHandler(Method handlerMethod, Object handler, NativeWebRequest webRequest)
 			throws Exception {
 
@@ -335,34 +324,6 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 	}
 
 	protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
-		if ((webRequest.getNativeRequest() instanceof HttpServletRequest)
-				&& (webRequest.getNativeResponse() instanceof HttpServletResponse)) {
-
-			HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-			HttpServletResponse response = (HttpServletResponse) webRequest.getNativeResponse();
-
-			if (ServletRequest.class.isAssignableFrom(parameterType)) {
-				return request;
-			} else if (ServletResponse.class.isAssignableFrom(parameterType)) {
-				return response;
-			} else if (HttpSession.class.isAssignableFrom(parameterType)) {
-				return request.getSession();
-			} else if (Principal.class.isAssignableFrom(parameterType)) {
-				return request.getUserPrincipal();
-			} else if (Locale.class.equals(parameterType)) {
-				return RequestContextUtils.getLocale(request);
-			} else if (InputStream.class.isAssignableFrom(parameterType)) {
-				return request.getInputStream();
-			} else if (Reader.class.isAssignableFrom(parameterType)) {
-				return request.getReader();
-			} else if (OutputStream.class.isAssignableFrom(parameterType)) {
-				return response.getOutputStream();
-			} else if (Writer.class.isAssignableFrom(parameterType)) {
-				return response.getWriter();
-			} else if (WebRequest.class.isAssignableFrom(parameterType)) {
-				return webRequest;
-			}
-		}
 		return WebArgumentResolver.UNRESOLVED;
 	}
 
@@ -432,6 +393,5 @@ public abstract class FacesControllerAnnotatedMethodInvoker {
 			}
 			return new ResolvedModelArgument(resolved);
 		}
-
 	}
 }

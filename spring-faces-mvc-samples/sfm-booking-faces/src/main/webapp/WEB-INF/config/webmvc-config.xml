@@ -15,7 +15,7 @@
 	</bean>
 
 	<!-- Maps @FacesController annotated classes -->
-	<bean class="org.springframework.faces.mvc.annotation.FacesAnnotationHandlerMapping">
+	<bean class="org.springframework.faces.mvc.servlet.annotation.FacesAnnotationHandlerMapping">
 	</bean>
 
 	<!-- Maps logical view names to Facelet templates in /WEB-INF (e.g. 'search' to '/WEB-INF/search.xhtml' -->
@@ -34,6 +34,6 @@
 	</bean>
 
 	<!-- Dispatches requests mapped to @FacesController implementations -->
-	<bean class="org.springframework.faces.mvc.annotation.FacesAnnotationMethodHandlerAdapter">
+	<bean class="org.springframework.faces.mvc.servlet.annotation.FacesAnnotationMethodHandlerAdapter">
 	</bean>
 </beans>

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.navigation;
+package org.springframework.faces.mvc.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +23,8 @@ import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
+import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.servlet.DefaultRedirectHandler;
 import org.springframework.js.ajax.AjaxHandler;
 
 public class DefaultRedirectHandlerTests extends TestCase {

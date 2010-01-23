@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.context.ExternalContext;
-import org.springframework.faces.mvc.context.MvcFacesExecution;
+import org.springframework.faces.mvc.execution.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.test.MvcFacesTestUtils;

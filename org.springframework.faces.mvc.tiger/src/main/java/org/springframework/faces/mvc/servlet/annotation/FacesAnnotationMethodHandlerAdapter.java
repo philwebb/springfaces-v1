@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.annotation;
+package org.springframework.faces.mvc.servlet.annotation;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
@@ -34,13 +43,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvoker;
-import org.springframework.faces.mvc.annotation.support.FacesControllerAnnotatedMethodInvokerFactory;
+import org.springframework.faces.mvc.annotation.support.AnnotatedMethodInvoker;
+import org.springframework.faces.mvc.annotation.support.AnnotatedMethodInvokerFactory;
 import org.springframework.faces.mvc.annotation.support.FacesWebArgumentResolvers;
 import org.springframework.faces.mvc.annotation.support.FoundNavigationCase;
 import org.springframework.faces.mvc.annotation.support.NavigationCaseAnnotationLocator;
-import org.springframework.faces.mvc.annotation.support.NavigationCaseMethodResolver;
-import org.springframework.faces.mvc.annotation.support.RequestMappingMethodResolver;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.execution.RequestContext;
@@ -49,11 +56,13 @@ import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionConte
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionResolver;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
-import org.springframework.faces.mvc.navigation.RedirectHandler;
 import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.servlet.FacesHandlerAdapter;
+import org.springframework.faces.mvc.servlet.RedirectHandler;
+import org.springframework.faces.mvc.servlet.annotation.support.NavigationCaseMethodResolver;
+import org.springframework.faces.mvc.servlet.annotation.support.RequestMappingMethodResolver;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -67,11 +76,13 @@ import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver;
 import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
@@ -456,16 +467,17 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	}
 
 	/**
-	 * Internal {@link FacesControllerAnnotatedMethodInvoker} implementation.
+	 * Internal {@link AnnotatedMethodInvoker} implementation.
 	 */
-	private class AnnotatedMethodInvoker extends FacesControllerAnnotatedMethodInvoker {
+	private class ServletFacesControllerAnnotatedMethodInvoker extends AnnotatedMethodInvoker {
 
-		public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
+		public ServletFacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
 				WebArgumentResolver[] additionalArgumentResolvers) {
 			super(resolver, webBindingInitializer, parameterNameDiscoverer, FacesWebArgumentResolvers.mergeResolvers(
 					completeArgumentResolvers, additionalArgumentResolvers));
 		}
 
+		@Override
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 				throws Exception {
 			return FacesAnnotationMethodHandlerAdapter.this.createBinder((HttpServletRequest) webRequest
@@ -478,16 +490,49 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			initBinder(handler, attrName, binder, webRequest);
 			return binder;
 		}
+
+		@Override
+		protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
+			if ((webRequest.getNativeRequest() instanceof HttpServletRequest)
+					&& (webRequest.getNativeResponse() instanceof HttpServletResponse)) {
+
+				HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+				HttpServletResponse response = (HttpServletResponse) webRequest.getNativeResponse();
+
+				if (ServletRequest.class.isAssignableFrom(parameterType)) {
+					return request;
+				} else if (ServletResponse.class.isAssignableFrom(parameterType)) {
+					return response;
+				} else if (HttpSession.class.isAssignableFrom(parameterType)) {
+					return request.getSession();
+				} else if (Principal.class.isAssignableFrom(parameterType)) {
+					return request.getUserPrincipal();
+				} else if (Locale.class.equals(parameterType)) {
+					return RequestContextUtils.getLocale(request);
+				} else if (InputStream.class.isAssignableFrom(parameterType)) {
+					return request.getInputStream();
+				} else if (Reader.class.isAssignableFrom(parameterType)) {
+					return request.getReader();
+				} else if (OutputStream.class.isAssignableFrom(parameterType)) {
+					return response.getOutputStream();
+				} else if (Writer.class.isAssignableFrom(parameterType)) {
+					return response.getWriter();
+				} else if (WebRequest.class.isAssignableFrom(parameterType)) {
+					return webRequest;
+				}
+			}
+			return super.resolveStandardArgument(parameterType, webRequest);
+		}
 	}
 
 	/**
 	 * Internal {@link NavigationOutcomeExpressionContext} implementation.
 	 */
 	private class NavigationOutcomeExpressionContextImpl implements NavigationOutcomeExpressionContext,
-			FacesControllerAnnotatedMethodInvokerFactory {
+			AnnotatedMethodInvokerFactory {
 
 		private NativeWebRequest webRequest;
-		private AnnotatedMethodInvoker dataBinderMethodInvoker;
+		private ServletFacesControllerAnnotatedMethodInvoker dataBinderMethodInvoker;
 		private NavigationCaseMethodResolver methodResolver;
 		private Object handler;
 
@@ -504,13 +549,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 		public WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception {
 			if (dataBinderMethodInvoker == null) {
-				dataBinderMethodInvoker = new AnnotatedMethodInvoker(methodResolver, null);
+				dataBinderMethodInvoker = new ServletFacesControllerAnnotatedMethodInvoker(methodResolver, null);
 			}
 			return dataBinderMethodInvoker.createDataBinder(handler, webRequest, attrName, target, objectName);
 		}
 
-		public FacesControllerAnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
-			return new AnnotatedMethodInvoker(methodResolver, additionalArgumentResolvers);
+		public AnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
+			return new ServletFacesControllerAnnotatedMethodInvoker(methodResolver, additionalArgumentResolvers);
 		}
 	}
 }

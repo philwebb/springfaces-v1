@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.faces.mvc.context;
+package org.springframework.faces.mvc.execution;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,11 +23,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseListener;
 
-import org.springframework.faces.mvc.execution.ActionUrlMapper;
-import org.springframework.faces.mvc.execution.RequestContext;
-import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
-import org.springframework.faces.mvc.navigation.RedirectHandler;
+import org.springframework.faces.mvc.servlet.RedirectHandler;
 import org.springframework.faces.mvc.support.MvcNavigationHandler;
 import org.springframework.faces.mvc.support.MvcPhaseListener;
 import org.springframework.faces.mvc.support.MvcStateManager;

@@ -1,13 +1,5 @@
-- Do model level validation
-- start flow passing input
-- respond to flow output
-- integrate phase listener in model
-- support action listeners/events
-- DataBinder JSF converter integration
-- Improve logging
-- HTTP cache header
-
-v2
-
+Improve logging
+DataBinder JSF converter integration
 @BeforePhase @AfterPhase annotations
-If support in navigation case
+"If" support in navigation case
+Portlets
