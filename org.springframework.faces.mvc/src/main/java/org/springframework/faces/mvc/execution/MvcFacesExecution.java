@@ -51,7 +51,7 @@ import org.springframework.web.servlet.HandlerAdapter;
  * @author Phillip Webb
  */
 public interface MvcFacesExecution {
-	// FIXME move
+
 	/**
 	 * Called to resolve the view ID. This method usually delegates to a {@link FacesViewIdResolver}.
 	 * @param viewName The view name to resolve

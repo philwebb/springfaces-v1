@@ -28,7 +28,7 @@ import org.springframework.faces.mvc.servlet.FacesHandler;
  * @author Phillip Webb
  */
 public class MvcHandlerELResolver extends AbstractELResolver {
-	// FIXME update test
+
 	protected boolean isAvailable() {
 		return RequestContextHolder.getRequestContext() != null;
 	}

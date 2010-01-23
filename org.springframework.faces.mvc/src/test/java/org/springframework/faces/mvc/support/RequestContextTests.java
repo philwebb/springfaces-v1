@@ -93,9 +93,13 @@ public class RequestContextTests extends TestCase {
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		RequestControlContextImpl requestContext = new RequestControlContextImpl(externalContext, execution,
 				facesHandler);
-		Exception exception = new Exception();
-		requestContext.setException(exception);
-		assertSame(exception, requestContext.getException());
+		try {
+			Exception exception = new Exception();
+			requestContext.setException(exception);
+			assertSame(exception, requestContext.getException());
+		} finally {
+			requestContext.release();
+		}
 	}
 
 	public void testSetGetLastNavigationRequestEvent() throws Exception {
@@ -104,8 +108,12 @@ public class RequestContextTests extends TestCase {
 		FacesHandler facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
 		RequestControlContextImpl requestContext = new RequestControlContextImpl(externalContext, execution,
 				facesHandler);
-		NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
-		requestContext.setLastNavigationRequestEvent(event);
-		assertSame(event, requestContext.getLastNavigationRequestEvent());
+		try {
+			NavigationRequestEvent event = new NavigationRequestEvent(this, null, "outcome");
+			requestContext.setLastNavigationRequestEvent(event);
+			assertSame(event, requestContext.getLastNavigationRequestEvent());
+		} finally {
+			requestContext.release();
+		}
 	}
 }

@@ -23,10 +23,9 @@ import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 
 /**
- * A context for a single JSF request that is being handled by the Spring MVC framework. The
- * {@link RequestContext} is associated to the current thread and remains available during the execution the
- * request. The context provides access to the {@link FacesHandler} instance is handling the request and an
- * {@link ExternalContext}.
+ * A context for a single JSF request that is being handled by the Spring MVC framework. The {@link RequestContext} is
+ * associated to the current thread and remains available during the execution the request. The context provides access
+ * to the {@link FacesHandler} instance is handling the request and an {@link ExternalContext}.
  * 
  * @see RequestContextHolder
  * 
@@ -34,7 +33,10 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
  */
 public interface RequestContext {
 
-	// FIXME
+	/**
+	 * Returns the external context that triggered the current request.
+	 * @return the external context
+	 */
 	public ExternalContext getExternalContext();
 
 	/**

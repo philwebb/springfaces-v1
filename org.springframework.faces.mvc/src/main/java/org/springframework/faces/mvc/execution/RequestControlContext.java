@@ -16,8 +16,6 @@ public interface RequestControlContext extends RequestContext {
 	 */
 	MvcFacesExecution getExecution();
 
-	// FIXME move out of this class?
-
 	/**
 	 * Method called during exception handling to store the current exception.
 	 * @param exception The exception being handled

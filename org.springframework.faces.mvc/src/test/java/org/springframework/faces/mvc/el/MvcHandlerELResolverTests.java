@@ -15,8 +15,6 @@
  */
 package org.springframework.faces.mvc.el;
 
-import javax.el.ELContext;
-
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
@@ -24,8 +22,6 @@ import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.execution.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.servlet.FacesHandler;
-import org.springframework.faces.mvc.test.MvcFacesTestUtils;
-import org.springframework.faces.mvc.test.MvcFacesTestUtils.MethodCallAssertor;
 
 public class MvcHandlerELResolverTests extends TestCase {
 
@@ -33,14 +29,15 @@ public class MvcHandlerELResolverTests extends TestCase {
 	private static final Long VALUE = new Long(123);
 
 	private MvcHandlerELResolver resolver;
-	private ELContext elContext;
-	private RequestControlContextImpl requestContext;
 	private FacesHandler facesHandler;
+	private RequestControlContextImpl requestContext;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.resolver = new MvcHandlerELResolver();
-		this.elContext = (ELContext) MvcFacesTestUtils.methodTrackingObject(ELContext.class);
+	}
+
+	private void createRequestContext() {
 		MvcFacesExecution execution = (MvcFacesExecution) EasyMock.createMock(MvcFacesExecution.class);
 		ExternalContext externalContext = (ExternalContext) EasyMock.createMock(ExternalContext.class);
 		this.facesHandler = (FacesHandler) EasyMock.createMock(FacesHandler.class);
@@ -49,72 +46,22 @@ public class MvcHandlerELResolverTests extends TestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		this.requestContext.release();
+		if (requestContext != null) {
+			this.requestContext.release();
+		}
 	}
 
-	public void testGetTypeFound() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE).times(2);
+	public void testIsAvailable() throws Exception {
+		assertFalse(resolver.isAvailable());
+		createRequestContext();
+		assertTrue(resolver.isAvailable());
+	}
+
+	public void testGet() throws Exception {
+		createRequestContext();
+		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE);
 		EasyMock.replay(new Object[] { facesHandler });
-		Class type = resolver.getType(elContext, null, PROPERTY_NAME);
-		assertEquals(VALUE.getClass(), type);
+		assertEquals(VALUE, resolver.get(PROPERTY_NAME));
 		EasyMock.verify(new Object[] { facesHandler });
-		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
-	}
-
-	public void testGetValueFound() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE).times(2);
-		EasyMock.replay(new Object[] { facesHandler });
-		Object value = resolver.getValue(elContext, null, PROPERTY_NAME);
-		assertSame(VALUE, value);
-		EasyMock.verify(new Object[] { facesHandler });
-		((MethodCallAssertor) elContext).assertCalled("setPropertyResolved");
-	}
-
-	public void testGetTypeNotFound() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(null);
-		EasyMock.replay(new Object[] { facesHandler });
-		Class type = resolver.getType(elContext, null, PROPERTY_NAME);
-		assertNull(type);
-		EasyMock.verify(new Object[] { facesHandler });
-		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
-	}
-
-	public void testGetValueNotFound() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(null);
-		EasyMock.replay(new Object[] { facesHandler });
-		Object value = resolver.getValue(elContext, null, PROPERTY_NAME);
-		assertNull(value);
-		EasyMock.verify(new Object[] { facesHandler });
-		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
-	}
-
-	public void testGetValueNonNullBase() throws Exception {
-		EasyMock.replay(new Object[] { facesHandler });
-		Object value = resolver.getValue(elContext, "base", PROPERTY_NAME);
-		assertNull(value);
-		EasyMock.verify(new Object[] { facesHandler });
-		((MethodCallAssertor) elContext).assertNotCalled("setPropertyResolved");
-	}
-
-	public void testIsReadOnly() throws Exception {
-		EasyMock.expect(facesHandler.resolveVariable(PROPERTY_NAME)).andReturn(VALUE).times(2);
-		EasyMock.replay(new Object[] { facesHandler });
-		assertTrue(resolver.isReadOnly(elContext, null, PROPERTY_NAME));
-	}
-
-	public void testGetFeatureDescriptorsIsNull() throws Exception {
-		assertNull(resolver.getFeatureDescriptors(elContext, "base"));
-	}
-
-	public void testGetCommonPropertyTypeNonNullBase() throws Exception {
-		assertEquals(Object.class, resolver.getCommonPropertyType(elContext, null));
-	}
-
-	public void testGetCommonPropertyTypeNullBase() throws Exception {
-		assertEquals(null, resolver.getCommonPropertyType(elContext, "base"));
-	}
-
-	public void testSetValueDoesNothing() throws Exception {
-		resolver.setValue(elContext, "base", "property", "value");
 	}
 }

@@ -27,7 +27,7 @@ import org.springframework.faces.expression.ELDelegatingVariableResolver;
  * @author Phillip Webb
  */
 public class MvcFacesVariableResolver extends ELDelegatingVariableResolver {
-	// FIXME test
+
 	private static final CompositeELResolver composite = new CompositeELResolver();
 	static {
 		composite.add(new MvcHandlerELResolver());
