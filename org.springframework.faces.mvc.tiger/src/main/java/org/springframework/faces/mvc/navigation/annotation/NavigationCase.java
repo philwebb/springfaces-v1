@@ -90,13 +90,23 @@ public @interface NavigationCase {
 	 */
 	public String to() default "";
 
-	// FIXME doc comment
-	// FIXME test new NavigationOutcome class
-	// FIXME tests for NavigationOutcome.location == null
-	// FIXME frament support
+	/**
+	 * Determine if a popup dialog box should be used when redirecting the user. If this value is omitted popup dialogs
+	 * will not be used. Note: popup dialog boxes only apply for navigation cases that redirect the user, if the current
+	 * view is re-rendered this value will be ignored. The {@link #fragments()} value is often used in combination with
+	 * popups in order to render a limited subset of the page components.
+	 * @return <tt>true</rr> if a popup dialog box should be used.
+	 */
 	public boolean popup() default false;
 
+	/**
+	 * Determine a subset of the page that will be re-rendered for ajax requests. Fragments can be used when a page is
+	 * refreshed (i.e. when {@link #to()} is <tt>null</tt>) or when issuing a popup redirect.
+	 * @return The IDs of the view element(s) that should be re-rendered
+	 */
 	public String[] fragments() default {};
 
-	// FIXME support if?
+	// FIXME test new NavigationOutcome class
+	// FIXME tests for NavigationOutcome.location == null
+	// FIXME tests for fragment support
 }
