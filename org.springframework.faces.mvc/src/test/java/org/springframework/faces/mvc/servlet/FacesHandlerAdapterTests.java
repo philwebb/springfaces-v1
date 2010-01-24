@@ -48,6 +48,8 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 
 public class FacesHandlerAdapterTests extends TestCase {
 
+	// FIXME test execution repository
+
 	private FacesHandlerAdapter adapter;
 	private StaticWebApplicationContext context;
 

@@ -40,8 +40,10 @@ import org.springframework.faces.mvc.bind.ModelBinder;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
 import org.springframework.faces.mvc.bind.RequestMappedModelBindingExecutor;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
-import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.PageEncodedActionUrlMapper;
+import org.springframework.faces.mvc.execution.RequestContext;
+import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
+import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository;
 import org.springframework.faces.mvc.view.FacesViewIdResolver;
 import org.springframework.faces.mvc.view.SimpleFacesViewIdResolver;
 import org.springframework.util.Assert;
@@ -64,6 +66,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	private FacesViewIdResolver facesViewIdResolver;
 	private ActionUrlMapper actionUrlMapper;
 	private RedirectHandler redirectHandler;
+	private ExecutionContextRepository executionContextRepository = new SessionBindingExecutionContextRepository();
 	private boolean overrideInitParameters = true;
 	private ServletContext facesServletContext;
 
@@ -71,8 +74,8 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 		return handler instanceof FacesHandler;
 	}
 
-	protected void doHandle(RequestContext requestContext, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	protected void doHandle(RequestContext requestContext, HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		facesServlet.service(request, response);
 	}
 
@@ -129,6 +132,10 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 
 	protected RedirectHandler getRedirectHandler() {
 		return redirectHandler;
+	}
+
+	protected ExecutionContextRepository getExecutionContextRepository() {
+		return executionContextRepository;
 	}
 
 	protected Servlet getFacesServlet() {
@@ -208,7 +215,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the {@link FacesViewIdResolver} that will be used to resolve view IDs. If the resolver is not specified a
 	 * {@link SimpleFacesViewIdResolver} will be used.
-	 * @param facesViewIdResolver
+	 * @param facesViewIdResolver The view ID resolver
 	 * @see SimpleFacesViewIdResolver
 	 */
 	public void setFacesViewIdResolver(FacesViewIdResolver facesViewIdResolver) {
@@ -219,7 +226,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the {@link ActionUrlMapper} that will be used to map action URLS. If the mapper is not specified a
 	 * {@link PageEncodedActionUrlMapper} will be used.
-	 * @param actionUrlMapper
+	 * @param actionUrlMapper The action URL mapper
 	 * @see PageEncodedActionUrlMapper
 	 */
 	public void setActionUrlMapper(ActionUrlMapper actionUrlMapper) {
@@ -230,7 +237,7 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the model binder that will be used to expose model elements to JSF. If the binder is not specified the
 	 * {@link DefaultModelBinder} will be used.
-	 * @param modelBinder
+	 * @param modelBinder The model binder
 	 * @see DefaultModelBinder
 	 */
 	public void setModelBinder(ModelBinder modelBinder) {
@@ -241,11 +248,21 @@ public class FacesHandlerAdapter extends AbstractFacesHandlerAdapter implements 
 	/**
 	 * Set the redirect handler that will be used to handle navigation outcome. If the handler is not specified the
 	 * {@link DefaultRedirectHandler} will be used.
-	 * @param redirectHandler
+	 * @param redirectHandler The redirect handler
 	 */
 	public void setRedirectHandler(RedirectHandler redirectHandler) {
 		Assert.notNull(redirectHandler, "The redirectHandler is required");
 		this.redirectHandler = redirectHandler;
+	}
+
+	/**
+	 * Set the execution context repository that will be used to store execution data across redirects. When not
+	 * explicit set the {@link SessionBindingExecutionContextRepository} will be used.
+	 * @param executionContextRepository The execution context repository
+	 */
+	public void setExecutionContextRepository(ExecutionContextRepository executionContextRepository) {
+		Assert.notNull(executionContextRepository, "The executionContextRepository is required");
+		this.executionContextRepository = executionContextRepository;
 	}
 
 	/**

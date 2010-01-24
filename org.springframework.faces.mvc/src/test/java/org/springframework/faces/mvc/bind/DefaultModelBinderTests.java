@@ -40,8 +40,7 @@ public class DefaultModelBinderTests extends TestCase {
 			throws Exception {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		Scope scope = null;
-		RequestControlContext context = (RequestControlContext) EasyMock
-				.createNiceMock(RequestControlContext.class);
+		RequestControlContext context = (RequestControlContext) EasyMock.createNiceMock(RequestControlContext.class);
 		RequestContextHolder.setRequestContext(context);
 		LocalAttributeMap map = new LocalAttributeMap();
 		if (scopeType == null) {
@@ -102,18 +101,15 @@ public class DefaultModelBinderTests extends TestCase {
 		}, null);
 	}
 
-	public void testScopeProvider() throws Exception {
-		doTestBind("view", new AdditionalBinderConfig() {
+	public void testSetModelScopeProvider() throws Exception {
+		doTestBind("request", new AdditionalBinderConfig() {
 			public void config(DefaultModelBinder binder) {
-				binder.setModelScopeProvider(ScopeType.VIEW);
+				binder.setModelScopeProvider(ScopeType.REQUEST);
 			}
-		}, ScopeType.VIEW);
+		}, ScopeType.REQUEST);
 	}
-
-	// FIXME more tests
 
 	private static interface AdditionalBinderConfig {
 		public void config(DefaultModelBinder binder);
 	}
-
 }

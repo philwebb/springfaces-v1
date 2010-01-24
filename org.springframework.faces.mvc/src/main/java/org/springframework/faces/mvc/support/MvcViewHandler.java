@@ -49,7 +49,6 @@ public class MvcViewHandler extends ViewHandler {
 		this.delegate = delegate;
 	}
 
-	// FIXME this don't feel right
 	private boolean isSpringJavascriptAjaxRequest(ExternalContext context) {
 		if (context.getRequest() instanceof HttpServletRequest) {
 			return springJsAjaxHandler.isAjaxRequest((HttpServletRequest) context.getRequest(),

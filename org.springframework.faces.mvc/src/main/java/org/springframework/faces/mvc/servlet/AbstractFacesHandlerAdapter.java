@@ -47,7 +47,6 @@ import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
 import org.springframework.faces.mvc.execution.repository.NoSuchExecutionException;
-import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.faces.mvc.support.WebFlowExternalContextAdapter;
@@ -75,8 +74,6 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	private List userDefinedExceptionHandlers;
 	private MvcFacesExceptionHandler[] allExceptionHandlers;
 	private AjaxHandler ajaxHandler;
-	// FIXME setter
-	private ExecutionContextRepository executionContextRepository = new SessionBindingExecutionContextRepository();
 
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		return -1;
@@ -90,8 +87,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			throws Exception {
 		FacesHandler facesHandler = (FacesHandler) handler;
 		ExternalContext externalContext = createExternalContext(request, response);
-		RequestControlContextImpl requestContext = new RequestControlContextImpl(
-				externalContext, newExecution(), facesHandler);
+		RequestControlContextImpl requestContext = new RequestControlContextImpl(externalContext, newExecution(),
+				facesHandler);
 		try {
 			restoreExecution(requestContext, request);
 			try {
@@ -112,9 +109,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	private void restoreExecution(RequestContext requestContext, HttpServletRequest request) {
 		String encodedKey = getRedirectHandler().getExecutionContextKey(request);
 		if (encodedKey != null) {
-			ExecutionContextKey key = executionContextRepository.parseKey(encodedKey);
+			ExecutionContextKey key = getExecutionContextRepository().parseKey(encodedKey);
 			try {
-				executionContextRepository.restore(key, requestContext);
+				getExecutionContextRepository().restore(key, requestContext);
 			} catch (NoSuchExecutionException e) {
 				logger.warn("Unable to restore flashScope for MVC Faces request", e);
 			}
@@ -133,9 +130,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	}
 
 	/**
-	 * Internal method called to perform the actual handling of the request. The {@link RequestContext} will be
-	 * active when this method is called. This method is expected to completely handle the rendering of a response or
-	 * throw an exception.
+	 * Internal method called to perform the actual handling of the request. The {@link RequestContext} will be active
+	 * when this method is called. This method is expected to completely handle the rendering of a response or throw an
+	 * exception.
 	 * @param requestContext The MVC Faces Request Context
 	 * @param request current HTTP request
 	 * @param response current HTTP response
@@ -158,8 +155,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		((RequestControlContext) requestContext).setException(exception);
 		MvcFacesExceptionOutcomeImpl mvcFacesExceptionOutcome = new MvcFacesExceptionOutcomeImpl();
 		// Try the handler specified exception handlers
-		boolean handled = handleException(requestContext, request, response, exception,
-				mvcFacesExceptionOutcome, requestContext.getFacesHandler().getExceptionHandlers());
+		boolean handled = handleException(requestContext, request, response, exception, mvcFacesExceptionOutcome,
+				requestContext.getFacesHandler().getExceptionHandlers());
 		if (!handled) {
 			handled = handleException(requestContext, request, response, exception, mvcFacesExceptionOutcome,
 					allExceptionHandlers);
@@ -185,9 +182,9 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 		return false;
 	}
 
-	protected void storeExecutionInRepositoryAndRedirect(RequestContext requestContext,
-			HttpServletRequest request, HttpServletResponse response, NavigationLocation location) throws IOException {
-		ExecutionContextKey key = executionContextRepository.save(requestContext);
+	protected void storeExecutionInRepositoryAndRedirect(RequestContext requestContext, HttpServletRequest request,
+			HttpServletResponse response, NavigationLocation location) throws IOException {
+		ExecutionContextKey key = getExecutionContextRepository().save(requestContext);
 		getRedirectHandler().handleRedirect(ajaxHandler, request, response, location, key);
 
 	}
@@ -265,6 +262,12 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	protected abstract RedirectHandler getRedirectHandler();
 
 	/**
+	 * Returns the {@link ExecutionContextRepository} that is used to store execution details accross redirects.
+	 * @return The execution context repository
+	 */
+	protected abstract ExecutionContextRepository getExecutionContextRepository();
+
+	/**
 	 * Returns the configured Ajax handler that should be used to handle all AJAX requests. This will never return
 	 * <tt>null</tt>.
 	 * @return The non null ajax handler
@@ -325,8 +328,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			return AbstractFacesHandlerAdapter.this.getFacesViewIdResolver().resolveViewId(viewName);
 		}
 
-		public void viewCreated(FacesContext facesContext, RequestContext requestContext,
-				UIViewRoot view, Map model) {
+		public void viewCreated(FacesContext facesContext, RequestContext requestContext, UIViewRoot view, Map model) {
 			AbstractFacesHandlerAdapter.this.getModelBindingExecutor().storeModelToBind(facesContext, model);
 			MvcFacesStateHolderComponent.attach(facesContext, view);
 		}
@@ -337,8 +339,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			AbstractFacesHandlerAdapter.this.getActionUrlMapper().writeState(facesContext, viewName);
 		}
 
-		private void stopAtProcessValidationsWhenHasCurrentException(RequestContext requestContext,
-				PhaseEvent event) {
+		private void stopAtProcessValidationsWhenHasCurrentException(RequestContext requestContext, PhaseEvent event) {
 			if (PhaseId.PROCESS_VALIDATIONS.equals(event.getPhaseId()) && requestContext.getException() != null) {
 				clearFlashScope(requestContext);
 				event.getFacesContext().renderResponse();
@@ -364,8 +365,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			}
 		}
 
-		public void redirect(FacesContext facesContext, RequestContext requestContext,
-				NavigationLocation location) throws IOException {
+		public void redirect(FacesContext facesContext, RequestContext requestContext, NavigationLocation location)
+				throws IOException {
 			HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 			HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 			storeExecutionInRepositoryAndRedirect(requestContext, request, response, location);
@@ -393,8 +394,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 			this.redisplay = true;
 		}
 
-		public void complete(RequestContext requestContext, HttpServletRequest request,
-				HttpServletResponse response) throws Exception {
+		public void complete(RequestContext requestContext, HttpServletRequest request, HttpServletResponse response)
+				throws Exception {
 			if (redirectLocation != null && redisplay) {
 				throw new IllegalStateException(
 						"Illegal outcome specified, redirect or redisplay are mutually exclusive");
