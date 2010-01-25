@@ -3,8 +3,8 @@ Bundle-Name: Spring Faces Tiger
 Bundle-Vendor: SpringSource
 Bundle-ManifestVersion: 2
 Import-Package: 
- org.springframework.webflow.engine.builder.support;version="[2.0.5, 2.0.6)"
- org.springframework.faces.mvc.navigation;version="[1.0.0, 1.0.1)"
+ org.springframework.webflow.engine.builder.support;version="[2.0.5, 2.0.6)";resolution:=optional,
+ org.springframework.faces.mvc.navigation;version="[1.0.0, 1.0.1)";resolution:=optional
 Import-Template: 
  org.springframework.faces.*;version="[1.0.0, 1.0.1)",
  org.springframework.webflow.*;version="[2.0.5, 2.0.6)",
