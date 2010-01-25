@@ -63,6 +63,7 @@ import org.springframework.faces.mvc.servlet.FacesHandlerAdapter;
 import org.springframework.faces.mvc.servlet.RedirectHandler;
 import org.springframework.faces.mvc.servlet.annotation.support.NavigationCaseMethodResolver;
 import org.springframework.faces.mvc.servlet.annotation.support.RequestMappingMethodResolver;
+import org.springframework.faces.mvc.servlet.support.HttpServletRequestEncodingScheme;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -113,6 +114,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 	private HandlerAdapter facesHandlerAdapter;
+
+	private HttpServletRequestEncodingScheme urlEncodingScheme = new HttpServletRequestEncodingScheme();
 
 	private NavigationOutcomeExpressionResolver navigationOutcomeExpressionResolver = new NavigationOutcomeExpressionElResolver();
 
@@ -225,7 +228,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		Method[] navigationMethods = methodResolver.resolveNavigationMethods(request);
 		FoundNavigationCase navigationCase = navigationCaseAnnotationLocator.findNavigationCase(handler,
 				navigationMethods, event);
-		NavigationOutcomeExpressionContextImpl context = new NavigationOutcomeExpressionContextImpl(handler,
+		String encoding = urlEncodingScheme.getEncodingScheme(request);
+		NavigationOutcomeExpressionContextImpl context = new NavigationOutcomeExpressionContextImpl(handler, encoding,
 				webRequest, methodResolver);
 		NavigationLocation outcome = navigationCase == null ? null : navigationCase.getOutcome(event, handler,
 				webRequest, context);
@@ -278,6 +282,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 								+ "a FacesHanlderAdapter using the setFacesHandlerAdapter method");
 			} else if (facesHandlerAdapters.size() == 1) {
 				facesHandlerAdapter = facesHandlerAdapters.values().iterator().next();
+				setUrlEncodingScheme(((FacesHandlerAdapter) facesHandlerAdapter).getUrlEncodingScheme());
 			} else {
 				facesHandlerAdapter = new FacesHandlerAdapter();
 				initializeInternalBean(facesHandlerAdapter);
@@ -391,6 +396,16 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	 */
 	public void setExposeController(boolean exposeController) {
 		this.exposeController = exposeController;
+	}
+
+	/**
+	 * Set the character encoding scheme for URLs. Default is the encoding scheme specified from the
+	 * {@link #setFacesHandlerAdapter(HandlerAdapter)}, falling back to the request's encoding scheme (which is
+	 * ISO-8859-1 if not specified otherwise).
+	 * @param urlEncodingScheme The encoding scheme
+	 */
+	public void setUrlEncodingScheme(String urlEncodingScheme) {
+		this.urlEncodingScheme.setEncodingScheme(urlEncodingScheme);
 	}
 
 	/**
@@ -535,12 +550,18 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 		private ServletFacesControllerAnnotatedMethodInvoker dataBinderMethodInvoker;
 		private NavigationCaseMethodResolver methodResolver;
 		private Object handler;
+		private String encoding;
 
-		public NavigationOutcomeExpressionContextImpl(Object handler, NativeWebRequest webRequest,
+		public NavigationOutcomeExpressionContextImpl(Object handler, String encoding, NativeWebRequest webRequest,
 				NavigationCaseMethodResolver methodResolver) {
 			this.handler = handler;
+			this.encoding = encoding;
 			this.webRequest = webRequest;
 			this.methodResolver = methodResolver;
+		}
+
+		public String getEncoding() {
+			return encoding;
 		}
 
 		public NativeWebRequest getWebRequest() {

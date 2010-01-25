@@ -44,8 +44,6 @@ import org.springframework.web.bind.WebDataBinder;
  */
 public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeExpressionResolver {
 
-	// FIXME replace this like FlowUrlHandler to allow specified
-	private static final String UTF_8 = "UTF-8";
 	private static final Pattern EL_PATTERN = Pattern.compile("(?:([A-Za-z0-9\\.\\-\\*\\_\\%]+)\\=)?+(\\#\\{.+?\\})");
 
 	/**
@@ -136,6 +134,7 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 		if (resolved == null) {
 			return null;
 		}
+		String encoding = context.getEncoding();
 		StringBuilder rtn = new StringBuilder();
 		if ((position == Position.QUERY) && attribute == null) {
 			// Expression to expand
@@ -147,9 +146,9 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 			}
 			for (PropertyValue value : values.getPropertyValues()) {
 				rtn.append(rtn.length() == 0 ? "" : "&");
-				rtn.append(URLEncoder.encode(value.getName(), UTF_8));
+				rtn.append(URLEncoder.encode(value.getName(), encoding));
 				rtn.append("=");
-				rtn.append(URLEncoder.encode((String) value.getValue(), UTF_8));
+				rtn.append(URLEncoder.encode((String) value.getValue(), encoding));
 			}
 		} else {
 			WebDataBinder dataBinder = context.createDataBinder(attribute, null, null);
@@ -162,7 +161,7 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 				rtn.append(attribute);
 				rtn.append("=");
 			}
-			rtn.append(URLEncoder.encode(converted, UTF_8));
+			rtn.append(URLEncoder.encode(converted, encoding));
 		}
 		return rtn.toString();
 	}

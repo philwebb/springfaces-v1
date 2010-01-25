@@ -27,6 +27,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 public interface NavigationOutcomeExpressionContext {
 
 	/**
+	 * Returns the character encoding that should be used for the resolved expressions.
+	 * @return The character encoding to use
+	 */
+	String getEncoding();
+
+	/**
 	 * Provides access to the current native web request that caused the navigation outcome.
 	 * @return The current native web request
 	 */

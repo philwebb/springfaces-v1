@@ -80,6 +80,8 @@ import org.springframework.web.util.UrlPathHelper;
 
 public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 
+	// FIXME test encoding
+
 	private static final Date D25_12_2009;
 	static {
 		Calendar c = Calendar.getInstance();

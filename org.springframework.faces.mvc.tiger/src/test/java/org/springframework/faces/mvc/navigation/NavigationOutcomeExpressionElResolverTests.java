@@ -27,11 +27,9 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockApplication12;
 import org.apache.shale.test.mock.MockFacesContext12;
 import org.easymock.EasyMock;
-import org.springframework.faces.mvc.navigation.NavigationLocation;
-import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionContext;
-import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver;
 import org.springframework.faces.mvc.navigation.NavigationOutcomeExpressionElResolver.Position;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.util.WebUtils;
 
 public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 
@@ -67,6 +65,7 @@ public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 
 	public void testSimpleQuery() throws Exception {
 		WebDataBinder dataBinder = new WebDataBinder(null);
+		EasyMock.expect(context.getEncoding()).andStubReturn(WebUtils.DEFAULT_CHARACTER_ENCODING);
 		EasyMock.expect(context.createDataBinder(null, null, null)).andReturn(dataBinder);
 		EasyMock.expect(context.createDataBinder("value", null, null)).andReturn(dataBinder);
 		EasyMock.replay(context);
@@ -86,6 +85,7 @@ public class NavigationOutcomeExpressionElResolverTests extends TestCase {
 	public void testExpandQuery() throws Exception {
 		Object e1 = VARIABLES.get("e1");
 		WebDataBinder dataBinder = new WebDataBinder(e1);
+		EasyMock.expect(context.getEncoding()).andStubReturn(WebUtils.DEFAULT_CHARACTER_ENCODING);
 		EasyMock.expect(context.createDataBinder(null, e1, null)).andReturn(dataBinder);
 		EasyMock.replay(context);
 		assertEquals(new NavigationLocation("contextRelative:/test?a=one&b=t+w%26o"), resolver
