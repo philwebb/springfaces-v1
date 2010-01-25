@@ -33,6 +33,7 @@ import org.springframework.webflow.core.collection.LocalAttributeMap;
 public class DefaultModelBinderTests extends TestCase {
 
 	protected void tearDown() throws Exception {
+		super.tearDown();
 		RequestContextHolder.setRequestContext(null);
 	}
 

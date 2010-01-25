@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.execution.MvcFacesExecution;
+import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 
@@ -49,10 +50,13 @@ public class MvcHandlerELResolverTests extends TestCase {
 		if (requestContext != null) {
 			this.requestContext.release();
 		}
+		RequestContextHolder.setRequestContext(null);
+		System.out.println("tear down");
 	}
 
 	public void testIsAvailable() throws Exception {
-		assertFalse(resolver.isAvailable());
+		System.out.println("1" + RequestContextHolder.getRequestContext());
+		assertFalse("resolver is available and should not be", resolver.isAvailable());
 		createRequestContext();
 		assertTrue(resolver.isAvailable());
 	}

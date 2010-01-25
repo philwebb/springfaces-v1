@@ -44,6 +44,10 @@ public class ImplicitMvcFacesElResolverTests extends TestCase {
 		RequestContextHolder.setRequestContext(requestContext);
 	}
 
+	protected void tearDown() throws Exception {
+		RequestContextHolder.setRequestContext(null);
+	}
+
 	private void replay() {
 		EasyMock.replay(new Object[] { requestContext, externalContext });
 	}
