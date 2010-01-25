@@ -51,9 +51,12 @@ import org.springframework.faces.mvc.view.FacesViewIdResolver;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.util.WebUtils;
 import org.springframework.webflow.test.MockExternalContext;
 
 public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
+
+	private static final String ENCODING = WebUtils.DEFAULT_CHARACTER_ENCODING;
 
 	// FIXME test execution repository
 
@@ -283,7 +286,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
 		HttpServletRequest frequest = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 		HttpServletResponse fresponse = (HttpServletResponse) facesContext.getExternalContext().getResponse();
-		redirectHandler.handleRedirect(ajaxHandler, frequest, fresponse, new NavigationLocation("location"), null);
+		redirectHandler.handleRedirect(ajaxHandler, ENCODING, frequest, fresponse, new NavigationLocation("location"),
+				null);
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter = new MockFacesHandlerAdapter() {
@@ -294,6 +298,7 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 			}
 		};
 		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
+		facesHandlerAdapter.setUrlEncodingScheme(WebUtils.DEFAULT_CHARACTER_ENCODING);
 		facesHandlerAdapter.handle(request, response, facesHandler);
 		EasyMock.verify(new Object[] { redirectHandler });
 	}
@@ -368,7 +373,8 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		MockMvcFacesExceptionHandler exceptionHandler = new MockMvcFacesExceptionHandler(true);
 		exceptionHandler.setRedirect("location");
 		AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
-		redirectHandler.handleRedirect(ajaxHandler, request, response, new NavigationLocation("location"), null);
+		redirectHandler.handleRedirect(ajaxHandler, ENCODING, request, response, new NavigationLocation("location"),
+				null);
 		EasyMock.expectLastCall();
 		EasyMock.replay(new Object[] { redirectHandler });
 		facesHandlerAdapter.setExceptionHandlers(Collections.singletonList(exceptionHandler));

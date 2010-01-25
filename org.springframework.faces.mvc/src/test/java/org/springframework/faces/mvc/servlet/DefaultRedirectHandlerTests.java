@@ -24,10 +24,15 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
-import org.springframework.faces.mvc.servlet.DefaultRedirectHandler;
 import org.springframework.js.ajax.AjaxHandler;
+import org.springframework.web.util.WebUtils;
 
 public class DefaultRedirectHandlerTests extends TestCase {
+
+	// FIXME test execution context key methods
+	// FIXME test custom encoding scheme
+
+	private static final String ENCODING = WebUtils.DEFAULT_CHARACTER_ENCODING;
 
 	private static final int TYPE_NORMAL = 1;
 	private static final int TYPE_HTTP10 = 2;
@@ -67,7 +72,7 @@ public class DefaultRedirectHandlerTests extends TestCase {
 		}
 
 		EasyMock.replay(new Object[] { context, request, response, ajaxHandler });
-		handler.handleRedirect(ajaxHandler, request, response, location, null);
+		handler.handleRedirect(ajaxHandler, ENCODING, request, response, location, null);
 		EasyMock.verify(new Object[] { response, ajaxHandler });
 	}
 

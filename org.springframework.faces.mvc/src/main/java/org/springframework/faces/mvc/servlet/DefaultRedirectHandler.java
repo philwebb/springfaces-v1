@@ -37,12 +37,8 @@ import org.springframework.js.ajax.AjaxHandler;
  * @author Phillip Webb
  */
 public class DefaultRedirectHandler implements RedirectHandler {
-	// FIXME test the execution stuff
 
 	private static final String EXECUTION_CONTEXT_KEY_PARAMETER = "execution";
-
-	// FIXME replace this as NavigationExpParser
-	private static final String UTF_8 = "UTF-8";
 
 	private static final int NONE = 0x00;
 	private static final int STRIP_PREFIX = 0x01;
@@ -67,7 +63,8 @@ public class DefaultRedirectHandler implements RedirectHandler {
 			return ((flags & context) != 0);
 		}
 
-		public String buildUrl(HttpServletRequest httpServletRequest, String location, ExecutionContextKey key) {
+		public String buildUrl(String encoding, HttpServletRequest httpServletRequest, String location,
+				ExecutionContextKey key) {
 			try {
 				StringBuffer url = new StringBuffer();
 				url.append(hasFlag(CONTEXT) ? httpServletRequest.getContextPath() : "");
@@ -79,9 +76,9 @@ public class DefaultRedirectHandler implements RedirectHandler {
 				url.append(location);
 				if (key != null) {
 					url.append(location.indexOf("?") == -1 ? "?" : "&");
-					url.append(URLEncoder.encode(EXECUTION_CONTEXT_KEY_PARAMETER, UTF_8));
+					url.append(URLEncoder.encode(EXECUTION_CONTEXT_KEY_PARAMETER, encoding));
 					url.append("=");
-					url.append(URLEncoder.encode(key.toString(), UTF_8));
+					url.append(URLEncoder.encode(key.toString(), encoding));
 				}
 				return url.toString();
 			} catch (UnsupportedEncodingException e) {
@@ -135,20 +132,21 @@ public class DefaultRedirectHandler implements RedirectHandler {
 	 * @param location The location string
 	 * @return The URL The final URL with all prefixes expanded
 	 */
-	protected String getLocationUrl(HttpServletRequest request, String location, ExecutionContextKey key) {
+	protected String getLocationUrl(String encoding, HttpServletRequest request, String location,
+			ExecutionContextKey key) {
 		for (Iterator iterator = URL_BUILDERS.iterator(); iterator.hasNext();) {
 			UrlBuilder urlBuilder = (UrlBuilder) iterator.next();
 			if (urlBuilder.isSuitable(location)) {
-				return urlBuilder.buildUrl(request, location, key);
+				return urlBuilder.buildUrl(encoding, request, location, key);
 			}
 		}
 		return location;
 	}
 
-	public void handleRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
-			NavigationLocation location, ExecutionContextKey key) throws IOException {
+	public void handleRedirect(AjaxHandler ajaxHandler, String encoding, HttpServletRequest request,
+			HttpServletResponse response, NavigationLocation location, ExecutionContextKey key) throws IOException {
 		if (location != null && location.getLocation() != null) {
-			String url = getLocationUrl(request, location.getLocation().toString(), key);
+			String url = getLocationUrl(encoding, request, location.getLocation().toString(), key);
 			sendRedirect(ajaxHandler, url, request, response, location.getPopup());
 		}
 	}

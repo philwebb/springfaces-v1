@@ -38,6 +38,7 @@ public interface RedirectHandler {
 	/**
 	 * Redirect the client to the specified location.
 	 * @param ajaxHandler The AJAX handler that is being used to handle the request. This will never be <tt>null</tt>
+	 * @param encoding The character encoding to use
 	 * @param request The native request
 	 * @param response The native response
 	 * @param location The redirect location, this will be the result of
@@ -47,8 +48,8 @@ public interface RedirectHandler {
 	 * retrieved using {@link #getExecutionContextKey(HttpServletRequest)}.
 	 * @throws IOException
 	 */
-	public void handleRedirect(AjaxHandler ajaxHandler, HttpServletRequest request, HttpServletResponse response,
-			NavigationLocation location, ExecutionContextKey key) throws IOException;
+	public void handleRedirect(AjaxHandler ajaxHandler, String encoding, HttpServletRequest request,
+			HttpServletResponse response, NavigationLocation location, ExecutionContextKey key) throws IOException;
 
 	/**
 	 * Returns the flow execution context key encoded as part of the request or <tt>null</tt> if not present.

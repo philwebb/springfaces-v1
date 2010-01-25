@@ -48,6 +48,7 @@ import org.springframework.faces.mvc.execution.RequestControlContextImpl;
 import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
 import org.springframework.faces.mvc.execution.repository.NoSuchExecutionException;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.servlet.support.HttpServletRequestEncodingScheme;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.faces.mvc.support.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.view.FacesViewIdResolver;
@@ -74,6 +75,7 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	private List userDefinedExceptionHandlers;
 	private MvcFacesExceptionHandler[] allExceptionHandlers;
 	private AjaxHandler ajaxHandler;
+	private HttpServletRequestEncodingScheme urlEncodingScheme = new HttpServletRequestEncodingScheme();
 
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		return -1;
@@ -185,8 +187,8 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	protected void storeExecutionInRepositoryAndRedirect(RequestContext requestContext, HttpServletRequest request,
 			HttpServletResponse response, NavigationLocation location) throws IOException {
 		ExecutionContextKey key = getExecutionContextRepository().save(requestContext);
-		getRedirectHandler().handleRedirect(ajaxHandler, request, response, location, key);
-
+		String encoding = urlEncodingScheme.getEncodingScheme(request);
+		getRedirectHandler().handleRedirect(ajaxHandler, encoding, request, response, location, key);
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -304,6 +306,23 @@ public abstract class AbstractFacesHandlerAdapter extends WebContentGenerator im
 	public void setAjaxHandler(AjaxHandler ajaxHandler) {
 		Assert.notNull(ajaxHandler, "The ajaxHandler is required");
 		this.ajaxHandler = ajaxHandler;
+	}
+
+	/**
+	 * Set the character encoding scheme for URLs. Default is the request's encoding scheme (which is ISO-8859-1 if not
+	 * specified otherwise).
+	 * @param urlEncodingScheme The encoding scheme
+	 */
+	public void setUrlEncodingScheme(String urlEncodingScheme) {
+		this.urlEncodingScheme.setEncodingScheme(urlEncodingScheme);
+	}
+
+	/**
+	 * Returns the URL encoding as specified by the user or <tt>null</tt> if default encoding is being used.
+	 * @return The encoding scheme
+	 */
+	public String getUrlEncodingScheme() {
+		return this.urlEncodingScheme.getEncodingScheme();
 	}
 
 	/**
