@@ -62,10 +62,12 @@ import org.springframework.web.multipart.MultipartRequest;
  */
 public abstract class AnnotatedMethodInvoker {
 
-	// FIXME tidy up, dc, tests
-
 	private static final Log logger = LogFactory.getLog(HandlerMethodInvoker.class);
 
+	/**
+	 * {@link ModelArgumentResolver} that is used when resolving {@link InitBinder} methods. This resolver will throw
+	 * {@link IllegalStateException}s.
+	 */
 	private static final ModelArgumentResolver INIT_BINDER_NO_MODEL_ARGUMENT_RESOLVER = new ModelArgumentResolver() {
 		public ResolvedModelArgument resolve(String modelAttributeName, MethodParameter methodParameter,
 				WebRequest webRequest, boolean failOnErrors) {
@@ -79,11 +81,8 @@ public abstract class AnnotatedMethodInvoker {
 	};
 
 	private WebBindingInitializer bindingInitializer;
-
 	private RequestMappingMethodResolver methodResolver;
-
 	private ParameterNameDiscoverer parameterNameDiscoverer;
-
 	private WebArgumentResolver[] customArgumentResolvers;
 
 	public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver, WebBindingInitializer bindingInitializer,
@@ -95,10 +94,26 @@ public abstract class AnnotatedMethodInvoker {
 		this.customArgumentResolvers = customArgumentResolvers;
 	}
 
+	/**
+	 * Factory method used to create a {@link WebDataBinder}.
+	 * @param webRequest The web request
+	 * @param target The target object to bind (can be <tt>null</tt>)
+	 * @param objectName The name of the object being bound
+	 * @return An uninitialized {@link WebDataBinder} instance
+	 * @throws Exception on error
+	 */
 	protected abstract WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 			throws Exception;
 
-	// FIXME can we replace NWR with EC
+	/**
+	 * Invoke a method from an active handler. This method can be used in JSF post-back operations to invoke methods.
+	 * Any {@link ModelAttribute} annotated parameters are resolved using the {@link FacesModelArgumentResolver}.
+	 * @param handlerMethod The method to invoke
+	 * @param handler The underlying handler
+	 * @param webRequest The web request
+	 * @return The return value from the invoked method or <tt>null</tt> if the method does not return a value
+	 * @throws Exception on error
+	 */
 	public final Object invokeOnActiveHandler(Method handlerMethod, Object handler, NativeWebRequest webRequest)
 			throws Exception {
 
@@ -116,10 +131,18 @@ public abstract class AnnotatedMethodInvoker {
 		}
 	}
 
-	protected final void initBinder(Object handler, String attrName, WebDataBinder binder, NativeWebRequest webRequest)
+	/**
+	 * Initialize the specified data binder by executing all {@link InitBinder} methods.
+	 * @param handler The underlying handler
+	 * @param attrName The attribute name being initialized
+	 * @param binder The data binder to initialize
+	 * @param request The active web request.
+	 * @throws Exception on error
+	 */
+	protected final void initBinder(Object handler, String attrName, WebDataBinder binder, NativeWebRequest request)
 			throws Exception {
 		if (this.bindingInitializer != null) {
-			this.bindingInitializer.initBinder(binder, webRequest);
+			this.bindingInitializer.initBinder(binder, request);
 		}
 		if (handler != null) {
 			Set<Method> initBinderMethods = this.methodResolver.getInitBinderMethods();
@@ -129,8 +152,7 @@ public abstract class AnnotatedMethodInvoker {
 					Method methodToInvoke = BridgeMethodResolver.findBridgedMethod(initBinderMethod);
 					String[] targetNames = AnnotationUtils.findAnnotation(methodToInvoke, InitBinder.class).value();
 					if (targetNames.length == 0 || Arrays.asList(targetNames).contains(attrName)) {
-						Object[] initBinderArgs = resolveInitBinderArguments(handler, methodToInvoke, binder,
-								webRequest);
+						Object[] initBinderArgs = resolveInitBinderArguments(handler, methodToInvoke, binder, request);
 						if (debug) {
 							logger.debug("Invoking init-binder method: " + methodToInvoke);
 						}
@@ -327,6 +349,9 @@ public abstract class AnnotatedMethodInvoker {
 		return WebArgumentResolver.UNRESOLVED;
 	}
 
+	/**
+	 * Internal data holder for a resolved model argument.
+	 */
 	protected static final class ResolvedModelArgument {
 
 		private Object result;
@@ -370,6 +395,10 @@ public abstract class AnnotatedMethodInvoker {
 				WebRequest webRequest, boolean failOnErrors);
 	}
 
+	/**
+	 * {@link ModelArgumentResolver} implementation that will resolve model elements by treating them as JSF
+	 * expressions.
+	 */
 	protected static class FacesModelArgumentResolver implements ModelArgumentResolver {
 
 		private FacesContext facesContext;

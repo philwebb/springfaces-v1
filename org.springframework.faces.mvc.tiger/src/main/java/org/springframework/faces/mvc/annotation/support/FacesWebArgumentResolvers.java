@@ -24,8 +24,6 @@ import org.springframework.web.bind.support.WebArgumentResolver;
  */
 public class FacesWebArgumentResolvers {
 
-	// FIXME Test
-
 	private static final WebArgumentResolver[] ARGUMENT_RESOLVERS = new WebArgumentResolver[] { new FacesWebArgumentResolver() };
 
 	/**

@@ -59,6 +59,10 @@ import org.springframework.web.util.UrlPathHelper;
 
 public class AnnotatedMethodInvokerTests extends TestCase {
 
+	// FIXME increase test coverage
+	// FIXME can/should we replace NativeWebRequest on invokeOnActiveHandler with ExternalContext
+	// FIXME could improve doc comments on class
+
 	private MockFacesControllerAnnotatedMethodInvoker invoker;
 	private WebBindingInitializer bindingInitializer;
 	private HttpServletRequest request;
@@ -203,7 +207,7 @@ public class AnnotatedMethodInvokerTests extends TestCase {
 		((AbstractController) controller).assertCalled(SampleControllerMethod.INIT);
 	}
 
-	// FIXME move to servlet test
+	// FIXME move to servlet subclass test
 	// public void testStandardArguments() throws Exception {
 	// EasyMock.expect(request.getSession()).andReturn(new MockHttpSession());
 	// EasyMock.expect(request.getUserPrincipal()).andReturn(EasyMock.createMock(Principal.class));

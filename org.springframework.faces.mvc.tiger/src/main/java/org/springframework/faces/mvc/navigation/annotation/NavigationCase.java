@@ -105,8 +105,4 @@ public @interface NavigationCase {
 	 * @return The IDs of the view element(s) that should be re-rendered
 	 */
 	public String[] fragments() default {};
-
-	// FIXME test new NavigationOutcome class
-	// FIXME tests for NavigationOutcome.location == null
-	// FIXME tests for fragment support
 }

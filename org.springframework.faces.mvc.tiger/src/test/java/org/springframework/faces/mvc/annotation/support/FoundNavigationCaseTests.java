@@ -36,6 +36,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public class FoundNavigationCaseTests extends TestCase {
 
+	// FIXME tests for NavigationLocation.location == null
+	// FIXME tests for fragment support
+	// FIXME Test for popup
+
 	private AnnotatedMethodInvokerFactory invokerFactory;
 	private NativeWebRequest nativeWebRequest;
 
@@ -172,10 +176,8 @@ public class FoundNavigationCaseTests extends TestCase {
 
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 				throws Exception {
-			// TODO Auto-generated method stub
 			throw new UnsupportedOperationException("Auto-generated method stub");
 		}
-
 	}
 
 }
