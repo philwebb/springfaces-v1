@@ -32,11 +32,13 @@ import junit.framework.Assert;
 import org.apache.shale.test.base.AbstractJsfTestCase;
 import org.apache.shale.test.mock.MockFacesContext;
 import org.easymock.EasyMock;
+import org.easymock.IExpectationSetters;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.faces.mvc.bind.ModelBindingExecutor;
 import org.springframework.faces.mvc.context.ExternalContext;
 import org.springframework.faces.mvc.execution.ActionUrlMapper;
+import org.springframework.faces.mvc.execution.ExecutionContextKey;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionHandler;
 import org.springframework.faces.mvc.execution.MvcFacesExceptionOutcome;
 import org.springframework.faces.mvc.execution.MvcFacesExecution;
@@ -44,7 +46,10 @@ import org.springframework.faces.mvc.execution.RequestContext;
 import org.springframework.faces.mvc.execution.RequestContextHolder;
 import org.springframework.faces.mvc.execution.RequestControlContext;
 import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
+import org.springframework.faces.mvc.execution.repository.IntegerExecutionContextKey;
+import org.springframework.faces.mvc.execution.repository.NoSuchExecutionException;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
+import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
 import org.springframework.faces.mvc.support.MvcFacesStateHolderComponent;
 import org.springframework.faces.mvc.support.WebFlowExternalContextAdapter;
 import org.springframework.faces.mvc.view.FacesViewIdResolver;
@@ -57,39 +62,6 @@ import org.springframework.webflow.test.MockExternalContext;
 public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 
 	private static final String ENCODING = WebUtils.DEFAULT_CHARACTER_ENCODING;
-
-	// FIXME test execution repository
-
-	private class MockFacesHandlerAdapter extends AbstractFacesHandlerAdapter {
-
-		protected void doHandle(RequestContext requestContext, HttpServletRequest request, HttpServletResponse response)
-				throws Exception {
-		}
-
-		protected ExternalContext createExternalContext(HttpServletRequest request, HttpServletResponse response) {
-			return new WebFlowExternalContextAdapter(new MockExternalContext());
-		}
-
-		protected ActionUrlMapper getActionUrlMapper() {
-			return actionUrlMapper;
-		}
-
-		protected FacesViewIdResolver getFacesViewIdResolver() {
-			return facesViewIdResolver;
-		}
-
-		protected ModelBindingExecutor getModelBindingExecutor() {
-			return modelBindingExecutor;
-		}
-
-		protected RedirectHandler getRedirectHandler() {
-			return redirectHandler;
-		}
-
-		protected ExecutionContextRepository getExecutionContextRepository() {
-			return executionContextRepository;
-		}
-	}
 
 	private ActionUrlMapper actionUrlMapper;
 	private FacesViewIdResolver facesViewIdResolver;
@@ -443,6 +415,115 @@ public class AbstractFacesHandlerAdapterTests extends AbstractJsfTestCase {
 		facesHandlerAdapter = new MockFacesHandlerAdapter();
 		Object handler = new Object();
 		assertEquals(-1, facesHandlerAdapter.getLastModified(request, handler));
+	}
+
+	public void testCreateExternalContext() throws Exception {
+		AjaxHandler ajaxHandler = (AjaxHandler) EasyMock.createMock(AjaxHandler.class);
+		ajaxHandler.isAjaxRequest(request, response);
+		EasyMock.expectLastCall().andStubReturn(Boolean.TRUE);
+		EasyMock.replay(new Object[] { ajaxHandler });
+		facesHandlerAdapter = new MockFacesHandlerAdapter();
+		facesHandlerAdapter.setAjaxHandler(ajaxHandler);
+		facesHandlerAdapter.setServletContext(servletContext);
+		ExternalContext createdExternalContext = facesHandlerAdapter.realCreateExternalContext(request, response);
+		assertTrue(createdExternalContext.isAjaxRequest());
+		assertTrue(createdExternalContext instanceof WebFlowExternalContextAdapter);
+		assertSame(request, createdExternalContext.getNativeRequest());
+		assertSame(response, createdExternalContext.getNativeResponse());
+	}
+
+	private void doTestRestoreExecution(boolean testThrow) throws Exception {
+		EasyMock.expect(redirectHandler.getExecutionContextKey(request)).andReturn("123");
+		IntegerExecutionContextKey key = new IntegerExecutionContextKey(123);
+		EasyMock.expect(executionContextRepository.parseKey("123")).andReturn(key);
+		executionContextRepository.restore((ExecutionContextKey) EasyMock.eq(key), (RequestContext) EasyMock
+				.isA(RequestControlContext.class));
+
+		IExpectationSetters call = EasyMock.expectLastCall();
+		if (testThrow) {
+			// Client can throw and should be swallowed and logged
+			call.andThrow(new NoSuchExecutionException(key));
+		}
+		EasyMock.replay(new Object[] { redirectHandler, executionContextRepository });
+		facesHandlerAdapter = new MockFacesHandlerAdapter() {
+			protected void doHandle(RequestContext requestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
+			}
+		};
+		facesHandlerAdapter.handle(request, response, facesHandler);
+		EasyMock.verify(new Object[] { redirectHandler, executionContextRepository });
+	}
+
+	public void testRestoreExecution() throws Exception {
+		doTestRestoreExecution(false);
+	}
+
+	public void testRestoreExecutionThrows() throws Exception {
+		doTestRestoreExecution(true);
+	}
+
+	public void testAfterPhaseClearsFlashScope() throws Exception {
+		facesHandlerAdapter = new MockFacesHandlerAdapter() {
+			protected void doHandle(RequestContext requestContext, HttpServletRequest request,
+					HttpServletResponse response) throws Exception {
+				PhaseEvent event = new PhaseEvent(facesContext, PhaseId.RENDER_RESPONSE, lifecycle);
+				requestContext.getFlashScope().put("test", "test");
+
+				// First test with event, should not clear
+				NavigationRequestEvent lastNavigationRequestEvent = new NavigationRequestEvent(this, "test", "test");
+				((RequestControlContext) requestContext).setLastNavigationRequestEvent(lastNavigationRequestEvent);
+				((RequestControlContext) requestContext).getExecution().afterPhase(requestContext, event);
+				assertEquals(1, requestContext.getFlashScope().size());
+
+				// Then test without event to cause cleanup
+				((RequestControlContext) requestContext).setLastNavigationRequestEvent(null);
+				((RequestControlContext) requestContext).getExecution().afterPhase(requestContext, event);
+				assertEquals(0, requestContext.getFlashScope().size());
+			}
+		};
+		facesHandlerAdapter.handle(request, response, facesHandler);
+	}
+
+	public void testCustomUrlEncoding() throws Exception {
+		facesHandlerAdapter = new MockFacesHandlerAdapter();
+		assertNull(facesHandlerAdapter.getUrlEncodingScheme());
+		facesHandlerAdapter.setUrlEncodingScheme("UTF-8");
+		assertEquals("UTF-8", facesHandlerAdapter.getUrlEncodingScheme());
+	}
+
+	private class MockFacesHandlerAdapter extends AbstractFacesHandlerAdapter {
+
+		protected void doHandle(RequestContext requestContext, HttpServletRequest request, HttpServletResponse response)
+				throws Exception {
+		}
+
+		protected ExternalContext createExternalContext(HttpServletRequest request, HttpServletResponse response) {
+			return new WebFlowExternalContextAdapter(new MockExternalContext());
+		}
+
+		protected ExternalContext realCreateExternalContext(HttpServletRequest request, HttpServletResponse response) {
+			return super.createExternalContext(request, response);
+		}
+
+		protected ActionUrlMapper getActionUrlMapper() {
+			return actionUrlMapper;
+		}
+
+		protected FacesViewIdResolver getFacesViewIdResolver() {
+			return facesViewIdResolver;
+		}
+
+		protected ModelBindingExecutor getModelBindingExecutor() {
+			return modelBindingExecutor;
+		}
+
+		protected RedirectHandler getRedirectHandler() {
+			return redirectHandler;
+		}
+
+		protected ExecutionContextRepository getExecutionContextRepository() {
+			return executionContextRepository;
+		}
 	}
 
 	private static class MockMvcFacesExceptionHandler implements MvcFacesExceptionHandler {

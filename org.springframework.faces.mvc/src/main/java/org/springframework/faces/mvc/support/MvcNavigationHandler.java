@@ -75,6 +75,6 @@ public class MvcNavigationHandler extends NavigationHandler {
 			return false;
 		}
 		// Only store fragments for popups or direct re-renders
-		return (location.getPopup() || location.getLocation() == null);
+		return (location.isPopup() || location.getLocation() == null);
 	}
 }

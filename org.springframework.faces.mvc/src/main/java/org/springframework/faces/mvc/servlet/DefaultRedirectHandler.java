@@ -147,7 +147,7 @@ public class DefaultRedirectHandler implements RedirectHandler {
 			HttpServletResponse response, NavigationLocation location, ExecutionContextKey key) throws IOException {
 		if (location != null && location.getLocation() != null) {
 			String url = getLocationUrl(encoding, request, location.getLocation().toString(), key);
-			sendRedirect(ajaxHandler, url, request, response, location.getPopup());
+			sendRedirect(ajaxHandler, url, request, response, location.isPopup());
 		}
 	}
 

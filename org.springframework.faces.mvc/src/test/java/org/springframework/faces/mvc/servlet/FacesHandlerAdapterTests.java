@@ -41,14 +41,14 @@ import org.springframework.faces.mvc.execution.ActionUrlMapper;
 import org.springframework.faces.mvc.execution.MvcFacesExecution;
 import org.springframework.faces.mvc.execution.PageEncodedActionUrlMapper;
 import org.springframework.faces.mvc.execution.RequestControlContextImpl;
+import org.springframework.faces.mvc.execution.repository.ExecutionContextRepository;
+import org.springframework.faces.mvc.execution.repository.SessionBindingExecutionContextRepository;
 import org.springframework.faces.mvc.view.FacesViewIdResolver;
 import org.springframework.faces.mvc.view.SimpleFacesViewIdResolver;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 public class FacesHandlerAdapterTests extends TestCase {
-
-	// FIXME test execution repository
 
 	private FacesHandlerAdapter adapter;
 	private StaticWebApplicationContext context;
@@ -243,6 +243,18 @@ public class FacesHandlerAdapterTests extends TestCase {
 
 	public void testOverrideInitParamsTrue() throws Exception {
 		doTestOverrideInitParams(true);
+	}
+
+	public void testDefaultExecutionRepository() throws Exception {
+		assertNotNull(adapter.getExecutionContextRepository());
+		assertEquals(SessionBindingExecutionContextRepository.class, adapter.getExecutionContextRepository().getClass());
+	}
+
+	public void testCustomExecutionRepository() throws Exception {
+		ExecutionContextRepository executionContextRepository = (ExecutionContextRepository) EasyMock
+				.createMock(ExecutionContextRepository.class);
+		adapter.setExecutionContextRepository(executionContextRepository);
+		assertSame(executionContextRepository, adapter.getExecutionContextRepository());
 	}
 
 	public static class TrackingMockServlet extends MockServlet {

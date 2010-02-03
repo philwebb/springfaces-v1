@@ -23,14 +23,13 @@ import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
+import org.springframework.faces.mvc.execution.ExecutionContextKey;
+import org.springframework.faces.mvc.execution.repository.IntegerExecutionContextKey;
 import org.springframework.faces.mvc.navigation.NavigationLocation;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.web.util.WebUtils;
 
 public class DefaultRedirectHandlerTests extends TestCase {
-
-	// FIXME test execution context key methods
-	// FIXME test custom encoding scheme
 
 	private static final String ENCODING = WebUtils.DEFAULT_CHARACTER_ENCODING;
 
@@ -38,7 +37,8 @@ public class DefaultRedirectHandlerTests extends TestCase {
 	private static final int TYPE_HTTP10 = 2;
 	private static final int TYPE_AJAX = 3;
 
-	private void doTestRedirect(NavigationLocation location, final String expectedUrl, int type) throws Exception {
+	private void doTestRedirect(NavigationLocation location, final String expectedUrl, int type, ExecutionContextKey key)
+			throws Exception {
 		DefaultRedirectHandler handler = new DefaultRedirectHandler();
 		handler.setRedirectHttp10Compatible(type == TYPE_HTTP10);
 		ServletContext context = (ServletContext) EasyMock.createMock(ServletContext.class);
@@ -72,20 +72,20 @@ public class DefaultRedirectHandlerTests extends TestCase {
 		}
 
 		EasyMock.replay(new Object[] { context, request, response, ajaxHandler });
-		handler.handleRedirect(ajaxHandler, ENCODING, request, response, location, null);
+		handler.handleRedirect(ajaxHandler, ENCODING, request, response, location, key);
 		EasyMock.verify(new Object[] { response, ajaxHandler });
 	}
 
-	private void doTestRedirects(Object location, final String expectedUrl) throws Exception {
+	private void doTestRedirects(Object location, final String expectedUrl, ExecutionContextKey key) throws Exception {
 		NavigationLocation navigationLocation = new NavigationLocation(location);
-		doTestRedirect(navigationLocation, expectedUrl, TYPE_NORMAL);
-		doTestRedirect(navigationLocation, expectedUrl, TYPE_HTTP10);
-		doTestRedirect(navigationLocation, expectedUrl, TYPE_AJAX);
+		doTestRedirect(navigationLocation, expectedUrl, TYPE_NORMAL, key);
+		doTestRedirect(navigationLocation, expectedUrl, TYPE_HTTP10, key);
+		doTestRedirect(navigationLocation, expectedUrl, TYPE_AJAX, key);
 	}
 
 	public void testAssertsWorks() throws Exception {
 		try {
-			doTestRedirects("http://localhost", "http://localhost2");
+			doTestRedirects("http://localhost", "http://localhost2", null);
 			fail();
 		} catch (AssertionError e) {
 		} catch (ComparisonFailure e) {
@@ -93,30 +93,64 @@ public class DefaultRedirectHandlerTests extends TestCase {
 	}
 
 	public void testServletRelative() throws Exception {
-		doTestRedirects("servletRelative:test", "/context/servlet/test");
-		doTestRedirects("servletRelative:/test", "/context/servlet/test");
+		doTestRedirects("servletRelative:test", "/context/servlet/test", null);
+		doTestRedirects("servletRelative:/test", "/context/servlet/test", null);
 	}
 
 	public void testContextRelative() throws Exception {
-		doTestRedirects("contextRelative:test", "/context/test");
-		doTestRedirects("contextRelative:/test", "/context/test");
+		doTestRedirects("contextRelative:test", "/context/test", null);
+		doTestRedirects("contextRelative:/test", "/context/test", null);
 	}
 
 	public void testServerRelative() throws Exception {
-		doTestRedirects("serverRelative:test", "/test");
-		doTestRedirects("serverRelative:/test", "/test");
+		doTestRedirects("serverRelative:test", "/test", null);
+		doTestRedirects("serverRelative:/test", "/test", null);
 	}
 
 	public void testHttp() throws Exception {
-		doTestRedirects("http://localhost", "http://localhost");
+		doTestRedirects("http://localhost", "http://localhost", null);
 	}
 
 	public void testHttps() throws Exception {
-		doTestRedirects("https://localhost", "https://localhost");
+		doTestRedirects("https://localhost", "https://localhost", null);
 	}
 
 	public void testDefault() throws Exception {
-		doTestRedirects("test", "/context/servlet/test");
-		doTestRedirects("/test", "/context/servlet/test");
+		doTestRedirects("test", "/context/servlet/test", null);
+		doTestRedirects("/test", "/context/servlet/test", null);
+	}
+
+	public void testWithKey() throws Exception {
+		ExecutionContextKey key = new IntegerExecutionContextKey(123);
+		doTestRedirects("test", "/context/servlet/test?execution=123", key);
+		doTestRedirects("test?a=b", "/context/servlet/test?a=b&execution=123", key);
+	}
+
+	public void testKeyEncoding() throws Exception {
+		ExecutionContextKey key = new ExecutionContextKey() {
+			public String toString() {
+				return "te&st";
+			}
+
+			public boolean equals(Object o) {
+				throw new UnsupportedOperationException("Auto-generated method stub");
+			}
+
+			public int hashCode() {
+				throw new UnsupportedOperationException("Auto-generated method stub");
+			}
+		};
+		doTestRedirects("test", "/context/servlet/test?execution=te%26st", key);
+	}
+
+	public void testExtractExecutionKey() throws Exception {
+		DefaultRedirectHandler handler = new DefaultRedirectHandler();
+		HttpServletRequest requestWithout = (HttpServletRequest) EasyMock.createMock(HttpServletRequest.class);
+		EasyMock.expect(requestWithout.getParameter("execution")).andReturn(null);
+		HttpServletRequest requestWith = (HttpServletRequest) EasyMock.createMock(HttpServletRequest.class);
+		EasyMock.expect(requestWith.getParameter("execution")).andReturn("123");
+		EasyMock.replay(new Object[] { requestWithout, requestWith });
+		assertNull(handler.getExecutionContextKey(requestWithout));
+		assertEquals("123", handler.getExecutionContextKey(requestWith));
 	}
 }

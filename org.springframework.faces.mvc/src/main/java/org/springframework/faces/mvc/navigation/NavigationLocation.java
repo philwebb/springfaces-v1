@@ -80,7 +80,7 @@ public final class NavigationLocation {
 	/**
 	 * @return If the redirect should be rendered as a popup modal dialog
 	 */
-	public boolean getPopup() {
+	public boolean isPopup() {
 		return popup.booleanValue();
 	}
 
