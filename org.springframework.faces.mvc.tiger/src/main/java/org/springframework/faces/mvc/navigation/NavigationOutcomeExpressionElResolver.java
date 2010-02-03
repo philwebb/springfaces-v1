@@ -80,7 +80,7 @@ public class NavigationOutcomeExpressionElResolver implements NavigationOutcomeE
 			i = matcher.end();
 		}
 		resolvedLocation.append(s.substring(i, s.length()));
-		return new NavigationLocation(resolvedLocation.toString(), outcome.getPopup(), outcome.getFragments());
+		return new NavigationLocation(resolvedLocation.toString(), outcome.isPopup(), outcome.getFragments());
 	}
 
 	/**
