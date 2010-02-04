@@ -41,12 +41,7 @@ public class ConversionServiceQuickConverter implements QuickConverter, Initiali
 
 	@SuppressWarnings("unchecked")
 	public <T> T execute(Object source, Class<T> targetClass) {
-		return (T) conversionService.executeConversion(source, targetClass);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T execute(String converterId, Object source, Class<T> targetClass) {
-		return (T) conversionService.executeConversion(converterId, source, targetClass);
+		return (T) getConversionService().executeConversion(source, targetClass);
 	}
 
 	public Byte toByte(Object source) {
@@ -106,5 +101,13 @@ public class ConversionServiceQuickConverter implements QuickConverter, Initiali
 	public void setConversionService(ConversionService conversionService) {
 		Assert.notNull(conversionService, "The conversion service is required");
 		this.conversionService = conversionService;
+	}
+
+	/**
+	 * Returns the underlying conversion service.
+	 * @return The conversion service
+	 */
+	protected ConversionService getConversionService() {
+		return conversionService;
 	}
 }

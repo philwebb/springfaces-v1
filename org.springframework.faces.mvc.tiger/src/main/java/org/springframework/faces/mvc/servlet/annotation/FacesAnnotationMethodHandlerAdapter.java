@@ -15,24 +15,15 @@
  */
 package org.springframework.faces.mvc.servlet.annotation;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
@@ -70,6 +61,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,13 +69,11 @@ import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver;
 import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
-import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
@@ -484,9 +474,9 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 	/**
 	 * Internal {@link AnnotatedMethodInvoker} implementation.
 	 */
-	private class ServletFacesControllerAnnotatedMethodInvoker extends AnnotatedMethodInvoker {
+	private class AnnotatedMethodInvokerImpl extends AnnotatedMethodInvoker {
 
-		public ServletFacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
+		public AnnotatedMethodInvokerImpl(RequestMappingMethodResolver resolver,
 				WebArgumentResolver[] additionalArgumentResolvers) {
 			super(resolver, webBindingInitializer, parameterNameDiscoverer, FacesWebArgumentResolvers.mergeResolvers(
 					completeArgumentResolvers, additionalArgumentResolvers));
@@ -506,37 +496,8 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			return binder;
 		}
 
-		@Override
-		protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
-			if ((webRequest.getNativeRequest() instanceof HttpServletRequest)
-					&& (webRequest.getNativeResponse() instanceof HttpServletResponse)) {
-
-				HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-				HttpServletResponse response = (HttpServletResponse) webRequest.getNativeResponse();
-
-				if (ServletRequest.class.isAssignableFrom(parameterType)) {
-					return request;
-				} else if (ServletResponse.class.isAssignableFrom(parameterType)) {
-					return response;
-				} else if (HttpSession.class.isAssignableFrom(parameterType)) {
-					return request.getSession();
-				} else if (Principal.class.isAssignableFrom(parameterType)) {
-					return request.getUserPrincipal();
-				} else if (Locale.class.equals(parameterType)) {
-					return RequestContextUtils.getLocale(request);
-				} else if (InputStream.class.isAssignableFrom(parameterType)) {
-					return request.getInputStream();
-				} else if (Reader.class.isAssignableFrom(parameterType)) {
-					return request.getReader();
-				} else if (OutputStream.class.isAssignableFrom(parameterType)) {
-					return response.getOutputStream();
-				} else if (Writer.class.isAssignableFrom(parameterType)) {
-					return response.getWriter();
-				} else if (WebRequest.class.isAssignableFrom(parameterType)) {
-					return webRequest;
-				}
-			}
-			return super.resolveStandardArgument(parameterType, webRequest);
+		protected void raiseMissingParameterException(String paramName, Class paramType) throws Exception {
+			throw new MissingServletRequestParameterException(paramName, paramType.getName());
 		}
 	}
 
@@ -547,7 +508,7 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 			AnnotatedMethodInvokerFactory {
 
 		private NativeWebRequest webRequest;
-		private ServletFacesControllerAnnotatedMethodInvoker dataBinderMethodInvoker;
+		private AnnotatedMethodInvokerImpl dataBinderMethodInvoker;
 		private NavigationCaseMethodResolver methodResolver;
 		private Object handler;
 		private String encoding;
@@ -570,13 +531,13 @@ public class FacesAnnotationMethodHandlerAdapter extends AnnotationMethodHandler
 
 		public WebDataBinder createDataBinder(String attrName, Object target, String objectName) throws Exception {
 			if (dataBinderMethodInvoker == null) {
-				dataBinderMethodInvoker = new ServletFacesControllerAnnotatedMethodInvoker(methodResolver, null);
+				dataBinderMethodInvoker = new AnnotatedMethodInvokerImpl(methodResolver, null);
 			}
 			return dataBinderMethodInvoker.createDataBinder(handler, webRequest, attrName, target, objectName);
 		}
 
 		public AnnotatedMethodInvoker newInvoker(WebArgumentResolver... additionalArgumentResolvers) {
-			return new ServletFacesControllerAnnotatedMethodInvoker(methodResolver, additionalArgumentResolvers);
+			return new AnnotatedMethodInvokerImpl(methodResolver, additionalArgumentResolvers);
 		}
 	}
 }

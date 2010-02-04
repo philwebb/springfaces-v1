@@ -63,6 +63,11 @@ public class SampleController {
 		return "someview";
 	}
 
+	@RequestMapping("/popupandfragment/*")
+	@NavigationCase(on = "action", to = "popupandfragment", popup = true, fragments = "fragments")
+	public void popupAndFragment() {
+	}
+
 	@NavigationCase(on = "methodcall")
 	public String methodCall(String navigation, NavigationCase navigationCase, NavigationRequestEvent event,
 			FacesContext facesContext) {

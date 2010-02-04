@@ -15,15 +15,26 @@
  */
 package org.springframework.faces.mvc.annotation.support;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +50,6 @@ import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -51,8 +61,9 @@ import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
-//Based on AnnotatedMethodInvoker from Spring MVC
+//Based on HandlerMethodInvoker from Spring MVC
 
 /**
  * Helper class used to invoke annotated methods on {@link FacesController} annotated classes.
@@ -85,6 +96,13 @@ public abstract class AnnotatedMethodInvoker {
 	private ParameterNameDiscoverer parameterNameDiscoverer;
 	private WebArgumentResolver[] customArgumentResolvers;
 
+	/**
+	 * Constructor
+	 * @param resolver The resolver used to obtain methods
+	 * @param bindingInitializer The binding initializer
+	 * @param parameterNameDiscoverer Strategy class used to determine parameter names
+	 * @param customArgumentResolvers Any additional argument resolvers
+	 */
 	public AnnotatedMethodInvoker(RequestMappingMethodResolver resolver, WebBindingInitializer bindingInitializer,
 			ParameterNameDiscoverer parameterNameDiscoverer, WebArgumentResolver... customArgumentResolvers) {
 
@@ -120,7 +138,7 @@ public abstract class AnnotatedMethodInvoker {
 		Method handlerMethodToInvoke = BridgeMethodResolver.findBridgedMethod(handlerMethod);
 		try {
 			ModelArgumentResolver modelResolver = new FacesModelArgumentResolver(FacesContext.getCurrentInstance());
-			Object[] args = resolveArguments(handler, handlerMethod, webRequest, null, modelResolver);
+			Object[] args = resolveArguments(handler, handlerMethod, webRequest, null, modelResolver, handler);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Invoking method and active handler: " + handlerMethodToInvoke);
 			}
@@ -167,6 +185,29 @@ public abstract class AnnotatedMethodInvoker {
 		}
 	}
 
+	/**
+	 * Invoke the specified method, ensuring that the method is accessible and that all exceptions are re-thrown
+	 * correctly.
+	 */
+	private Object doInvokeMethod(Method method, Object target, Object[] args) throws Exception {
+		ReflectionUtils.makeAccessible(method);
+		try {
+			return method.invoke(target, args);
+		} catch (InvocationTargetException ex) {
+			ReflectionUtils.rethrowException(ex.getTargetException());
+		}
+		throw new IllegalStateException("Should never get here");
+	}
+
+	/**
+	 * Resolve the arguments on a {@link InitBinder} annotated method.
+	 * @param handler The handler
+	 * @param initBinderMethod The {@link InitBinder} annotated method
+	 * @param binder The data binder
+	 * @param webRequest The web request
+	 * @return Resolved arguments
+	 * @throws Exception on error
+	 */
 	private Object[] resolveInitBinderArguments(Object handler, Method initBinderMethod, final WebDataBinder binder,
 			NativeWebRequest webRequest) throws Exception {
 		WebArgumentResolver initBinderArgumentResolver = new WebArgumentResolver() {
@@ -180,11 +221,24 @@ public abstract class AnnotatedMethodInvoker {
 		};
 		WebArgumentResolver[] argumentResolvers = { initBinderArgumentResolver };
 		return resolveArguments(handler, initBinderMethod, webRequest, argumentResolvers,
-				INIT_BINDER_NO_MODEL_ARGUMENT_RESOLVER);
+				INIT_BINDER_NO_MODEL_ARGUMENT_RESOLVER, null);
 	}
 
+	/**
+	 * Resolve the arguments for a specific handler method.
+	 * @param handler The handler
+	 * @param handlerMethod The method
+	 * @param webRequest The web request
+	 * @param argumentResolvers Additional {@link WebArgumentResolver}s that are used to resolver argument (can be
+	 * <tt>null</tt>)
+	 * @param modelArgumentResolver The model argument resolver
+	 * @param handlerForInitBinderCall The handler for use with init binder (can be <tt>null</tt>)
+	 * @return Resolved arguments
+	 * @throws Exception on error
+	 */
 	private Object[] resolveArguments(Object handler, Method handlerMethod, NativeWebRequest webRequest,
-			WebArgumentResolver[] argumentResolvers, ModelArgumentResolver modelArgumentResolver) throws Exception {
+			WebArgumentResolver[] argumentResolvers, ModelArgumentResolver modelArgumentResolver,
+			Object handlerForInitBinderCall) throws Exception {
 
 		Class[] paramTypes = handlerMethod.getParameterTypes();
 		Object[] args = new Object[paramTypes.length];
@@ -239,7 +293,8 @@ public abstract class AnnotatedMethodInvoker {
 			}
 
 			if (requestParamName != null) {
-				args[i] = resolveRequestParam(requestParamName, requestParamRequired, methodParameter, webRequest, null);
+				args[i] = resolveRequestParam(requestParamName, requestParamRequired, methodParameter, webRequest,
+						handlerForInitBinderCall);
 			} else if (modelAttributeName != null) {
 				boolean assignBindingResult = (args.length > i + 1 && Errors.class.isAssignableFrom(paramTypes[i + 1]));
 				ResolvedModelArgument resolved = null;
@@ -260,6 +315,16 @@ public abstract class AnnotatedMethodInvoker {
 		return args;
 	}
 
+	/**
+	 * Resolve a single request parameter
+	 * @param paramName The parameter name or an empty string if the name should be taken from the <tt>methodParam</tt>
+	 * @param paramRequired <tt>true</tt> if the parameter is required or <tt>false</tt> if the parameter is optional
+	 * @param methodParam The method parameter
+	 * @param webRequest The web request
+	 * @param handlerForInitBinderCall The handler for use with init binder (can be <tt>null</tt>)
+	 * @return The resolved request parameter
+	 * @throws Exception on error
+	 */
 	private Object resolveRequestParam(String paramName, boolean paramRequired, MethodParameter methodParam,
 			NativeWebRequest webRequest, Object handlerForInitBinderCall) throws Exception {
 		Class paramType = methodParam.getParameterType();
@@ -290,7 +355,8 @@ public abstract class AnnotatedMethodInvoker {
 								+ paramType
 								+ " parameter '"
 								+ paramName
-								+ "' is not present but cannot be translated into a null value due to being declared as a "
+								+ "' is not present but cannot be translated into "
+								+ "a null value due to being declared as a "
 								+ "primitive type. Consider declaring it as object wrapper for the corresponding primitive type.");
 			}
 		}
@@ -299,20 +365,23 @@ public abstract class AnnotatedMethodInvoker {
 		return binder.convertIfNecessary(paramValue, paramType, methodParam);
 	}
 
-	private Object doInvokeMethod(Method method, Object target, Object[] args) throws Exception {
-		ReflectionUtils.makeAccessible(method);
-		try {
-			return method.invoke(target, args);
-		} catch (InvocationTargetException ex) {
-			ReflectionUtils.rethrowException(ex.getTargetException());
-		}
-		throw new IllegalStateException("Should never get here");
-	}
+	/**
+	 * Called to raise a missing parameter exception. Subclasses should throw an appropriate exception.
+	 * @param paramName The parameter name that could not be found
+	 * @param paramType The parameter type that could not be found
+	 * @throws Exception The raised exception
+	 */
+	protected abstract void raiseMissingParameterException(String paramName, Class paramType) throws Exception;
 
-	protected void raiseMissingParameterException(String paramName, Class paramType) throws Exception {
-		throw new MissingServletRequestParameterException(paramName, paramType.getName());
-	}
-
+	/**
+	 * Resolve a single argument. This method supports custom resolvers and standard argument types.
+	 * @param methodParameter The parameter to resolver
+	 * @param webRequest The web request
+	 * @return The resolved argument (can be <tt>null</tt>) or {@link WebArgumentResolver#UNRESOLVED} if the argument
+	 * cannot be resolved.
+	 * @throws Exception on error
+	 * @see #resolveStandardArgument(Class, NativeWebRequest)
+	 */
 	protected Object resolveCommonArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
 			throws Exception {
 		// Invoke custom argument resolvers if present...
@@ -332,6 +401,53 @@ public abstract class AnnotatedMethodInvoker {
 		return value;
 	}
 
+	/**
+	 * Resolve a standard argument type. This method can be overridden by subclasses to extend supported argument types.
+	 * @param parameterType The paramter type to resolve
+	 * @param webRequest The web request
+	 * @return The resolved argument (can be <tt>null</tt>) or {@link WebArgumentResolver#UNRESOLVED} if the argument
+	 * @throws Exception on error
+	 */
+	protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
+		if ((webRequest.getNativeRequest() instanceof HttpServletRequest)
+				&& (webRequest.getNativeResponse() instanceof HttpServletResponse)) {
+
+			HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+			HttpServletResponse response = (HttpServletResponse) webRequest.getNativeResponse();
+
+			if (ServletRequest.class.isAssignableFrom(parameterType)) {
+				return request;
+			} else if (ServletResponse.class.isAssignableFrom(parameterType)) {
+				return response;
+			} else if (HttpSession.class.isAssignableFrom(parameterType)) {
+				return request.getSession();
+			} else if (Principal.class.isAssignableFrom(parameterType)) {
+				return request.getUserPrincipal();
+			} else if (Locale.class.equals(parameterType)) {
+				return RequestContextUtils.getLocale(request);
+			} else if (InputStream.class.isAssignableFrom(parameterType)) {
+				return request.getInputStream();
+			} else if (Reader.class.isAssignableFrom(parameterType)) {
+				return request.getReader();
+			} else if (OutputStream.class.isAssignableFrom(parameterType)) {
+				return response.getOutputStream();
+			} else if (Writer.class.isAssignableFrom(parameterType)) {
+				return response.getWriter();
+			} else if (WebRequest.class.isAssignableFrom(parameterType)) {
+				return webRequest;
+			}
+		}
+		return WebArgumentResolver.UNRESOLVED;
+	}
+
+	/**
+	 * Invoke the specified {@link WebArgumentResolver}s.
+	 * @param methodParameter The method parameter
+	 * @param webRequest The web request
+	 * @param resolvers The resolvers (can be <tt>null</tt>)
+	 * @return The resolved argument (can be <tt>null</tt>) or {@link WebArgumentResolver#UNRESOLVED} if the argument
+	 * @throws Exception on error
+	 */
 	private Object invokeArgumentResolvers(MethodParameter methodParameter, NativeWebRequest webRequest,
 			WebArgumentResolver[] resolvers) throws Exception {
 		if (resolvers != null) {
@@ -342,10 +458,6 @@ public abstract class AnnotatedMethodInvoker {
 				}
 			}
 		}
-		return WebArgumentResolver.UNRESOLVED;
-	}
-
-	protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
 		return WebArgumentResolver.UNRESOLVED;
 	}
 
@@ -366,6 +478,9 @@ public abstract class AnnotatedMethodInvoker {
 			this.errors = errors;
 		}
 
+		/**
+		 * @return The resolved model result.
+		 */
 		public Object getResult() {
 			return result;
 		}

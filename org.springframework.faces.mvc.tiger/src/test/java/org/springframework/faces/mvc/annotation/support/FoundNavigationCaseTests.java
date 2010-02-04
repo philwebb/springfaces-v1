@@ -36,10 +36,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public class FoundNavigationCaseTests extends TestCase {
 
-	// FIXME tests for NavigationLocation.location == null
-	// FIXME tests for fragment support
-	// FIXME Test for popup
-
 	private AnnotatedMethodInvokerFactory invokerFactory;
 	private NativeWebRequest nativeWebRequest;
 
@@ -165,6 +161,17 @@ public class FoundNavigationCaseTests extends TestCase {
 		assertFalse(target.isMethodCalled());
 	}
 
+	public void testPopupAndFragments() throws Exception {
+		Method method = SampleController.class.getMethod("popupAndFragment", new Class<?>[] {});
+		NavigationCase navigationCase = method.getAnnotation(NavigationCase.class);
+		FoundNavigationCase fnc = new FoundNavigationCase(navigationCase, method);
+		SampleController target = new SampleController();
+		Object outcome = fnc.getOutcome(new NavigationRequestEvent(new MockFacesContext(), null, "action"), target,
+				nativeWebRequest, invokerFactory);
+		assertEquals(new NavigationLocation("popupandfragment", true, new String[] { "fragments" }), outcome);
+		assertFalse(target.isMethodCalled());
+	}
+
 	private class MockFacesControllerAnnotatedMethodInvoker extends AnnotatedMethodInvoker {
 
 		public MockFacesControllerAnnotatedMethodInvoker(RequestMappingMethodResolver resolver,
@@ -176,8 +183,11 @@ public class FoundNavigationCaseTests extends TestCase {
 
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 				throws Exception {
-			throw new UnsupportedOperationException("Auto-generated method stub");
+			throw new UnsupportedOperationException();
+		}
+
+		protected void raiseMissingParameterException(String paramName, Class paramType) throws Exception {
+			throw new UnsupportedOperationException();
 		}
 	}
-
 }

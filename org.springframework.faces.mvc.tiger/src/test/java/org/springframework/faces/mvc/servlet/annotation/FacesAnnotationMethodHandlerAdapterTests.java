@@ -62,6 +62,7 @@ import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
 import org.springframework.faces.mvc.navigation.annotation.NavigationRules;
 import org.springframework.faces.mvc.servlet.FacesHandler;
 import org.springframework.faces.mvc.servlet.FacesHandlerAdapter;
+import org.springframework.faces.mvc.servlet.FacesHandlerAdapterInitializationChecker;
 import org.springframework.faces.mvc.stereotype.FacesController;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.PathMatcher;
@@ -79,8 +80,6 @@ import org.springframework.web.servlet.mvc.multiaction.MethodNameResolver;
 import org.springframework.web.util.UrlPathHelper;
 
 public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
-
-	// FIXME test encoding
 
 	private static final Date D25_12_2009;
 	static {
@@ -215,6 +214,18 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 		doTestGetNavigationOutcomeLocation("outcome", new NavigationLocation("resolvedtestview"));
 	}
 
+	public void testGetNavigationOutcomeLocationWithCustomEncoding() throws Exception {
+		adapter.setUrlEncodingScheme("CUSTOM_ENCODING");
+		adapter.setNavigationOutcomeExpressionResolver(new NavigationOutcomeExpressionResolver() {
+			public NavigationLocation resolveNavigationOutcome(NavigationOutcomeExpressionContext context,
+					NavigationLocation outcome) throws Exception {
+				assertEquals("CUSTOM_ENCODING", context.getEncoding());
+				return new NavigationLocation("resolved" + outcome.getLocation());
+			}
+		});
+		doTestGetNavigationOutcomeLocation("outcome", new NavigationLocation("resolvedtestview"));
+	}
+
 	public void testGetNavigationOutcomeContext() throws Exception {
 		final boolean[] called = new boolean[] { false };
 		adapter.setNavigationOutcomeExpressionResolver(new NavigationOutcomeExpressionResolver() {
@@ -261,6 +272,17 @@ public class FacesAnnotationMethodHandlerAdapterTests extends TestCase {
 					+ "please manually inject a FacesHanlderAdapter using the setFacesHandlerAdapter method", e
 					.getMessage());
 		}
+	}
+
+	public void testDefaultHandlerAndPostProcess() throws Exception {
+		context.refresh();
+		adapter = new FacesAnnotationMethodHandlerAdapter();
+		adapter.setApplicationContext(context);
+		adapter.setBeanName("testMethodAdapterBean");
+		adapter.afterPropertiesSet();
+		adapter.postProcessBeanFactory(context.getBeanFactory());
+		FacesHandlerAdapter createdAdapter = (FacesHandlerAdapter) adapter.getFacesHandlerAdapter();
+		assertTrue(FacesHandlerAdapterInitializationChecker.isInitialized(createdAdapter));
 	}
 
 	public void testSetUrlPathHelper() throws Exception {

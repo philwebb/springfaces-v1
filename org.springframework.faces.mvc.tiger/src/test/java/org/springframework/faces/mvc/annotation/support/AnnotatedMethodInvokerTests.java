@@ -15,11 +15,16 @@
  */
 package org.springframework.faces.mvc.annotation.support;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedReader;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.security.Principal;
@@ -37,10 +42,13 @@ import javax.servlet.http.HttpSession;
 
 import junit.framework.TestCase;
 
+import org.apache.shale.test.mock.MockHttpSession;
+import org.apache.shale.test.mock.MockServletOutputStream;
 import org.easymock.EasyMock;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.faces.mvc.servlet.annotation.support.RequestMappingMethodResolver;
+import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
@@ -61,7 +69,6 @@ public class AnnotatedMethodInvokerTests extends TestCase {
 
 	// FIXME increase test coverage
 	// FIXME can/should we replace NativeWebRequest on invokeOnActiveHandler with ExternalContext
-	// FIXME could improve doc comments on class
 
 	private MockFacesControllerAnnotatedMethodInvoker invoker;
 	private WebBindingInitializer bindingInitializer;
@@ -207,39 +214,36 @@ public class AnnotatedMethodInvokerTests extends TestCase {
 		((AbstractController) controller).assertCalled(SampleControllerMethod.INIT);
 	}
 
-	// FIXME move to servlet subclass test
-	// public void testStandardArguments() throws Exception {
-	// EasyMock.expect(request.getSession()).andReturn(new MockHttpSession());
-	// EasyMock.expect(request.getUserPrincipal()).andReturn(EasyMock.createMock(Principal.class));
-	// EasyMock.expect(request.getLocale()).andReturn(Locale.UK);
-	// EasyMock.expect(request.getInputStream()).andReturn(
-	// new DelegatingServletInputStream(new ByteArrayInputStream(new byte[] {})));
-	// EasyMock.expect(request.getReader()).andReturn(new BufferedReader(new StringReader("")));
-	// EasyMock.expect(response.getOutputStream()).andReturn(new MockServletOutputStream(new ByteArrayOutputStream()));
-	// EasyMock.expect(response.getWriter()).andReturn(new PrintWriter(new ByteArrayOutputStream()));
-	// EasyMock.replay(request, response);
-	// controller = new StandardArgumentController();
-	// setupInvoker();
-	// WebDataBinder binder = new WebDataBinder(null);
-	// invoker.initBinder(controller, null, binder, webRequest);
-	// ((AbstractController) controller).assertCalled(SampleControllerMethod.INIT);
-	// }
-	//
-	// public void testTooSpecificStandardArgument() throws Exception {
-	// EasyMock.expect(request.getReader()).andReturn(new BufferedReader(new StringReader("")));
-	// EasyMock.replay(request, response);
-	// controller = new TooSpecificStandardArgumentController();
-	// setupInvoker();
-	// WebDataBinder binder = new WebDataBinder(null);
-	// try {
-	// invoker.initBinder(controller, null, binder, webRequest);
-	// fail();
-	// } catch (IllegalStateException e) {
-	// assertEquals("Standard argument type [java.io.PipedReader] resolved to incompatible value of type "
-	// + "[class java.io.BufferedReader]. Consider declaring the argument type in a "
-	// + "less specific fashion.", e.getMessage());
-	// }
-	// }
+	public void testStandardArguments() throws Exception {
+		EasyMock.expect(request.getSession()).andReturn(new MockHttpSession());
+		EasyMock.expect(request.getUserPrincipal()).andReturn(EasyMock.createMock(Principal.class));
+		EasyMock.expect(request.getLocale()).andReturn(Locale.UK);
+		EasyMock.expect(request.getInputStream()).andReturn(
+				new DelegatingServletInputStream(new ByteArrayInputStream(new byte[] {})));
+		EasyMock.expect(request.getReader()).andReturn(new BufferedReader(new StringReader("")));
+		EasyMock.expect(response.getOutputStream()).andReturn(new MockServletOutputStream(new ByteArrayOutputStream()));
+		EasyMock.expect(response.getWriter()).andReturn(new PrintWriter(new ByteArrayOutputStream()));
+		EasyMock.replay(request, response);
+		controller = new StandardArgumentController();
+		setupInvoker();
+		WebDataBinder binder = new WebDataBinder(null);
+		invoker.initBinder(controller, null, binder, webRequest);
+		((AbstractController) controller).assertCalled(SampleControllerMethod.INIT);
+	}
+
+	public void testTooSpecificStandardArgument() throws Exception {
+		controller = new TooSpecificStandardArgumentController();
+		setupInvoker();
+		WebDataBinder binder = new WebDataBinder(null);
+		try {
+			invoker.initBinder(controller, null, binder, webRequest);
+			fail();
+		} catch (IllegalStateException e) {
+			assertEquals("Standard argument type [java.io.PipedReader] resolved to incompatible value of type "
+					+ "[class java.io.BufferedReader]. Consider declaring the argument type in a "
+					+ "less specific fashion.", e.getMessage());
+		}
+	}
 
 	public void testSimpleArgumentResolver() throws Exception {
 		parameterNameDiscoverer = EasyMock.createNiceMock(ParameterNameDiscoverer.class);
@@ -436,6 +440,17 @@ public class AnnotatedMethodInvokerTests extends TestCase {
 		protected WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
 				throws Exception {
 			return new WebDataBinder(target, objectName);
+		}
+
+		protected Object resolveStandardArgument(Class parameterType, NativeWebRequest webRequest) throws Exception {
+			if (Reader.class.isAssignableFrom(parameterType)) {
+				return new BufferedReader(new StringReader(""));
+			}
+			return super.resolveStandardArgument(parameterType, webRequest);
+		}
+
+		protected void raiseMissingParameterException(String paramName, Class paramType) throws Exception {
+			throw new MissingServletRequestParameterException(paramName, paramType.getName());
 		}
 	}
 }
