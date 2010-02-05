@@ -15,12 +15,43 @@
  */
 package org.springframework.faces.mvc.annotation.support;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
+
+import org.easymock.EasyMock;
+import org.springframework.web.bind.support.WebArgumentResolver;
 
 public class FacesWebArgumentResolversTests extends TestCase {
 
-	// FIXME write tests for FacesWebArgumentResolvers
+	private void assertMergeResolvers(WebArgumentResolver[] expected, WebArgumentResolver[] r1, WebArgumentResolver[] r2)
+			throws Exception {
+		WebArgumentResolver[] actual = FacesWebArgumentResolvers.mergeResolvers(r1, r2);
+		assertTrue(Arrays.equals(expected, actual));
+	}
 
-	public void testStub() throws Exception {
+	public void testMergeResolvers() throws Exception {
+		WebArgumentResolver a1 = EasyMock.createMock(WebArgumentResolver.class);
+		WebArgumentResolver a2 = EasyMock.createMock(WebArgumentResolver.class);
+		WebArgumentResolver a3 = EasyMock.createMock(WebArgumentResolver.class);
+		WebArgumentResolver a4 = EasyMock.createMock(WebArgumentResolver.class);
+
+		WebArgumentResolver[] r1 = { a1, a2 };
+		WebArgumentResolver[] r2 = { a3, a4 };
+
+		assertMergeResolvers(new WebArgumentResolver[] { a1, a2, a3, a4 }, r1, r2);
+		assertMergeResolvers(new WebArgumentResolver[] { a3, a4 }, null, r2);
+		assertMergeResolvers(new WebArgumentResolver[] { a1, a2 }, r1, null);
+		assertMergeResolvers(new WebArgumentResolver[] {}, null, null);
+	}
+
+	public void testMergeWithFacesResolvers() throws Exception {
+		WebArgumentResolver a1 = EasyMock.createMock(WebArgumentResolver.class);
+		WebArgumentResolver a2 = EasyMock.createMock(WebArgumentResolver.class);
+		WebArgumentResolver[] resolvers = { a1, a2 };
+		WebArgumentResolver[] merged = FacesWebArgumentResolvers.mergeWithFacesResolvers(resolvers);
+		assertSame(a1, merged[0]);
+		assertSame(a2, merged[1]);
+		assertTrue(merged[2] instanceof FacesWebArgumentResolver);
 	}
 }

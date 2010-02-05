@@ -24,10 +24,10 @@ import junit.framework.TestCase;
 import org.apache.shale.test.mock.MockFacesContext;
 import org.springframework.faces.mvc.annotation.sample.SampleController;
 import org.springframework.faces.mvc.navigation.NavigationRequestEvent;
+import org.springframework.faces.mvc.navigation.annotation.NavigationCase;
+import org.springframework.faces.mvc.stereotype.FacesController;
 
 public class NavigationCaseAnnotationLocatorTests extends TestCase {
-
-	// FIXME test controller with no annotation methods
 
 	private FacesContext facesContext = new MockFacesContext();
 	private NavigationCaseAnnotationLocator locator;
@@ -115,4 +115,16 @@ public class NavigationCaseAnnotationLocatorTests extends TestCase {
 		assertNull(locator.findNavigationCase(handler, methods, event("ceon1", "ceon1", new RuntimeException())));
 	}
 
+	public void testLocateWithNoAnnotatedMethods() throws Exception {
+		handler = new NoAnnotatedMethodsController();
+		FoundNavigationCase found = locator.findNavigationCase(handler, methods, event("action", "outcome"));
+		assertEquals("nomethods", found.getNavigationCase().to());
+	}
+
+	@FacesController
+	@NavigationCase(on = "outcome", to = "nomethods")
+	public static class NoAnnotatedMethodsController {
+		public void someMethod() {
+		}
+	}
 }
